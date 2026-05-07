@@ -1,0 +1,806 @@
+/* =====================================================
+   CHEFCHAOUEN - Feuille de style principale
+   Auteur : Groupe GI1-2026
+   Description : Styles pour le portail touristique
+===================================================== */
+
+/* ===== VARIABLES CSS GLOBALES ===== */
+/* Variables réutilisables pour la cohérence des couleurs sur tout le site */
+:root {
+  --bleu-ciel:   #5BA4CF;  /* Bleu clair inspiré des murs de Chefchaouen */
+  --bleu-profond:#1A3C5E;  /* Bleu foncé pour les titres et fonds */
+  --bleu-moyen:  #2E6DA4;  /* Bleu intermédiaire pour les boutons */
+  --blanc:       #FFFFFF;  /* Blanc pur */
+  --gris-clair:  #F8F9FA;  /* Fond de section alternée */
+  --gris-texte:  #555555;  /* Texte secondaire */
+  --or:          #D4AF37;  /* Couleur or pour étoiles et accents */
+  --rouge-err:   #E74C3C;  /* Rouge pour les erreurs de formulaire */
+  --vert-succes: #27AE60;  /* Vert pour le message de succès */
+  --ombre: 0 4px 20px rgba(0,0,0,0.12); /* Ombre portée standard */
+  --transition: 0.3s ease; /* Durée de transition des animations */
+  --radius: 12px;          /* Arrondi des coins des cartes */
+}
+
+/* ===== RESET GLOBAL ===== */
+/* Suppression des marges et paddings par défaut du navigateur */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Les bordures sont incluses dans la largeur/hauteur */
+}
+
+/* Style de base du body */
+body {
+  font-family: 'Lato', sans-serif; /* Police principale du texte */
+  color: #333;
+  background: var(--blanc);
+  overflow-x: hidden;  /* Empêche le défilement horizontal */
+  scroll-behavior: smooth; /* Défilement fluide au clic sur les ancres */
+}
+
+/* Suppression du soulignement des liens */
+a { text-decoration: none; color: inherit; }
+
+/* Suppression des puces des listes */
+ul { list-style: none; }
+
+/* Images responsives par défaut */
+img { max-width: 100%; display: block; }
+
+/* ===== NAVBAR ===== */
+/* Barre de navigation fixe en haut de la page */
+#navbar {
+  position: fixed;      /* Reste visible lors du défilement */
+  top: 0; left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 5%;
+  background: transparent; /* Transparent au départ */
+  transition: background var(--transition), box-shadow var(--transition);
+  z-index: 1000; /* Au-dessus du contenu mais en dessous de la lightbox */
+}
+
+/* Classe ajoutée par JS après 80px de scroll : fond bleu opaque */
+#navbar.scrolled {
+  background: rgba(26,60,94,0.97);
+  box-shadow: var(--ombre);
+}
+
+/* Logo texte dans la navbar */
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: var(--blanc);
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+/* Liste des liens de navigation */
+.nav-links {
+  display: flex;
+  gap: 30px;
+}
+
+/* Style de chaque lien */
+.nav-links a {
+  color: var(--blanc);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  position: relative;
+  padding-bottom: 4px;
+  transition: color var(--transition);
+}
+
+/* Ligne dorée animée qui apparaît sous le lien au survol */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 0; height: 2px;
+  background: var(--or);
+  transition: width var(--transition);
+}
+.nav-links a:hover::after { width: 100%; }
+.nav-links a:hover { color: var(--or); }
+
+/* Bouton hamburger pour mobile (caché sur desktop) */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+/* Les 3 barres du hamburger */
+.hamburger span {
+  display: block;
+  width: 25px; height: 2px;
+  background: var(--blanc);
+  transition: var(--transition);
+}
+
+/* ===== SECTION HERO ===== */
+/* Section plein écran avec image de fond et effet parallaxe */
+#hero {
+  position: relative;
+  height: 100vh; /* Hauteur = 100% de la fenêtre du navigateur */
+  background-image: url('images/hero-chefchaoun.jpg');
+  background-size: cover;          /* L'image couvre tout l'espace */
+  background-position: center;    /* Image centrée */
+  background-attachment: fixed;   /* Effet parallaxe au scroll */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Couche sombre semi-transparente pour améliorer la lisibilité du texte */
+.hero-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(26,60,94,0.75) 0%, rgba(91,164,207,0.4) 100%);
+}
+
+/* Contenu du hero (texte + bouton), positionné au-dessus de l'overlay */
+.hero-content {
+  position: relative;
+  z-index: 2; /* Au-dessus de l'overlay */
+  color: var(--blanc);
+  max-width: 700px;
+  padding: 0 20px;
+}
+
+/* Titre principal : invisible au départ, animé par JS */
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 8vw, 6rem); /* Taille responsive (min 3rem, max 6rem) */
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 15px;
+  opacity: 0;               /* Invisible au départ */
+  transform: translateY(40px); /* Décalé vers le bas */
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+/* Sous-titre : animé avec délai de 0.3s */
+.hero-subtitle {
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-weight: 300;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 20px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
+}
+
+/* Description : animée avec délai de 0.6s */
+.hero-desc {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 35px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease 0.6s, transform 0.8s ease 0.6s;
+}
+
+/* Classe ajoutée par JS pour déclencher l'animation d'apparition */
+.hero-title.visible,
+.hero-subtitle.visible,
+.hero-desc.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Bouton "Découvrir" dans le hero */
+.btn-hero {
+  display: inline-block;
+  padding: 15px 40px;
+  background: var(--or);
+  color: var(--bleu-profond);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 50px; /* Forme ovale */
+  transition: all var(--transition);
+  opacity: 0;
+  animation: fadeInBtn 0.8s ease 1s forwards; /* Apparaît après 1s */
+}
+/* Animation d'apparition du bouton */
+@keyframes fadeInBtn { to { opacity: 1; } }
+
+.btn-hero:hover {
+  background: var(--blanc);
+  transform: translateY(-3px); /* Légère élévation */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Flèche animée en bas du hero pour inviter au scroll */
+.scroll-indicator {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--blanc);
+  font-size: 1.5rem;
+  animation: bounce 2s infinite; /* Rebond continu */
+  cursor: pointer;
+}
+/* Animation de rebond vertical */
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(10px); }
+}
+
+/* ===== STYLES GÉNÉRAUX DES SECTIONS ===== */
+/* Espacement uniforme pour toutes les sections */
+section { padding: 80px 0; }
+
+/* Fond gris clair pour les sections paires */
+#galerie, #carte { background: var(--gris-clair); }
+
+/* Conteneur centré avec largeur maximale */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Titre de section avec ligne décorative dorée en dessous */
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  color: var(--bleu-profond);
+  text-align: center;
+  margin-bottom: 10px;
+}
+/* Ligne dorée décorative sous le titre */
+.section-title::after {
+  content: '';
+  display: block;
+  width: 60px; height: 3px;
+  background: var(--or);
+  margin: 15px auto 0;
+}
+
+/* Texte de description sous le titre de section */
+.section-desc {
+  text-align: center;
+  color: var(--gris-texte);
+  font-size: 1.1rem;
+  margin-bottom: 40px;
+}
+
+/* ===== BOUTONS DE FILTRE ===== */
+/* Groupe de boutons pour filtrer les cards par catégorie */
+.filter-btns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+/* Style d'un bouton de filtre individuel */
+.filter-btn {
+  padding: 10px 25px;
+  border: 2px solid var(--bleu-moyen);
+  background: transparent;
+  color: var(--bleu-moyen);
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: 'Lato', sans-serif;
+}
+
+/* Bouton actif ou survolé : fond bleu, texte blanc */
+.filter-btn:hover,
+.filter-btn.active {
+  background: var(--bleu-moyen);
+  color: var(--blanc);
+  transform: translateY(-2px);
+}
+
+/* ===== GRILLE DE CARDS ===== */
+/* Grille auto-adaptative : minimum 300px par colonne */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+/* Card individuelle */
+.card {
+  background: var(--blanc);
+  border-radius: var(--radius);
+  overflow: hidden; /* Les coins arrondis s'appliquent aussi aux enfants */
+  box-shadow: var(--ombre);
+  transition: transform var(--transition), box-shadow var(--transition);
+  animation: cardIn 0.4s ease forwards; /* Animation d'entrée */
+}
+/* Animation d'entrée des cards */
+@keyframes cardIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+/* Élévation au survol */
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.18);
+}
+
+/* Zone image de la card */
+.card-img {
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* Badge de catégorie positionné dans l'image */
+.badge {
+  position: absolute;
+  top: 15px; right: 15px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+/* Couleurs des badges selon la catégorie */
+.badge.culture    { background: #8E44AD; color: white; }
+.badge.nature     { background: #27AE60; color: white; }
+.badge.sport      { background: #E67E22; color: white; }
+.badge.detente    { background: #2980B9; color: white; }
+.badge.restaurant { background: #C0392B; color: white; }
+.badge.hotel      { background: #1A3C5E; color: white; }
+.badge.riad       { background: #D4AF37; color: #333; }
+
+/* Corps de la card */
+.card-body { padding: 20px; }
+
+.card-body h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  color: var(--bleu-profond);
+  margin-bottom: 10px;
+}
+
+.card-body p {
+  color: var(--gris-texte);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  margin-bottom: 15px;
+}
+
+/* Pied de card avec icônes info */
+.card-footer, .resto-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--bleu-moyen);
+  font-weight: 700;
+}
+.card-footer span, .resto-info span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Card cachée par le filtre JS */
+.card.hidden { display: none; }
+
+/* ===== ÉTOILES DE NOTATION ===== */
+.stars { display: flex; gap: 3px; margin-bottom: 10px; }
+.stars .fas.fa-star { color: var(--or); } /* Étoile pleine : dorée */
+.stars .far.fa-star { color: #ccc; }      /* Étoile vide : grise */
+
+/* ===== GALERIE PHOTOS ===== */
+/* Grille de miniatures en proportions égales */
+.galerie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+  padding: 0 20px;
+}
+
+/* Item de galerie cliquable */
+.galerie-item {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 4/3; /* Ratio fixe pour uniformité */
+}
+
+/* Image miniature avec zoom au survol */
+.galerie-img {
+  width: 100%; height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.4s ease;
+}
+.galerie-item:hover .galerie-img {
+  transform: scale(1.08); /* Zoom léger au survol */
+}
+
+/* Overlay foncé avec icône, visible au survol */
+.galerie-hover {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(26,60,94,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0; /* Invisible par défaut */
+  transition: opacity var(--transition);
+}
+.galerie-hover i { color: white; font-size: 2rem; }
+.galerie-item:hover .galerie-hover { opacity: 1; } /* Visible au survol */
+
+/* ===== LIGHTBOX ===== */
+/* Fenêtre modale plein écran pour afficher les photos en grand */
+/* IMPORTANT : position fixed + z-index très élevé pour couvrir TOUT le contenu */
+#lightbox {
+  display: none;      /* Cachée par défaut */
+  position: fixed;    /* Couvre toute la fenêtre, indépendamment du scroll */
+  top: 0;
+  left: 0;
+  width: 100vw;       /* Largeur = 100% de la fenêtre */
+  height: 100vh;      /* Hauteur = 100% de la fenêtre */
+  background: rgba(0,0,0,0.93); /* Fond très sombre */
+  z-index: 99999;     /* Au-dessus de TOUT : navbar (1000), contenu, etc. */
+  align-items: center;
+  justify-content: center;
+}
+
+/* Lightbox affichée : classe ajoutée par JS au clic sur une photo */
+#lightbox.active {
+  display: flex; /* Flex pour centrer l'image */
+}
+
+/* Zone image + légende centrée */
+.lb-content {
+  max-width: 85vw;
+  max-height: 85vh;
+  text-align: center;
+}
+
+/* Image dans la lightbox */
+#lbImg {
+  max-width: 100%;
+  max-height: 78vh;
+  border-radius: 8px;
+  object-fit: contain; /* L'image garde ses proportions */
+}
+
+/* Légende sous l'image */
+#lbCaption {
+  color: white;
+  margin-top: 15px;
+  font-size: 1rem;
+}
+
+/* Boutons de navigation de la lightbox */
+#lbClose, #lbPrev, #lbNext {
+  position: absolute;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  font-size: 1.4rem;
+  width: 50px; height: 50px;
+  border-radius: 50%;  /* Boutons ronds */
+  cursor: pointer;
+  transition: background var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#lbClose { top: 20px; right: 20px; font-size: 1.8rem; } /* Bouton fermer en haut à droite */
+#lbPrev  { left: 20px; top: 50%; transform: translateY(-50%); }   /* Flèche gauche */
+#lbNext  { right: 20px; top: 50%; transform: translateY(-50%); }  /* Flèche droite */
+#lbClose:hover, #lbPrev:hover, #lbNext:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+/* ===== CARTE INTERACTIVE ===== */
+/* Disposition flex : liste des lieux + carte Leaflet côte à côte */
+.carte-wrapper {
+  display: flex;
+  height: 520px;
+  max-width: 1200px;
+  margin: 30px auto 0;
+}
+
+/* Liste des lieux à gauche */
+.carte-liste {
+  width: 300px;
+  min-width: 280px;
+  background: var(--bleu-profond);
+  color: white;
+  padding: 25px 20px;
+  overflow-y: auto; /* Défilement si trop d'items */
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.carte-liste h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: var(--or);
+}
+
+/* Item de lieu dans la liste */
+.lieu-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background var(--transition);
+  margin-bottom: 8px;
+  border-left: 3px solid transparent; /* Bordure gauche dorée pour l'item actif */
+}
+.lieu-item:hover, .lieu-item.active {
+  background: rgba(255,255,255,0.1);
+  border-left-color: var(--or);
+}
+.lieu-item > i { color: var(--or); font-size: 1.1rem; margin-top: 3px; min-width: 20px; }
+.lieu-item strong { display: block; font-size: 0.9rem; margin-bottom: 3px; }
+.lieu-item span { font-size: 0.78rem; color: rgba(255,255,255,0.65); }
+
+/* Div de la carte Leaflet : prend tout l'espace restant */
+#map {
+  flex: 1;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  z-index: 1; /* En dessous de la lightbox (99999) */
+}
+
+/* ===== MÉTÉO ET CONTACT ===== */
+/* Grille 2 colonnes : météo | formulaire */
+.meteo-contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* Widget météo avec dégradé bleu */
+.meteo-widget {
+  background: linear-gradient(135deg, var(--bleu-profond), var(--bleu-moyen));
+  color: white;
+  border-radius: var(--radius);
+  padding: 35px;
+  box-shadow: var(--ombre);
+}
+.meteo-widget h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Zone d'affichage de la température (remplie par l'API JS) */
+.meteo-temp-display { text-align: center; padding: 20px 0; }
+.meteo-temp { font-size: 4rem; font-weight: 700; font-family: 'Playfair Display', serif; }
+.meteo-desc { font-size: 1.1rem; opacity: 0.85; text-transform: capitalize; margin-top: 5px; }
+.meteo-ville { font-size: 0.9rem; opacity: 0.7; margin-top: 5px; }
+
+/* Spinner de chargement météo */
+.meteo-loading { text-align: center; padding: 30px; opacity: 0.7; }
+.meteo-loading p { margin-top: 10px; }
+
+/* Grille des statistiques météo (humidité, vent, ressenti) */
+.meteo-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin: 20px 0;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+.meteo-stat { text-align: center; }
+.meteo-stat i { font-size: 1.3rem; opacity: 0.8; }
+.meteo-stat span { display: block; font-size: 1.1rem; font-weight: 700; margin: 5px 0 3px; }
+.meteo-stat small { font-size: 0.75rem; opacity: 0.7; }
+
+/* Bloc de conseils dans le widget météo */
+.meteo-conseil {
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+}
+.meteo-conseil h4 { font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.meteo-conseil li { font-size: 0.85rem; opacity: 0.85; padding: 4px 0 4px 15px; position: relative; }
+.meteo-conseil li::before { content: '→'; position: absolute; left: 0; color: var(--or); }
+
+/* ===== FORMULAIRE DE CONTACT ===== */
+#contactForm {
+  background: white;
+  border-radius: var(--radius);
+  padding: 35px;
+  box-shadow: var(--ombre);
+}
+#contactForm h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  color: var(--bleu-profond);
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Groupe label + champ + message d'erreur */
+.form-group { margin-bottom: 20px; }
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--bleu-profond);
+  margin-bottom: 8px;
+}
+
+/* Styles communs des champs de saisie */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0; /* Bordure grise par défaut */
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: 'Lato', sans-serif;
+  color: #333;
+  transition: border-color var(--transition);
+  outline: none;
+}
+/* Bordure bleue au focus */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: var(--bleu-moyen); }
+
+/* Bordure rouge si erreur de validation */
+.form-group input.error,
+.form-group select.error,
+.form-group textarea.error { border-color: var(--rouge-err); }
+
+/* Textarea redimensionnable verticalement */
+.form-group textarea { resize: vertical; min-height: 120px; }
+
+/* Message d'erreur sous un champ */
+.error-msg { display: block; color: var(--rouge-err); font-size: 0.8rem; margin-top: 5px; min-height: 16px; }
+
+/* Bouton d'envoi */
+.btn-submit {
+  width: 100%;
+  padding: 15px;
+  background: var(--bleu-moyen);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Lato', sans-serif;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.btn-submit:hover { background: var(--bleu-profond); transform: translateY(-2px); }
+
+/* Message de succès après envoi */
+.form-success {
+  background: #D5F5E3;
+  color: var(--vert-succes);
+  border: 1px solid var(--vert-succes);
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--bleu-profond);
+  color: rgba(255,255,255,0.8);
+  padding: 50px 0 0;
+}
+
+/* Grille 3 colonnes dans le footer */
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr; /* Première colonne plus large */
+  gap: 40px;
+}
+.footer-brand h3 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: white; margin-bottom: 15px; }
+.footer-brand p { font-size: 0.9rem; line-height: 1.8; color: rgba(255,255,255,0.65); }
+.footer-links h4, .footer-info h4 { color: var(--or); margin-bottom: 15px; font-size: 1rem; letter-spacing: 1px; }
+.footer-links li { margin-bottom: 10px; }
+.footer-links a { color: rgba(255,255,255,0.65); font-size: 0.9rem; transition: color var(--transition); }
+.footer-links a:hover { color: var(--or); }
+.footer-info p { margin-bottom: 10px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.65); }
+.footer-info i { color: var(--or); }
+
+/* Barre de copyright */
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 20px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.4);
+}
+
+/* ===== RESPONSIVE TABLETTE (max 900px) ===== */
+@media (max-width: 900px) {
+  /* Affiche le bouton hamburger */
+  .hamburger { display: flex; }
+
+  /* Cache les liens de nav par défaut sur mobile */
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%; left: 0;
+    width: 100%;
+    background: var(--bleu-profond);
+    flex-direction: column;
+    padding: 20px;
+    gap: 15px;
+  }
+  /* Classe ajoutée par JS au clic hamburger pour afficher le menu */
+  .nav-links.open { display: flex; }
+
+  /* Carte et liste empilées verticalement */
+  .carte-wrapper { flex-direction: column; height: auto; }
+  .carte-liste { width: 100%; border-radius: var(--radius) var(--radius) 0 0; max-height: 200px; }
+  #map { height: 350px; border-radius: 0 0 var(--radius) var(--radius); }
+
+  /* Météo et contact en colonne unique */
+  .meteo-contact-grid { grid-template-columns: 1fr; }
+
+  /* Footer en 2 colonnes */
+  .footer-content { grid-template-columns: 1fr 1fr; }
+  .footer-brand { grid-column: 1 / -1; } /* Prend toute la largeur */
+}
+
+/* ===== RESPONSIVE MOBILE (max 600px) ===== */
+@media (max-width: 600px) {
+  .cards-grid { grid-template-columns: 1fr; } /* Une seule colonne */
+  .galerie-grid { grid-template-columns: repeat(2, 1fr); } /* 2 colonnes */
+  .footer-content { grid-template-columns: 1fr; }
+  .filter-btn { padding: 8px 16px; font-size: 0.8rem; }
+}
+
+/* ===== ANIMATION AU SCROLL ===== */
+/* Classe initiale pour les éléments animés au défilement */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+/* Classe ajoutée par JS quand l'élément entre dans la vue */
+.fade-in-up.visible { opacity: 1; transform: translateY(0); }

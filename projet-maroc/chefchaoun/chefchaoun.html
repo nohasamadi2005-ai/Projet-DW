@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<!-- DOCTYPE : déclare que ce document est en HTML5 (obligatoire en première ligne) -->
+
+<html>
+<!-- <html> : balise racine qui englobe tout le contenu de la page web -->
+
+<head>
+<!-- <head> : section invisible de la page, contient les métadonnées, les liens et le titre -->
+
+  <!-- <meta charset="UTF-8"> : définit l'encodage des caractères
+       UTF-8 permet d'afficher les lettres françaises : é, è, à, ç, ù... -->
+  <meta charset="UTF-8">
+
+  <!-- <meta viewport> : rend la page "responsive" (adaptée aux mobiles)
+       width=device-width = largeur = largeur de l'écran de l'appareil
+       initial-scale=1.0 = zoom initial à 100% sans agrandissement -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- <title> : texte affiché dans l'onglet du navigateur et dans les résultats Google -->
+  <title>Chefchaouen - La Perle Bleue du Maroc</title>
+
+  <!-- Leaflet.js CSS : feuille de style de la bibliothèque de carte interactive
+       href="..." : URL du CDN (serveur externe), pas besoin de télécharger le fichier
+       rel="stylesheet" : indique que c'est une feuille de style CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <!-- Font Awesome CSS : bibliothèque d'icônes vectorielles (fa-star, fa-map-marker, etc.)
+       Permet d'utiliser <i class="fas fa-star"></i> pour afficher des icônes -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- Google Fonts : charge deux polices depuis internet
+       Playfair Display : police serif élégante pour les titres (wght@400;700 = normale + gras)
+       Lato : police sans-serif lisible pour le texte courant (wght@300;400;700)
+       display=swap : affiche d'abord la police système, puis remplace quand Google charge -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+
+  <!-- Lien vers notre propre fichier CSS
+       href="chefchaoun.css" : fichier dans le même dossier que ce fichier HTML
+       Ce fichier contient tout le style visuel de notre page -->
+  <link rel="stylesheet" href="chefchaoun.css"/>
+
+</head>
+<!-- fin de la section head -->
+
+<body>
+<!-- <body> : corps de la page — tout ce que l'utilisateur voit et avec quoi il interagit -->
+
+
+<!-- ====================================================================
+     NAVBAR : BARRE DE NAVIGATION PRINCIPALE
+     - Reste fixe en haut de l'écran pendant le défilement (CSS : position:fixed)
+     - Le fond devient bleu opaque au scroll grâce au JS
+     - Sur mobile : les liens se cachent, un bouton hamburger ☰ apparaît
+===================================================================== -->
+<nav id="navbar">
+  <!-- <nav> : balise HTML5 sémantique réservée à la navigation principale
+       id="navbar" : identifiant unique utilisé par le JS pour changer le style au scroll -->
+
+  <div class="nav-logo">Chefchaouen</div>
+  <!-- <div class="nav-logo"> : conteneur du logo (nom de la ville)
+       class="nav-logo" : CSS applique le style du logo (couleur, taille, police) -->
+
+  <ul class="nav-links" id="navLinks">
+    <!-- <ul> : liste non ordonnée (unordered list) = liste sans numéros ni puces
+         class="nav-links" : CSS aligne les liens horizontalement (display:flex)
+         id="navLinks" : le JS utilise cet id pour afficher/cacher le menu sur mobile -->
+
+    <li><a href="#hero">Accueil</a></li>
+    <!-- <li> : élément de liste (list item)
+         <a href="#hero"> : lien ancre — fait défiler la page jusqu'à l'élément id="hero"
+         Le # devant hero = ancre interne (reste sur la même page) -->
+
+    <li><a href="#activites">Activités</a></li>
+    <!-- Lien vers la section activités (id="activites" dans le HTML plus bas) -->
+
+    <li><a href="#galerie">Galerie</a></li>
+    <!-- Lien vers la section galerie photos -->
+
+    <li><a href="#hebergement">Restaurants</a></li>
+    <!-- Lien vers la section restaurants et hébergement (id="hebergement") -->
+
+    <li><a href="#carte">Carte</a></li>
+    <!-- Lien vers la section carte interactive -->
+
+    <li><a href="#contact">Contact</a></li>
+    <!-- Lien vers la section météo et formulaire de contact -->
+
+  </ul>
+  <!-- fin de la liste de navigation -->
+
+  <button class="hamburger" id="hamburger">
+    <!-- <button> : bouton cliquable
+         class="hamburger" : CSS le cache sur desktop (display:none), visible seulement sur mobile
+         id="hamburger" : le JS écoute le clic sur ce bouton pour ouvrir/fermer le menu mobile -->
+    <span></span>
+    <!-- Premier <span> vide : CSS crée le trait du haut du hamburger ☰ -->
+    <span></span>
+    <!-- Deuxième <span> : trait du milieu -->
+    <span></span>
+    <!-- Troisième <span> : trait du bas
+         Ces 3 spans + CSS forment l'icône hamburger ☰ sans image -->
+  </button>
+
+</nav>
+<!-- fin de la barre de navigation -->
+
+
+<!-- ====================================================================
+     SECTION 1 : HERO
+     - Occupe 100% de la hauteur de l'écran (CSS : height:100vh)
+     - Background : grande photo de Chefchaouen définie en CSS
+     - Contient le titre H1 animé par JS au chargement de la page
+     - L'animation = apparition progressive (opacity 0 → 1) + montée (translateY)
+===================================================================== -->
+<section id="hero">
+  <!-- <section> : balise HTML5 sémantique pour une section de contenu
+       id="hero" : cible du lien <a href="#hero"> dans la navbar
+       CSS applique l'image de fond, hauteur 100vh, disposition flex centrée -->
+
+  <div class="hero-overlay"></div>
+  <!-- <div class="hero-overlay"> : couche semi-transparente noire posée SUR l'image de fond
+       Nécessaire pour que le texte blanc soit lisible malgré l'image colorée
+       CSS : position:absolute; inset:0; background:rgba(0,0,0,0.45) -->
+
+  <div class="hero-content">
+    <!-- Conteneur du texte centré dans le hero
+         CSS : position:relative (au-dessus de l'overlay), texte centré, couleur blanche -->
+
+    <h1 class="hero-title" id="heroTitle">Chefchaouen</h1>
+    <!-- <h1> : titre principal de la page (le plus important, un seul par page)
+         class="hero-title" : CSS définit la taille et la police (Playfair Display)
+         id="heroTitle" : JS cible cet élément pour déclencher l'animation au chargement
+         Animation JS : opacity passe de 0 à 1 + translateY de 30px à 0px -->
+
+    <p class="hero-subtitle" id="heroSubtitle">La Perle Bleue du Maroc</p>
+    <!-- <p> : paragraphe de texte
+         id="heroSubtitle" : JS anime ce sous-titre avec un délai de 0.3s après le titre
+         Cela crée un effet en cascade : titre → sous-titre → description -->
+
+    <p class="hero-desc" id="heroDesc">
+      <!-- id="heroDesc" : JS anime cette description avec un délai de 0.6s -->
+      Nichée dans les montagnes du Rif, Chefchaouen vous invite dans un voyage
+      au cœur d'une ville aux mille nuances de bleu.
+    </p>
+
+    <a href="#activites" class="btn-hero">Découvrir</a>
+    <!-- <a> : lien qui fait défiler vers la section activités
+         class="btn-hero" : CSS lui donne l'apparence d'un bouton (padding, border-radius, couleur)
+         Un <a> stylé en bouton est préférable à <button> pour la navigation interne -->
+
+  </div>
+  <!-- fin hero-content -->
+
+  <div class="scroll-indicator">
+    <!-- Indicateur visuel en bas du hero qui invite l'utilisateur à défiler
+         CSS : position:absolute; bottom:20px; animation bounce (rebond vertical) -->
+    <i class="fas fa-chevron-down"></i>
+    <!-- <i class="fas fa-chevron-down"> : icône Font Awesome = flèche vers le bas ˅
+         fas = Font Awesome Solid (style plein)
+         fa-chevron-down = nom de l'icône dans la bibliothèque Font Awesome -->
+  </div>
+
+</section>
+<!-- fin section hero -->
+
+
+<!-- ====================================================================
+     SECTION 2 : ACTIVITÉS TOURISTIQUES
+     - 6 cards d'activités dans une grille CSS
+     - Boutons de filtre : JS affiche/cache les cards selon data-category
+     - Chaque card a une image de fond, un badge coloré, titre, description, footer
+===================================================================== -->
+<section id="activites">
+  <!-- id="activites" : cible du lien navbar <a href="#activites"> -->
+
+  <div class="container">
+    <!-- class="container" : div centré avec largeur max (ex: 1200px) défini en CSS
+         Tous les contenus sont dans un container pour rester centrés -->
+
+    <h2 class="section-title">Activités Touristiques</h2>
+    <!-- <h2> : titre de niveau 2 (hiérarchie : h1 dans hero > h2 dans chaque section) -->
+
+    <p class="section-desc">Explorez les merveilles de Chefchaouen</p>
+    <!-- Sous-titre descriptif de la section -->
+
+    <!-- BOUTONS DE FILTRE
+         JS écoute le clic sur chaque bouton
+         data-filter = valeur que JS compare à data-category des cards -->
+    <div class="filter-btns" id="filterActivites">
+      <!-- id="filterActivites" : JS attache les événements clic à ce groupe de boutons -->
+
+      <button class="filter-btn active" data-filter="all">Tous</button>
+      <!-- class="active" : CSS met ce bouton en surbrillance (fond coloré) par défaut
+           data-filter="all" : JS affiche TOUTES les cards quand ce bouton est cliqué -->
+
+      <button class="filter-btn" data-filter="nature">Nature</button>
+      <!-- data-filter="nature" : JS cache toutes les cards sauf celles avec data-category="nature" -->
+
+      <button class="filter-btn" data-filter="culture">Culture</button>
+      <!-- Filtre pour afficher uniquement les activités culturelles -->
+
+      <button class="filter-btn" data-filter="sport">Sport</button>
+      <!-- Filtre pour les activités sportives -->
+
+      <button class="filter-btn" data-filter="detente">Détente</button>
+      <!-- Filtre pour les activités de relaxation -->
+
+    </div>
+    <!-- fin filter-btns -->
+
+    <!-- GRILLE DES CARDS
+         CSS : display:grid; grid-template-columns:repeat(3,1fr) = 3 colonnes égales -->
+    <div class="cards-grid" id="activitesGrid">
+      <!-- id="activitesGrid" : JS parcourt les enfants de ce div pour filtrer -->
+
+
+      <!-- ---- CARD 1 : LA MÉDINA ---- -->
+      <div class="card" data-category="culture">
+        <!-- class="card" : CSS applique le style (border-radius, shadow, overflow:hidden)
+             data-category="culture" : JS lit cette valeur pour décider si la card est visible
+             Quand filtre = "culture" ou "all" → visible ; sinon → display:none -->
+
+        <div class="card-img" style="background-image:url('images/medina.jpg')">
+          <!-- class="card-img" : CSS définit height:200px, background-size:cover
+               style="background-image:..." : image de fond propre à cette card
+               background-size:cover = l'image remplit tout le div sans déformation -->
+
+          <span class="badge culture">Culture</span>
+          <!-- <span> : balise inline pour le badge de catégorie
+               class="badge culture" : CSS badge = position absolue, arrondi
+               classe "culture" = CSS donne la couleur spécifique à cette catégorie -->
+        </div>
+
+        <div class="card-body">
+          <!-- Partie texte de la card sous l'image
+               CSS : padding pour aérer le contenu -->
+
+          <h3>La Médina Bleue</h3>
+          <!-- <h3> : titre de niveau 3, pour chaque card individuelle -->
+
+          <p>Perdez-vous dans les ruelles bleues et blanches de la vieille médina,
+          classée patrimoine architectural du Maroc.</p>
+          <!-- Description de l'activité -->
+
+          <div class="card-footer">
+            <!-- Pied de card : durée à gauche, localisation à droite
+                 CSS : display:flex; justify-content:space-between -->
+
+            <span><i class="fas fa-clock"></i> 2-3h</span>
+            <!-- <i class="fas fa-clock"> : icône horloge de Font Awesome
+                 <span> : contient l'icône + le texte de durée -->
+
+            <span><i class="fas fa-map-marker-alt"></i> Centre-ville</span>
+            <!-- icône épingle de localisation + adresse/zone -->
+
+          </div>
+          <!-- fin card-footer -->
+        </div>
+        <!-- fin card-body -->
+      </div>
+      <!-- fin card Médina -->
+
+
+      <!-- ---- CARD 2 : CASCADES D'AKCHOUR ---- -->
+      <div class="card" data-category="nature">
+        <!-- data-category="nature" : JS affiche cette card quand filtre = "nature" ou "all" -->
+
+        <div class="card-img" style="background-image:url('images/akchour.jpg')">
+          <span class="badge nature">Nature</span>
+          <!-- class="nature" : CSS donne une couleur verte au badge nature -->
+        </div>
+        <div class="card-body">
+          <h3>Cascades d'Akchour</h3>
+          <p>Randonnée jusqu'aux majestueuses cascades d'Akchour, joyau naturel
+          dans la forêt de cèdres du Parc National de Talassemtane.</p>
+          <div class="card-footer">
+            <span><i class="fas fa-clock"></i> Journée</span>
+            <span><i class="fas fa-map-marker-alt"></i> 30km</span>
+          </div>
+        </div>
+      </div>
+      <!-- fin card Akchour -->
+
+
+      <!-- ---- CARD 3 : RANDONNÉE DANS LE RIF ---- -->
+      <div class="card" data-category="sport">
+        <!-- data-category="sport" : visible uniquement quand filtre = "sport" ou "all" -->
+
+        <div class="card-img" style="background-image:url('images/rif.jpg')">
+          <span class="badge sport">Sport</span>
+          <!-- Couleur rouge/orange pour la catégorie sport -->
+        </div>
+        <div class="card-body">
+          <h3>Randonnée dans le Rif</h3>
+          <p>Explorez les sentiers montagneux du massif du Rif avec des guides locaux.
+          Panoramas exceptionnels sur la ville et la vallée.</p>
+          <div class="card-footer">
+            <span><i class="fas fa-clock"></i> Demi-journée</span>
+            <span><i class="fas fa-map-marker-alt"></i> Montagne</span>
+          </div>
+        </div>
+      </div>
+      <!-- fin card Rif -->
+
+
+      <!-- ---- CARD 4 : PLACE OUTA EL HAMMAM ---- -->
+      <div class="card" data-category="culture">
+        <div class="card-img" style="background-image:url('images/place.jpg')">
+          <span class="badge culture">Culture</span>
+        </div>
+        <div class="card-body">
+          <h3>Place Outa El Hammam</h3>
+          <p>Cœur battant de la ville, cette place animée est entourée de cafés
+          traditionnels, de restaurants et de la Kasbah historique.</p>
+          <div class="card-footer">
+            <span><i class="fas fa-clock"></i> 1h</span>
+            <span><i class="fas fa-map-marker-alt"></i> Médina</span>
+          </div>
+        </div>
+      </div>
+      <!-- fin card Place -->
+
+
+      <!-- ---- CARD 5 : HAMMAM TRADITIONNEL ---- -->
+      <div class="card" data-category="detente">
+        <!-- data-category="detente" : visible quand filtre = "detente" ou "all" -->
+
+        <div class="card-img" style="background-image:url('images/hammam.jpg')">
+          <span class="badge detente">Détente</span>
+          <!-- Couleur violette/mauve pour la catégorie détente -->
+        </div>
+        <div class="card-body">
+          <h3>Hammam Traditionnel</h3>
+          <p>Vivez l'expérience du hammam marocain authentique. Relaxation totale
+          dans un cadre traditionnel avec huile d'argan et savon beldi.</p>
+          <div class="card-footer">
+            <span><i class="fas fa-clock"></i> 2h</span>
+            <span><i class="fas fa-map-marker-alt"></i> Médina</span>
+          </div>
+        </div>
+      </div>
+      <!-- fin card Hammam -->
+
+
+      <!-- ---- CARD 6 : PARC NATIONAL TALASSEMTANE ---- -->
+      <div class="card" data-category="nature">
+        <div class="card-img" style="background-image:url('images/parc.jpg')">
+          <span class="badge nature">Nature</span>
+        </div>
+        <div class="card-body">
+          <h3>Parc National Talassemtane</h3>
+          <p>Forêts de cèdres et de pins, faune sauvage et paysages à couper le
+          souffle dans ce parc naturel protégé aux portes de la ville.</p>
+          <div class="card-footer">
+            <span><i class="fas fa-clock"></i> Journée</span>
+            <span><i class="fas fa-map-marker-alt"></i> Périphérie</span>
+          </div>
+        </div>
+      </div>
+      <!-- fin card Parc -->
+
+
+    </div>
+    <!-- fin activitesGrid (grille des 6 cards d'activités) -->
+
+  </div>
+  <!-- fin container section activités -->
+
+</section>
+<!-- fin section activités -->
+
+
+<!-- ====================================================================
+     SECTION 3 : GALERIE PHOTOS
+     - Grille de 8 miniatures avec image de fond CSS
+     - Clic sur une miniature → JS ouvre le LIGHTBOX (fenêtre modale plein écran)
+     - Lightbox : affiche la grande photo, légende, boutons précédent/suivant
+     - Navigation dans le lightbox via les boutons OU les touches clavier (←/→)
+===================================================================== -->
+<section id="galerie">
+  <!-- id="galerie" : cible du lien navbar <a href="#galerie"> -->
+
+  <div class="container">
+
+    <h2 class="section-title">Galerie Photos</h2>
+    <p class="section-desc">Chefchaouen en images</p>
+
+    <!-- GRILLE DES MINIATURES
+         CSS : grid-template-columns:repeat(4,1fr) = 4 colonnes de miniatures carrées -->
+    <div class="galerie-grid" id="galerieGrid">
+      <!-- id="galerieGrid" : JS récupère tous les .galerie-item dans ce div
+           pour construire le tableau de photos de la lightbox -->
+
+
+      <!-- ---- MINIATURE 1 ---- -->
+      <div class="galerie-item" data-index="0"
+           data-full="images/g1-full.jpg"
+           data-caption="Les ruelles bleues de la Médina">
+        <!-- data-index="0" : position dans le tableau JS (0 = première photo)
+                              Utilisé pour navigation suivant/précédent dans la lightbox
+             data-full="..." : chemin de la GRANDE image affichée dans la lightbox
+                               (différente de la miniature pour optimiser le chargement)
+             data-caption="..." : texte de légende affiché sous la photo dans la lightbox
+             JS lit ces 3 attributs data-* au moment du clic pour remplir la lightbox -->
+
+        <div class="galerie-img" style="background-image:url('images/g1.jpg')">
+          <!-- class="galerie-img" : CSS définit les dimensions de la miniature
+               style="background-image:..." : image miniature (plus petite = chargement rapide)
+               background-size:cover, background-position:center en CSS -->
+        </div>
+
+        <div class="galerie-hover">
+          <!-- Overlay affiché au survol via CSS (:hover)
+               CSS : opacity:0 par défaut → opacity:1 au hover
+               Donne un effet de voile avec l'icône de loupe au centre -->
+          <i class="fas fa-expand"></i>
+          <!-- icône Font Awesome d'agrandissement = indique que la photo est cliquable -->
+        </div>
+
+      </div>
+      <!-- fin miniature 1 -->
+
+
+      <!-- ---- MINIATURE 2 ---- -->
+      <div class="galerie-item" data-index="1"
+           data-full="images/g2-full.jpg"
+           data-caption="La Kasbah et ses jardins">
+        <!-- data-index="1" : deuxième photo dans le tableau lightbox -->
+        <div class="galerie-img" style="background-image:url('images/g2.jpg')"></div>
+        <div class="galerie-hover"><i class="fas fa-expand"></i></div>
+      </div>
+
+
+      <!-- ---- MINIATURE 3 ---- -->
+      <div class="galerie-item" data-index="2"
+           data-full="images/g3-full.jpg"
+           data-caption="Cascades d'Akchour">
+        <div class="galerie-img" style="background-image:url('images/g3.jpg')"></div>
+        <div class="galerie-hover"><i class="fas fa-expand"></i></div>
+      </div>
+
+
+      <!-- ---- MINIATURE 4 ---- -->
+      <div class="galerie-item" data-index="3"
+           data-full="images/g4-full.jpg"
+           data-caption="Vue panoramique sur Chefchaouen">
+        <div class="galerie-img" style="background-image:url('images/g4.jpg')"></div>
+        <div class="galerie-hover"><i class="fas fa-expand"></i></div>
+      </div>
+
+
+      <!-- ---- MINIATURE 5 ---- -->
+      <div class="galerie-item" data-index="4"
+           data-full="images/g5-full.jpg"
+           data-caption="Artisanat local et souks">
+        <div class="galerie-img" style="background-image:url('images/g5.jpg')"></div>
+        <div class="galerie-hover"><i class="fas fa-expand"></i></div>
+      </div>
+
+
+      <!-- ---- MINIATURE 6 ---- -->
+      <div class="galerie-item" data-index="5"
+           data-full="images/g6-full.jpg"
+           data-caption="Place Outa El Hammam">
+        <div class="galerie-img" style="background-image:url('images/g6.jpg')"></div>
+        <div class="galerie-hover"><i class="fas fa-expand"></i></div>
+      </div>
+
+
+      <!-- ---- MINIATURE 7 ---- -->
+      <div class="galerie-item" data-index="6"
+           data-full="images/g7-full.jpg"
+           data-caption="Portes et fenêtres bleues">
+        <div class="galerie-img" style="background-image:url('images/g7.jpg')"></div>
+        <div class="galerie-hover"><i class="fas fa-expand"></i></div>
+      </div>
+
+
+      <!-- ---- MINIATURE 8 ---- -->
+      <div class="galerie-item" data-index="7"
+           data-full="images/g8-full.jpg"
+           data-caption="Coucher de soleil sur la montagne">
+        <!-- data-index="7" : dernière photo (index 7 = 8ème dans un tableau commençant à 0) -->
+        <div class="galerie-img" style="background-image:url('images/g8.jpg')"></div>
+        <div class="galerie-hover"><i class="fas fa-expand"></i></div>
+      </div>
+
+
+    </div>
+    <!-- fin galerieGrid -->
+
+  </div>
+  <!-- fin container galerie -->
+
+
+  <!-- LIGHTBOX : fenêtre modale plein écran pour afficher les grandes photos
+       Placée EN DEHORS du .container pour éviter tout conflit de z-index et de débordement
+       CSS : display:none par défaut → JS passe à display:flex au clic sur une miniature
+       CSS : position:fixed; inset:0; z-index:9999 = couvre tout l'écran par-dessus tout -->
+  <div id="lightbox">
+    <!-- id="lightbox" : JS cible cet élément pour l'afficher/cacher
+         CSS : background-color:rgba(0,0,0,0.9) = fond noir très sombre
+         display:flex; align-items:center; justify-content:space-between = disposition des boutons -->
+
+    <button id="lbClose"><i class="fas fa-times"></i></button>
+    <!-- Bouton FERMER la lightbox
+         id="lbClose" : JS écoute le clic pour remettre display:none sur #lightbox
+         CSS : position:absolute; top:20px; right:20px = coin supérieur droit
+         fas fa-times = icône ✕ de Font Awesome -->
+
+    <button id="lbPrev"><i class="fas fa-chevron-left"></i></button>
+    <!-- Bouton PHOTO PRÉCÉDENTE
+         id="lbPrev" : JS décrémente l'index courant et charge la photo précédente
+         fas fa-chevron-left = icône flèche gauche ❮ de Font Awesome -->
+
+    <div class="lb-content">
+      <!-- Conteneur central : image agrandie + légende
+           CSS : flex:1; display:flex; flex-direction:column; align-items:center -->
+
+      <img id="lbImg" src="" alt="Photo Chefchaouen agrandie"/>
+      <!-- <img> : image agrandie affichée dans la lightbox
+           id="lbImg" : JS met à jour src="" avec le data-full de la miniature cliquée
+           src="" vide au départ car rempli dynamiquement par JS
+           alt="..." : texte alternatif pour accessibilité et si l'image ne charge pas -->
+
+      <p id="lbCaption"></p>
+      <!-- Légende de la photo
+           id="lbCaption" : JS met à jour le texte avec data-caption de la miniature
+           Vide au départ, rempli dynamiquement -->
+
+    </div>
+    <!-- fin lb-content -->
+
+    <button id="lbNext"><i class="fas fa-chevron-right"></i></button>
+    <!-- Bouton PHOTO SUIVANTE
+         id="lbNext" : JS incrémente l'index et charge la photo suivante
+         fas fa-chevron-right = icône flèche droite ❯
+         JS gère aussi le passage de la dernière à la première photo (boucle circulaire) -->
+
+  </div>
+  <!-- fin lightbox -->
+
+</section>
+<!-- fin section galerie -->
+
+
+<!-- ====================================================================
+     SECTION 4 : RESTAURANTS & HÉBERGEMENT
+     - Même principe de filtrage que la section activités
+     - Cards avec image, badge type, nom, étoiles de notation, description, adresse/prix
+     - Les étoiles sont des icônes Font Awesome : fas fa-star (pleine) et far fa-star (vide)
+===================================================================== -->
+<section id="hebergement">
+  <!-- id="hebergement" : cible du lien navbar -->
+
+  <div class="container">
+
+    <h2 class="section-title">Restaurants & Hébergement</h2>
+    <p class="section-desc">Les meilleures adresses de Chefchaouen</p>
+
+    <!-- FILTRES PAR TYPE D'ÉTABLISSEMENT
+         Même fonctionnement que les filtres activités :
+         JS compare data-filter du bouton avec data-category de chaque card -->
+    <div class="filter-btns" id="filterResto">
+      <!-- id="filterResto" : JS différencie ces filtres de ceux des activités -->
+
+      <button class="filter-btn active" data-filter="all">Tous</button>
+      <!-- Actif par défaut : affiche restaurants + hôtels + riads -->
+
+      <button class="filter-btn" data-filter="restaurant">Restaurants</button>
+      <!-- Filtre restaurants : affiche uniquement data-category="restaurant" -->
+
+      <button class="filter-btn" data-filter="hotel">Hôtels</button>
+      <!-- Filtre hôtels -->
+
+      <button class="filter-btn" data-filter="riad">Riads</button>
+      <!-- Filtre riads (maisons d'hôtes traditionnelles marocaines) -->
+
+    </div>
+    <!-- fin filterResto -->
+
+    <div class="cards-grid" id="restGrid">
+      <!-- id="restGrid" : JS parcourt ce div pour filtrer ses cards enfants -->
+
+
+      <!-- ---- CARD RESTAURANT 1 : BAB SSOUR ---- -->
+      <div class="card" data-category="restaurant">
+        <!-- data-category="restaurant" : visible si filtre = "restaurant" ou "all" -->
+
+        <div class="card-img" style="background-image:url('images/rest1.jpg')">
+          <span class="badge restaurant">Restaurant</span>
+          <!-- class="restaurant" : CSS donne la couleur badge spécifique aux restaurants -->
+        </div>
+
+        <div class="card-body">
+          <h3>Restaurant Bab Ssour</h3>
+
+          <!-- SYSTÈME D'ÉTOILES DE NOTATION
+               fas fa-star = étoile PLEINE (dorée via CSS)
+               far fa-star = étoile VIDE (contour uniquement, grise via CSS)
+               Ici : 4 étoiles pleines + 1 vide = note 4/5 -->
+          <div class="stars">
+            <i class="fas fa-star"></i>  <!-- étoile 1 : pleine -->
+            <i class="fas fa-star"></i>  <!-- étoile 2 : pleine -->
+            <i class="fas fa-star"></i>  <!-- étoile 3 : pleine -->
+            <i class="fas fa-star"></i>  <!-- étoile 4 : pleine -->
+            <i class="far fa-star"></i>  <!-- étoile 5 : vide → note = 4/5 -->
+          </div>
+
+          <p>Cuisine marocaine authentique avec vue imprenable sur la médina.
+          Tajines et couscous maison.</p>
+
+          <div class="resto-info">
+            <!-- Informations pratiques : prix et adresse
+                 CSS : display:flex; justify-content:space-between -->
+            <span><i class="fas fa-tag"></i> 80-150 MAD</span>
+            <!-- fa-tag = icône étiquette de prix -->
+            <span><i class="fas fa-map-marker-alt"></i> Rue Bab Ssour</span>
+            <!-- fa-map-marker-alt = icône localisation -->
+          </div>
+        </div>
+        <!-- fin card-body -->
+
+      </div>
+      <!-- fin card Bab Ssour -->
+
+
+      <!-- ---- CARD RESTAURANT 2 : CAFÉ CLOCK ---- -->
+      <div class="card" data-category="restaurant">
+        <div class="card-img" style="background-image:url('images/rest2.jpg')">
+          <span class="badge restaurant">Restaurant</span>
+        </div>
+        <div class="card-body">
+          <h3>Café Clock Chaouen</h3>
+          <div class="stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <!-- 5 étoiles pleines = note parfaite 5/5 -->
+          </div>
+          <p>Fusion maroco-moderne avec terrasse panoramique.
+          Petit-déjeuner au coucher du soleil inoubliable.</p>
+          <div class="resto-info">
+            <span><i class="fas fa-tag"></i> 100-200 MAD</span>
+            <span><i class="fas fa-map-marker-alt"></i> Médina</span>
+          </div>
+        </div>
+      </div>
+      <!-- fin card Café Clock -->
+
+
+      <!-- ---- CARD HÔTEL : PARADOR ---- -->
+      <div class="card" data-category="hotel">
+        <!-- data-category="hotel" : visible si filtre = "hotel" ou "all" -->
+
+        <div class="card-img" style="background-image:url('images/hotel1.jpg')">
+          <span class="badge hotel">Hôtel</span>
+          <!-- class="hotel" : CSS couleur bleue pour le badge hôtel -->
+        </div>
+        <div class="card-body">
+          <h3>Hôtel Parador</h3>
+          <div class="stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+            <!-- 4 étoiles pleines + 1 vide = 4/5 -->
+          </div>
+          <p>Hôtel historique surplombant la ville, ancienne résidence coloniale
+          reconvertie en établissement de charme.</p>
+          <div class="resto-info">
+            <span><i class="fas fa-tag"></i> 500-800 MAD/nuit</span>
+            <span><i class="fas fa-map-marker-alt"></i> Kasbah</span>
+          </div>
+        </div>
+      </div>
+      <!-- fin card Hôtel Parador -->
+
+
+      <!-- ---- CARD RIAD 1 : CHERIFA ---- -->
+      <div class="card" data-category="riad">
+        <!-- data-category="riad" : visible si filtre = "riad" ou "all" -->
+
+        <div class="card-img" style="background-image:url('images/riad1.jpg')">
+          <span class="badge riad">Riad</span>
+          <!-- class="riad" : CSS couleur or/jaune pour le badge riad -->
+        </div>
+        <div class="card-body">
+          <h3>Riad Cherifa</h3>
+          <div class="stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <!-- 5 étoiles = excellence -->
+          </div>
+          <p>Magnifique riad traditionnel au cœur de la médina bleue.
+          Patio fleuri, terrasse panoramique et déco authentique.</p>
+          <div class="resto-info">
+            <span><i class="fas fa-tag"></i> 600-1200 MAD/nuit</span>
+            <span><i class="fas fa-map-marker-alt"></i> Médina bleue</span>
+          </div>
+        </div>
+      </div>
+      <!-- fin card Riad Cherifa -->
+
+
+      <!-- ---- CARD RESTAURANT 3 : LA LAMPE MAGIQUE ---- -->
+      <div class="card" data-category="restaurant">
+        <div class="card-img" style="background-image:url('images/rest3.jpg')">
+          <span class="badge restaurant">Restaurant</span>
+        </div>
+        <div class="card-body">
+          <h3>La Lampe Magique</h3>
+          <div class="stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+            <!-- 4/5 étoiles -->
+          </div>
+          <p>Restaurant en terrasse avec cuisine berbère traditionnelle.
+          Spécialités de la région du Rif et harira maison.</p>
+          <div class="resto-info">
+            <span><i class="fas fa-tag"></i> 60-120 MAD</span>
+            <span><i class="fas fa-map-marker-alt"></i> Place Outa</span>
+          </div>
+        </div>
+      </div>
+      <!-- fin card La Lampe Magique -->
+
+
+      <!-- ---- CARD RIAD 2 : DAR MEZIANA ---- -->
+      <div class="card" data-category="riad">
+        <div class="card-img" style="background-image:url('images/riad2.jpg')">
+          <span class="badge riad">Riad</span>
+        </div>
+        <div class="card-body">
+          <h3>Dar Meziana</h3>
+          <div class="stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+            <!-- 4/5 étoiles -->
+          </div>
+          <p>Dar traditionnel rénové avec goût, mêlant architecture andalouse et
+          touches contemporaines. Petit-déjeuner inclus.</p>
+          <div class="resto-info">
+            <span><i class="fas fa-tag"></i> 400-700 MAD/nuit</span>
+            <span><i class="fas fa-map-marker-alt"></i> Rue Al Ándalus</span>
+          </div>
+        </div>
+      </div>
+      <!-- fin card Dar Meziana -->
+
+
+    </div>
+    <!-- fin restGrid -->
+
+  </div>
+  <!-- fin container section restaurants -->
+
+</section>
+<!-- fin section hébergement -->
+
+
+<!-- ====================================================================
+     SECTION 5 : CARTE INTERACTIVE (LEAFLET.JS)
+     - Leaflet est une bibliothèque JavaScript gratuite de cartographie
+     - JS initialise la carte avec les coordonnées GPS de Chefchaouen
+     - JS place des marqueurs (pins) sur chaque lieu touristique
+     - Clic sur un marqueur → popup avec nom du lieu s'ouvre sur la carte
+     - Clic sur un lieu dans la liste → JS centre la carte + ouvre le popup
+===================================================================== -->
+<section id="carte">
+  <!-- id="carte" : cible du lien navbar -->
+
+  <div class="container">
+    <h2 class="section-title">Carte Interactive</h2>
+    <p class="section-desc">Explorez Chefchaouen sur la carte</p>
+  </div>
+  <!-- Le container s'arrête ici pour que la section carte soit pleine largeur -->
+
+  <!-- Disposition côte à côte : liste gauche | carte droite
+       CSS : display:flex; height:500px -->
+  <div class="carte-wrapper">
+
+    <!-- LISTE DES LIEUX TOURISTIQUES (panneau gauche) -->
+    <div class="carte-liste">
+      <!-- CSS : width:280px; overflow-y:auto; fond blanc -->
+      <h3>Lieux à visiter</h3>
+
+      <!-- LIEU 1 : Place Outa El Hammam -->
+      <div class="lieu-item active" data-lat="35.1688" data-lng="-5.2687"
+           data-name="Place Outa El Hammam">
+        <!-- class="active" : CSS met ce lieu en surbrillance (activé par défaut)
+             data-lat="35.1688" : latitude GPS du lieu (axe Nord-Sud)
+             data-lng="-5.2687" : longitude GPS du lieu (axe Est-Ouest)
+             data-name="..." : nom du marqueur — JS ouvre son popup sur la carte
+             JS écoute le clic sur .lieu-item → centre la carte sur lat/lng + ouvre popup -->
+
+        <i class="fas fa-landmark"></i>
+        <!-- fa-landmark = icône bâtiment/monument représentant ce type de lieu -->
+
+        <div>
+          <strong>Place Outa El Hammam</strong>
+          <!-- <strong> : texte en gras (sémantiquement important) -->
+          <span>Centre historique de la ville</span>
+          <!-- Description courte sous le nom du lieu -->
+        </div>
+
+      </div>
+      <!-- fin lieu-item Place Outa -->
+
+
+      <!-- LIEU 2 : La Kasbah -->
+      <div class="lieu-item" data-lat="35.1671" data-lng="-5.2701"
+           data-name="La Kasbah">
+        <!-- data-lat/lng : coordonnées GPS de la Kasbah -->
+        <i class="fas fa-chess-rook"></i>
+        <!-- fa-chess-rook = icône tour d'échec représentant une forteresse -->
+        <div>
+          <strong>La Kasbah</strong>
+          <span>Forteresse du 15ème siècle</span>
+        </div>
+      </div>
+
+
+      <!-- LIEU 3 : Mosquée Al-Andalus -->
+      <div class="lieu-item" data-lat="35.1700" data-lng="-5.2660"
+           data-name="Mosquée Al-Andalus">
+        <i class="fas fa-mosque"></i>
+        <!-- fa-mosque = icône mosquée de Font Awesome -->
+        <div>
+          <strong>Mosquée Al-Andalus</strong>
+          <span>Architecture hispano-mauresque</span>
+        </div>
+      </div>
+
+
+      <!-- LIEU 4 : Ras El Ma (Source d'eau) -->
+      <div class="lieu-item" data-lat="35.1650" data-lng="-5.2720"
+           data-name="Ras El Ma">
+        <i class="fas fa-water"></i>
+        <!-- fa-water = icône vagues pour une source d'eau -->
+        <div>
+          <strong>Ras El Ma</strong>
+          <span>Source d'eau et lavoir traditionnel</span>
+        </div>
+      </div>
+
+
+      <!-- LIEU 5 : Cascades d'Akchour (hors ville) -->
+      <div class="lieu-item" data-lat="35.0954" data-lng="-5.1742"
+           data-name="Cascades d'Akchour">
+        <!-- Coordonnées éloignées car situées à 30km de la ville -->
+        <i class="fas fa-mountain"></i>
+        <!-- fa-mountain = icône montagne -->
+        <div>
+          <strong>Cascades d'Akchour</strong>
+          <span>30 km au nord-est</span>
+        </div>
+      </div>
+
+
+      <!-- LIEU 6 : Souk artisanal -->
+      <div class="lieu-item" data-lat="35.1590" data-lng="-5.2700"
+           data-name="Souk artisanal">
+        <i class="fas fa-store"></i>
+        <!-- fa-store = icône boutique/magasin -->
+        <div>
+          <strong>Souk artisanal</strong>
+          <span>Artisanat local et souvenirs</span>
+        </div>
+      </div>
+
+    </div>
+    <!-- fin carte-liste (panneau gauche) -->
+
+
+    <!-- DIV CARTE LEAFLET (panneau droit)
+         Leaflet.js injecte automatiquement ses propres éléments HTML dans ce div
+         JS : L.map('map') initialise la carte dans l'élément id="map"
+         CSS : flex:1; height:100% → la carte remplit tout l'espace disponible -->
+    <div id="map"></div>
+    <!-- id="map" : L.map('map') dans le JS trouve ce div par son id -->
+
+  </div>
+  <!-- fin carte-wrapper -->
+
+</section>
+<!-- fin section carte -->
+
+
+<!-- ====================================================================
+     SECTION 6 : MÉTÉO & CONTACT
+     - MÉTÉO : JS appelle l'API OpenWeatherMap pour récupérer la météo en direct
+               → affiche température, humidité, vitesse du vent, ressenti
+     - FORMULAIRE : JS valide chaque champ avant d'accepter l'envoi
+               → vérifie : champs vides, format email, longueur message
+               → affiche les erreurs en rouge sous chaque champ invalide
+               → affiche un message de succès vert si tout est valide
+===================================================================== -->
+<section id="contact">
+  <!-- id="contact" : cible du lien navbar <a href="#contact"> -->
+
+  <div class="container">
+    <h2 class="section-title">Météo & Contact</h2>
+    <p class="section-desc">Planifiez votre visite et contactez-nous</p>
+
+    <!-- Grille 2 colonnes : météo à gauche | formulaire à droite
+         CSS : display:grid; grid-template-columns:1fr 1fr; gap:40px -->
+    <div class="meteo-contact-grid">
+
+
+      <!-- ====== BLOC MÉTÉO (colonne gauche) ====== -->
+      <div class="meteo-widget">
+        <!-- class="meteo-widget" : CSS applique le style du bloc météo (background, padding) -->
+
+        <h3><i class="fas fa-cloud-sun"></i> Météo à Chefchaouen</h3>
+        <!-- fa-cloud-sun = icône soleil partiellement couvert (météo) -->
+
+        <!-- Zone d'affichage de la météo : contenu rempli dynamiquement par JS -->
+        <div id="meteoDisplay">
+          <!-- id="meteoDisplay" : JS remplace le contenu de ce div avec les données de l'API
+               État initial : affiche le spinner de chargement -->
+
+          <div class="meteo-loading">
+            <!-- Visible pendant que JS attend la réponse de l'API -->
+            <i class="fas fa-spinner fa-spin"></i>
+            <!-- fa-spinner : icône de chargement circulaire
+                 fa-spin : classe Font Awesome qui fait tourner l'icône en continu (animation CSS) -->
+            <p>Chargement de la météo...</p>
+          </div>
+
+        </div>
+        <!-- fin meteoDisplay -->
+
+        <!-- Statistiques détaillées de météo : cachées par défaut, JS les affiche
+             style="display:none" : invisible au chargement
+             JS : element.style.display = 'flex' après réception des données API -->
+        <div class="meteo-details" id="meteoDetails" style="display:none">
+
+          <div class="meteo-stat">
+            <!-- Un bloc statistique : icône + valeur + label -->
+            <i class="fas fa-tint"></i>
+            <!-- fa-tint = goutte d'eau représentant l'humidité -->
+            <span id="humidity">--</span>
+            <!-- id="humidity" : JS met à jour ce texte avec le % d'humidité de l'API -->
+            <small>Humidité</small>
+            <!-- <small> : texte plus petit pour le label sous la valeur -->
+          </div>
+
+          <div class="meteo-stat">
+            <i class="fas fa-wind"></i>
+            <!-- fa-wind = icône vent -->
+            <span id="wind">--</span>
+            <!-- id="wind" : JS met à jour avec la vitesse du vent en km/h -->
+            <small>Vent</small>
+          </div>
+
+          <div class="meteo-stat">
+            <i class="fas fa-thermometer-half"></i>
+            <!-- fa-thermometer-half = thermomètre à moitié plein -->
+            <span id="feelsLike">--</span>
+            <!-- id="feelsLike" : JS met à jour avec la température ressentie -->
+            <small>Ressenti</small>
+          </div>
+
+        </div>
+        <!-- fin meteoDetails -->
+
+        <!-- Conseils de visite statiques (pas de JS, contenu fixe) -->
+        <div class="meteo-conseil">
+          <h4><i class="fas fa-lightbulb"></i> Conseils pratiques</h4>
+          <!-- fa-lightbulb = icône ampoule pour les conseils -->
+          <ul>
+            <!-- <ul> : liste non ordonnée de conseils -->
+            <li>Meilleure saison : Avril-Juin, Septembre-Octobre</li>
+            <li>Température moyenne : 15-25°C en journée</li>
+            <li>Prévoir une veste le soir en montagne</li>
+          </ul>
+        </div>
+
+      </div>
+      <!-- fin meteo-widget -->
+
+
+      <!-- ====== FORMULAIRE DE CONTACT (colonne droite) ====== -->
+      <form id="contactForm" novalidate>
+        <!-- <form> : balise de formulaire HTML
+             id="contactForm" : JS écoute l'événement 'submit' sur ce formulaire
+             novalidate : DÉSACTIVE la validation native du navigateur
+                          JS prend en charge la validation personnalisée à la place
+                          (messages d'erreur en français, style personnalisé) -->
+
+        <h3><i class="fas fa-envelope"></i> Nous contacter</h3>
+        <!-- fa-envelope = icône enveloppe -->
+
+        <!-- ---- CHAMP NOM ---- -->
+        <div class="form-group">
+          <!-- <div class="form-group"> : groupe label + input + message erreur
+               CSS : display:flex; flex-direction:column; margin-bottom:16px -->
+
+          <label for="nom">Nom complet *</label>
+          <!-- <label for="nom"> : étiquette associée à l'input id="nom"
+               for="nom" = quand on clique sur le label, le focus va sur l'input id="nom"
+               L'étoile * indique visuellement que ce champ est obligatoire -->
+
+          <input type="text" id="nom" name="nom"
+                 placeholder="Votre nom complet" required/>
+          <!-- type="text" : champ texte libre (une ligne)
+               id="nom" : lie l'input au label, et JS le cible pour valider
+               name="nom" : nom du champ dans les données du formulaire
+               placeholder="..." : texte gris indicatif qui disparaît quand on tape
+               required : attribut HTML indiquant que le champ est obligatoire
+                          (mais novalidate sur le form désactive la validation native) -->
+
+          <span class="error-msg" id="nomError"></span>
+          <!-- Span vide réservé aux messages d'erreur
+               id="nomError" : JS écrit un message ici si le nom est vide
+               class="error-msg" : CSS color:red; font-size:small
+               Exemple de message JS : "Le nom est obligatoire" -->
+
+        </div>
+        <!-- fin form-group nom -->
+
+
+        <!-- ---- CHAMP EMAIL ---- -->
+        <div class="form-group">
+
+          <label for="email">Adresse email *</label>
+
+          <input type="email" id="email" name="email"
+                 placeholder="votre@email.com" required/>
+          <!-- type="email" : le navigateur affiche le clavier email sur mobile
+               JS vérifie le format : doit contenir @ et un domaine (ex: nom@domaine.com)
+               Expression régulière utilisée par JS : /^[^\s@]+@[^\s@]+\.[^\s@]+$/ -->
+
+          <span class="error-msg" id="emailError"></span>
+          <!-- id="emailError" : JS écrit ici si email vide ou format invalide -->
+
+        </div>
+        <!-- fin form-group email -->
+
+
+        <!-- ---- CHAMP TÉLÉPHONE (optionnel) ---- -->
+        <div class="form-group">
+
+          <label for="tel">Téléphone</label>
+          <!-- Pas d'étoile * = champ optionnel, JS ne le valide pas -->
+
+          <input type="tel" id="tel" name="tel"
+                 placeholder="+212 6XX XX XX XX"/>
+          <!-- type="tel" : affiche le clavier numérique sur mobile
+               Pas de required car champ optionnel
+               Pas de span error-msg car JS ne valide pas ce champ -->
+
+        </div>
+        <!-- fin form-group tel -->
+
+
+        <!-- ---- CHAMP SUJET (liste déroulante) ---- -->
+        <div class="form-group">
+
+          <label for="sujet">Sujet *</label>
+
+          <select id="sujet" name="sujet" required>
+            <!-- <select> : liste déroulante (dropdown)
+                 JS vérifie que la valeur n'est pas "" (option vide) -->
+
+            <option value="">-- Choisir un sujet --</option>
+            <!-- Option vide par défaut avec value="" 
+                 JS détecte que value === "" et affiche une erreur si non changé -->
+
+            <option value="info">Informations générales</option>
+            <!-- <option value="..."> : chaque choix avec sa valeur interne -->
+
+            <option value="reservation">Réservation</option>
+            <option value="guide">Guide touristique</option>
+            <option value="autre">Autre</option>
+
+          </select>
+
+          <span class="error-msg" id="sujetError"></span>
+          <!-- id="sujetError" : JS écrit "Veuillez choisir un sujet" si value === "" -->
+
+        </div>
+        <!-- fin form-group sujet -->
+
+
+        <!-- ---- CHAMP MESSAGE ---- -->
+        <div class="form-group">
+
+          <label for="message">Message *</label>
+
+          <textarea id="message" name="message" rows="5"
+                    placeholder="Écrivez votre message ici..." required></textarea>
+          <!-- <textarea> : zone de texte multiligne (différent de <input>)
+               rows="5" : hauteur initiale = 5 lignes de texte
+               JS vérifie que le message n'est pas vide
+               CSS : resize:vertical = l'utilisateur peut agrandir verticalement -->
+
+          <span class="error-msg" id="messageError"></span>
+          <!-- id="messageError" : JS écrit "Le message est obligatoire" si vide -->
+
+        </div>
+        <!-- fin form-group message -->
+
+
+        <!-- BOUTON DE SOUMISSION -->
+        <button type="submit" class="btn-submit">
+          <!-- type="submit" : clique sur ce bouton → déclenche l'événement 'submit' du form
+               JS intercepte cet événement avec event.preventDefault()
+               puis valide tous les champs avant d'accepter ou rejeter -->
+          <i class="fas fa-paper-plane"></i> Envoyer le message
+          <!-- fa-paper-plane = icône avion en papier pour l'envoi de message -->
+        </button>
+
+
+        <!-- MESSAGE DE SUCCÈS
+             style="display:none" : invisible par défaut
+             JS : formSuccess.style.display = 'block' si tous les champs sont valides
+             CSS : fond vert, icône check, texte de confirmation -->
+        <div id="formSuccess" class="form-success" style="display:none">
+          <i class="fas fa-check-circle"></i>
+          <!-- fa-check-circle = icône cercle avec coche verte ✓ -->
+          Votre message a bien été envoyé ! Nous vous répondrons dans les 24h.
+        </div>
+
+
+      </form>
+      <!-- fin contactForm -->
+
+    </div>
+    <!-- fin meteo-contact-grid (grille 2 colonnes) -->
+
+  </div>
+  <!-- fin container section contact -->
+
+</section>
+<!-- fin section météo & contact -->
+
+
+<!-- ====================================================================
+     FOOTER : PIED DE PAGE
+     - 3 colonnes : présentation de la ville | liens navigation | infos contact
+     - Ligne du bas : copyright
+===================================================================== -->
+<footer>
+<!-- <footer> : balise HTML5 sémantique pour le pied de page
+     CSS : background-color foncé, texte clair, padding généreux -->
+
+  <div class="footer-content">
+    <!-- Grille 3 colonnes du footer
+         CSS : display:grid; grid-template-columns:2fr 1fr 1fr -->
+
+    <!-- ---- COLONNE 1 : PRÉSENTATION ---- -->
+    <div class="footer-brand">
+      <h3>Chefchaouen</h3>
+      <!-- <h3> dans le footer : titre de la colonne (niveau de hiérarchie moindre) -->
+      <p>La Perle Bleue du Maroc — Votre guide de voyage complet pour découvrir
+      cette ville magique nichée dans les montagnes du Rif.</p>
+    </div>
+
+    <!-- ---- COLONNE 2 : NAVIGATION ---- -->
+    <div class="footer-links">
+      <h4>Navigation</h4>
+      <!-- <h4> : titre de la colonne liens -->
+      <ul>
+        <!-- <ul> : liste des liens de navigation rapide en bas de page -->
+        <li><a href="#activites">Activités</a></li>
+        <li><a href="#galerie">Galerie</a></li>
+        <li><a href="#hebergement">Restaurants</a></li>
+        <li><a href="#carte">Carte</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <!-- Chaque lien ancre renvoie vers la section correspondante -->
+      </ul>
+    </div>
+
+    <!-- ---- COLONNE 3 : INFORMATIONS DE CONTACT ---- -->
+    <div class="footer-info">
+      <h4>Informations</h4>
+      <p><i class="fas fa-map-marker-alt"></i> Chefchaouen, Maroc</p>
+      <!-- Adresse avec icône localisation -->
+      <p><i class="fas fa-globe"></i> Région Tanger-Tétouan-Al Hoceima</p>
+      <!-- fa-globe = icône globe terrestre pour la région -->
+      <p><i class="fas fa-phone"></i> +212 539 XX XX XX</p>
+      <!-- fa-phone = icône téléphone -->
+      <p><i class="fas fa-envelope"></i> info@chefchaouen-tourisme.ma</p>
+      <!-- fa-envelope = icône enveloppe pour l'email -->
+    </div>
+
+  </div>
+  <!-- fin footer-content (3 colonnes) -->
+
+  <!-- Barre de copyright en bas du footer -->
+  <div class="footer-bottom">
+    <!-- CSS : border-top, text-align:center, padding-top, couleur plus claire -->
+    <p>&copy; 2026 Chefchaouen — Portail Touristique du Maroc | Projet GI1-2026</p>
+    <!-- &copy; : entité HTML pour le symbole copyright ©
+         Tout contenu entre <p> : texte de copyright centré -->
+  </div>
+
+</footer>
+<!-- fin footer -->
+
+
+
+<!-- Leaflet.js : bibliothèque de cartographie interactive
+     src="..." : URL CDN de la version 1.9.4 de Leaflet
+     Doit être chargé AVANT notre JS car notre JS utilise L.map(), L.marker() etc. -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+<script src="chefchaoun.js"></script>
+
+</body>
+<!-- fin du corps de la page -->
+
+</html>
+<!-- fin du document HTML -->
