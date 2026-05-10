@@ -103,10 +103,10 @@ function rate(starElement, rating) {
     stars.forEach((star, index) => {
         if (index < rating) {
             star.classList.add('active');
-            star.style.color = '#e8b87d';
+            star.style.color = '#e67e22';
         } else {
             star.classList.remove('active');
-            star.style.color = '#d4c4a8';
+            star.style.color = '#d4e6f1';
         }
     });
     
@@ -159,13 +159,13 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ============================================
-// CARTE LEAFLET
+// CARTE LEAFLET - AGADIR
 // ============================================
 function initMap() {
-    const dakhlaLat = 23.7141;
-    const dakhlaLng = -15.9364;
+    const agadirLat = 30.4278;
+    const agadirLng = -9.5981;
     
-    map = L.map('map').setView([dakhlaLat, dakhlaLng], 12);
+    map = L.map('map').setView([agadirLat, agadirLng], 12);
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',
@@ -173,10 +173,12 @@ function initMap() {
     }).addTo(map);
     
     const places = [
-        { lat: 23.7141, lng: -15.9364, name: 'Lagune de Dakhla', desc: 'Spot de kitesurf mondial' },
-        { lat: 23.6928, lng: -15.9382, name: 'Port de Dakhla', desc: 'Port de pêche traditionnel' },
-        { lat: 23.7500, lng: -15.9000, name: 'Dunes de Blanc', desc: 'Dunes blanches spectaculaires' },
-        { lat: 23.6800, lng: -15.9500, name: 'Plage de Foum Labouir', desc: 'Plage paradisiaque' }
+        { lat: 30.4278, lng: -9.5981, name: 'Plage d\'Agadir', desc: '10 km de plage de sable fin' },
+        { lat: 30.4260, lng: -9.6120, name: 'Kasbah d\'Agadir', desc: 'Forteresse historique du XVIe siècle' },
+        { lat: 30.4030, lng: -9.6000, name: 'Souk El Had', desc: 'Plus grand souk du Maroc' },
+        { lat: 30.3800, lng: -9.5500, name: 'Vallée du Paradis', desc: 'Oasis naturelle avec piscines' },
+        { lat: 30.4150, lng: -9.6200, name: 'Port de Pêche', desc: 'Port sardinière animé' },
+        { lat: 30.4300, lng: -9.5900, name: 'Corniche', desc: 'Promenade en bord de mer' }
     ];
     
     places.forEach(place => {

@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dakhla - Perle du Sahara</title>
+    <title>Agadir - Perle du Sud Marocain</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <!-- LIEN CORRIGÉ vers dakhla.css -->
-    <link rel="stylesheet" href="dakhla.css">
+    <link rel="stylesheet" href="agadir.css">
 </head>
 <body>
 
     <!-- NAVIGATION -->
     <nav class="navbar">
-        <div class="nav-brand">🏜️ Dakhla</div>
+        <div class="nav-brand">🌴 Agadir</div>
         <ul class="nav-links">
             <li><a href="#hero">Accueil</a></li>
             <li><a href="#activites">Activités</a></li>
@@ -24,20 +23,20 @@
         <div class="hamburger">☰</div>
     </nav>
 
-    <!-- Image de fond : vue aérienne de la lagune de Dakhla avec kitesurfers -->
+    <!-- HERO -->
     <section id="hero" class="hero">
         <div class="hero-content">
-            <h1 class="hero-title">Dakhla</h1>
-            <p class="hero-subtitle">La perle du Sahara Atlantique</p>
-            <p class="hero-description">Où le désert rencontre l'océan dans une harmonie de sable doré et d'eaux turquoise</p>
+            <h1 class="hero-title">Agadir</h1>
+            <p class="hero-subtitle">La perle du Sud Marocain</p>
+            <p class="hero-description">Entre l'océan Atlantique et les montagnes de l'Anti-Atlas, découvrez une ville où le soleil brille 300 jours par an</p>
         </div>
         <div class="scroll-indicator">↓</div>
     </section>
 
-    <!-- SECTION 2 : ACTIVITÉS TOURISTIQUES -->
+    <!-- ACTIVITÉS -->
     <section id="activites" class="activites">
         <h2 class="section-title">Activités Touristiques</h2>
-        <p class="section-subtitle">Découvrez les merveilles de Dakhla</p>
+        <p class="section-subtitle">Découvrez les merveilles d'Agadir</p>
         
         <div class="filter-buttons">
             <button class="filter-btn active" data-filter="all">Toutes</button>
@@ -47,115 +46,103 @@
         </div>
 
         <div class="cards-grid">
-            <!-- KITESURF - lien Planet Kitesurf -->
             <div class="activity-card" data-category="sport">
                 <div class="card-image">
-                    <img src="images/kitesurf_dakhla.jpg" alt="Kitesurf à Dakhla">
+                    <img src="images/surf.jpg" alt="Surf à Agadir">
                     <span class="card-badge">Sport</span>
                 </div>
                 <div class="card-content">
-                    <h3>Kitesurf</h3>
-                    <p>Spot mondial avec des vents constants et une lagune parfaite pour tous les niveaux.</p>
+                    <h3>Surf & Plage</h3>
+                    <p>Spot de surf renommé avec des vagues parfaites pour tous les niveaux, de la baie d'Agadir à Taghazout.</p>
                 </div>
             </div>
 
-            <!-- EXCURSION DÉSERT - lien Civitatis chameau -->
             <div class="activity-card" data-category="nature">
                 <div class="card-image">
-                    <img src="images/chamau.jpg" alt="Excursion chameau Dakhla">
+                    <img src="images/v.jpg" alt="Vallée du Paradis">
                     <span class="card-badge nature">Nature</span>
                 </div>
                 <div class="card-content">
-                    <h3>Excursion dans le Désert</h3>
-                    <p>Balade à dos de chameau et traversez les dunes dorées du Sahara.</p>
+                    <h3>Vallée du Paradis</h3>
+                    <p>Oasis luxuriante avec piscines naturelles, falaises et paysages verdoyants à 1h d'Agadir.</p>
                 </div>
             </div>
 
-            <!-- CULTURE SAHRAOUIE - lien TripAdvisor Kasbah -->
             <div class="activity-card" data-category="culture">
                 <div class="card-image">
-                    <img src="images/culture.jpg" alt="Culture Sahraouie">
+                    <img src="images/kasbah.jpg" alt="Kasbah d'Agadir">
                     <span class="card-badge culture">Culture</span>
                 </div>
                 <div class="card-content">
-                    <h3>Culture Sahraouie</h3>
-                    <p>Immergez-vous dans les traditions nomades, la musique gnawa et l'artisanat local.</p>
+                    <h3>Kasbah d'Agadir Oufella</h3>
+                    <p>Forteresse historique dominant la baie, offrant une vue panoramique sur la ville et l'océan.</p>
                 </div>
             </div>
 
-            <!-- SURF - lien Takuma -->
             <div class="activity-card" data-category="sport">
                 <div class="card-image">
-                    <img src="images/surf.jpg" alt="Surf à Dakhla">
+                    <img src="images/telepherique.jpg" alt="Téléphérique">
                     <span class="card-badge">Sport</span>
                 </div>
                 <div class="card-content">
-                    <h3>Surf</h3>
-                    <p>Les meilleurs spots de surf de la côte atlantique avec des vagues parfaites.</p>
+                    <h3>Téléphérique</h3>
+                    <p>Activité spéciale qu’on ne trouve qu’à Agadir dans tout le Maroc.</p>
                 </div>
             </div>
 
-            <!-- PÊCHE -->
-            <div class="activity-card" data-category="sport">
+            <div class="activity-card" data-category="nature">
                 <div class="card-image">
-                    <img src="images/peche.jpg" alt="Pêche à Dakhla">
-                    <span class="card-badge">Sport</span>
+                    <img src="images/crocoparc.jpg" alt="Crocoparc Agadir">
+                    <span class="card-badge nature">Nature</span>
                 </div>
                 <div class="card-content">
-                    <h3>Pêche en Haute Mer</h3>
-                    <p>Partez à la pêche aux thons, dorades et autres poissons de l'Atlantique sud.</p>
+                    <h3>Crocoparc</h3>
+                    <p>Parc animalier unique au Maroc avec crocodiles, jardins exotiques et aires de jeux.</p>
                 </div>
             </div>
 
-            <!-- ARTISANAT LOCAL - lien Visit Morocco -->
             <div class="activity-card" data-category="culture">
                 <div class="card-image">
-                    <img src="images/cult.jpg" alt="Artisanat Local">
+                    <img src="images/medina.jpg" alt="Médina Coco Polizzi">
                     <span class="card-badge culture">Culture</span>
                 </div>
                 <div class="card-content">
-                    <h3>Artisanat Local</h3>
-                    <p>Découvrez les tapis kilims, la poterie et les bijoux traditionnels sahraouis.</p>
+                    <h3>Médina Coco Polizzi</h3>
+                    <p>Médina artisanale reconstruite avec amour, ateliers d'artisans et architecture traditionnelle.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SECTION 3 : GALERIE PHOTOS -->
+    <!-- GALERIE -->
     <section id="galerie" class="galerie">
         <h2 class="section-title">Galerie Photos</h2>
-        <p class="section-subtitle">Dakhla en images</p>
+        <p class="section-subtitle">Agadir en images</p>
         
         <div class="gallery-grid">
-            <!-- DUNES DORÉES - lien Maroc Désert -->
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="images/dun.jpg" alt="Dunes Dorées">
-                <div class="gallery-overlay">Dunes Dorées</div>
+                <img src="images/plage.jpg" alt="Plage d'Agadir">
+                <div class="gallery-overlay">Plage d'Agadir</div>
             </div>
-            <!-- PLAGE - lien Les Jardins de la Médina -->
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="images/plage.jpg" alt="Plage de Dakhla">
-                <div class="gallery-overlay">Plage Paradisiaque</div>
+                <img src="images/k.jpg" alt="Kasbah vue panoramique">
+                <div class="gallery-overlay">Kasbah d'Agadir</div>
             </div>
-            <!-- KITESURF - lien Planet Kitesurf -->
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="images/kit.jpg" alt="Kitesurf">
-                <div class="gallery-overlay">Kitesurf</div>
+                <img src="images/taghazout.jpg" alt="Taghazout">
+                <div class="gallery-overlay"> Taghazout</div>
             </div>
-            <!-- COUCHER DE SOLEIL - lien Biche Around The World -->
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="images/couche.jpg" alt="Coucher de soleil">
-                <div class="gallery-overlay">Coucher de Soleil</div>
+                <img src="images/aghroud.jpg" alt="Aghroud">
+                <div class="gallery-overlay">Aghroud</div>
             </div>
-            <!-- FLAMANTS ROSES - lien Extrem Sud -->
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="images/flm.jpg" alt="Flamants Roses">
-                <div class="gallery-overlay">Flamants Roses</div>
+                <img src="images/souk.jpg" alt="Souk El Had">
+                <div class="gallery-overlay">Souk El Had</div>
             </div>
-            <!-- LAGUNE - lien Les Jardins de la Médina -->
             <div class="gallery-item" onclick="openLightbox(this)">
-                <img src="images/lagune.jpg" alt="Lagune de Dakhla">
-                <div class="gallery-overlay">Lagune de Dakhla</div>
+                <img src="images/port.jpg" alt="Port de Pêche">
+                <div class="gallery-overlay">Port de Pêche</div>
             </div>
         </div>
     </section>
@@ -169,7 +156,7 @@
         <button class="lightbox-next" onclick="changeImage(1)">❯</button>
     </div>
 
-    <!-- SECTION 4 : RESTAURANTS ET HÉBERGEMENT -->
+    <!-- RESTAURANTS & HÉBERGEMENT -->
     <section id="restaurants" class="restaurants">
         <h2 class="section-title">Restaurants & Hébergement</h2>
         
@@ -181,10 +168,10 @@
         </div>
 
         <div class="cards-grid">
-            <!-- RESTAURANT 1 : TALHAMAR -->
+            <!-- RESTAURANT 1 : LE JARDIN D'EAU -->
             <div class="establishment-card" data-type="restaurant">
                 <div class="card-image">
-                    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/16/54/41/69/talhamar.jpg?w=900&h=500&s=1" alt="Restaurant Talhamar Dakhla">
+                    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/02/68/47/14/le-jardin-d-eau.jpg?w=500&h=-1&s=1" alt="Le Jardin d'Eau Agadir">
                     <span class="estab-type">Restaurant</span>
                 </div>
                 <div class="estab-header">
@@ -196,16 +183,16 @@
                         <span class="star" onclick="rate(this, 5)">★</span>
                     </div>
                 </div>
-                <h3>Talhamar</h3>
+                <h3>Le Jardin d'Eau</h3>
                 <p class="estab-price">$$$</p>
-                <p class="estab-address">📍 Avenue de la Plage, Dakhla</p>
-                <p>Restaurant sur l'eau spécialisé en fruits de mer frais et poissons grillés.</p>
+                <p class="estab-address">📍 Boulevard du 20 Août, Agadir</p>
+                <p>Cuisine française raffinée et fruits de mer dans un cadre élégant avec jardin.</p>
             </div>
 
-            <!-- HÔTEL 1 : DAKHLA ATTITUDE -->
+            <!-- HÔTEL 1 : ROYAL ATLAS -->
             <div class="establishment-card" data-type="hotel">
                 <div class="card-image">
-                    <img src="https://images.trvl-media.com/lodging/19000000/18160000/18156800/18156714/e9d81780.jpg?impolicy=resizecrop&rw=575&rh=575&ra=fill" alt="Dakhla Attitude Hotel">
+                    <img src="https://www.directgolfholidays.com/wp-content/uploads/2020/12/Royal_Atlas_9.jpg" alt="Hôtel Royal Atlas Agadir">
                     <span class="estab-type hotel-badge">Hôtel</span>
                 </div>
                 <div class="estab-header">
@@ -217,20 +204,20 @@
                         <span class="star" onclick="rate(this, 5)">★</span>
                     </div>
                 </div>
-                <h3>Dakhla Attitude</h3>
+                <h3>Royal Atlas & Spa</h3>
                 <p class="estab-price">$$$$</p>
-                <p class="estab-address">📍 Pointe de la Lagune, Dakhla</p>
-                <p>Resort de luxe avec spa, piscine et accès direct à la lagune pour le kitesurf.</p>
+                <p class="estab-address">📍 Avenue de L'Université, Agadir</p>
+                <p>Hôtel 5 étoiles avec spa, piscine et vue imprenable sur l'océan Atlantique.</p>
             </div>
 
-            <!-- RIAD : RIAD SAHARA -->
+            <!-- RIAD : VILLA BLANCHE -->
             <div class="establishment-card" data-type="riad">
                 <div class="card-image">
-                    <img src="https://www.visitmorocco.com/sites/default/files/riad_0.jpg" alt="Riad Sahara Dakhla">
+                    <img src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/364612157.jpg?k=ee0374e48c613cc07e4a8bf26a9209ff1631638cbc291d414cd881cc8985e60f&o=" alt="Riad Villa Blanche Agadir">
                     <span class="estab-type riad-badge">Riad</span>
                 </div>
                 <div class="estab-header">
-                    <div class="stars" data-rating="4">
+                    <div class="stars" data-rating="5">
                         <span class="star" onclick="rate(this, 1)">★</span>
                         <span class="star" onclick="rate(this, 2)">★</span>
                         <span class="star" onclick="rate(this, 3)">★</span>
@@ -238,16 +225,16 @@
                         <span class="star" onclick="rate(this, 5)">★</span>
                     </div>
                 </div>
-                <h3>Riad Sahara</h3>
-                <p class="estab-price">$$</p>
-                <p class="estab-address">📍 Centre de Dakhla</p>
-                <p>Authentique riad sahraoui avec patio, fontaine et terrasse panoramique sur le désert.</p>
+                <h3>Riad Villa Blanche</h3>
+                <p class="estab-price">$$$$</p>
+                <p class="estab-address">📍 Rue des Tennis, Agadir</p>
+                <p>Riad de luxe avec patio andalou, hammam et restaurant gastronomique.</p>
             </div>
 
-            <!-- RESTAURANT 2 : LE SAHARIEN -->
+            <!-- RESTAURANT 2 : LA SCALA -->
             <div class="establishment-card" data-type="restaurant">
                 <div class="card-image">
-                    <img src="https://gomorocconow.com/fr/wp-content/uploads/2025/02/Best-Moroccan-Restaurants-in-Dakhla.jpg" alt="Le Saharien Restaurant Dakhla">
+                    <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/28/c2/aa/b3/terre-mer.jpg?w=900&h=500&s=1" alt="La Scala Agadir">
                     <span class="estab-type">Restaurant</span>
                 </div>
                 <div class="estab-header">
@@ -259,46 +246,49 @@
                         <span class="star" onclick="rate(this, 5)">★</span>
                     </div>
                 </div>
-                <h3>Le Saharien</h3>
+                <h3>La Scala</h3>
                 <p class="estab-price">$$</p>
-                <p class="estab-address">📍 Route de l'Aéroport, Dakhla</p>
-                <p>Cuisine marocaine traditionnelle : tagines, couscous et pastilla dans un cadre saharien.</p>
+                <p class="estab-address">📍 Rue Oued Souss, Agadir</p>
+                <p>Poissons grillés et cuisine marocaine traditionnelle face au port.</p>
             </div>
         </div>
     </section>
 
-    <!-- SECTION 5 : CARTE INTERACTIVE -->
+    <!-- CARTE -->
     <section id="carte" class="carte-section">
         <h2 class="section-title">Carte Interactive</h2>
-        <p class="section-subtitle">Explorez les lieux emblématiques de Dakhla</p>
+        <p class="section-subtitle">Explorez les lieux emblématiques d'Agadir</p>
         
         <div class="map-container">
             <div id="map"></div>
             <div class="places-list">
                 <h3>Lieux à découvrir</h3>
                 <ul>
-                    <li onclick="flyToPlace(23.7141, -15.9364, 'Lagune de Dakhla')">Lagune de Dakhla</li>
-                    <li onclick="flyToPlace(23.6928, -15.9382, 'Port de Dakhla')">Port de Dakhla</li>
-                    <li onclick="flyToPlace(23.7500, -15.9000, 'Dunes de Blanc')">Dunes de Blanc</li>
-                    <li onclick="flyToPlace(23.6800, -15.9500, 'Plage de Foum Labouir')">Plage de Foum Labouir</li>
+                    <li onclick="flyToPlace(30.4278, -9.5981, 'Plage d\'Agadir')">Plage d'Agadir</li>
+                    <li onclick="flyToPlace(30.4260, -9.6120, 'Kasbah d\'Agadir')">Kasbah d'Agadir Oufella</li>
+                    <li onclick="flyToPlace(30.4030, -9.6000, 'Souk El Had')">Souk El Had</li>
+                    <li onclick="flyToPlace(30.3800, -9.5500, 'Vallée du Paradis')">Vallée du Paradis</li>
+                    <li onclick="flyToPlace(30.4150, -9.6200, 'Port de Pêche')">Port de Pêche</li>
+                    <li onclick="flyToPlace(30.4300, -9.5900, 'Corniche')">Corniche d'Agadir</li>
                 </ul>
             </div>
         </div>
     </section>
 
-    <!-- SECTION 6 : MÉTÉO ET CONTACT -->
+    <!-- CONTACT & MÉTÉO -->
     <section id="contact" class="contact-section">
         <h2 class="section-title">Météo & Contact</h2>
         
         <div class="contact-grid">
             <div class="weather-widget">
-                <h3>🌤️ Météo à Dakhla</h3>
+                <h3>🌤️ Météo à Agadir</h3>
                 <div id="weather-info">
-                    <div class="weather-temp">24°C</div>
+                    <div class="weather-temp">22°C</div>
                     <div class="weather-desc">☀️ Ensoleillé</div>
-                    <p>💧 Humidité: 65%</p>
-                    <p>💨 Vent: 25 km/h (Nord-Est)</p>
-                    <p>🌡️ Ressenti: 26°C</p>
+                    <p>💧 Humidité: 68%</p>
+                    <p>💨 Vent: 18 km/h (Nord-Ouest)</p>
+                    <p>🌡️ Ressenti: 24°C</p>
+                    <p>☀️ Ensoleillement: 3000h/an</p>
                 </div>
             </div>
 
@@ -332,12 +322,11 @@
     </section>
 
     <footer class="footer">
-        <p>© Dakhla Tourisme. Tous droits réservés.</p>
-        <p>Perle du Sahara Atlantique</p>
+        <p>© Agadir Tourisme. Tous droits réservés.</p>
+        <p>Perle du Sud Marocain</p>
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- LIEN CORRIGÉ vers dakhla.js -->
-    <script src="dakhla.js"></script>
+    <script src="agadir.js"></script>
 </body>
 </html>

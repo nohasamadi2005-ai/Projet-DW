@@ -1,18 +1,19 @@
 /* ============================================
-   VARIABLES COULEURS SAHARA
+   VARIABLES COULEURS AGADIR - BLEU OCÉAN
    ============================================ */
 :root {
-    --sable-clair: #f5e6d3;
-    --sable: #e6d5b8;
-    --sable-fonce: #d4c4a8;
-    --terre: #c9a86c;
-    --terre-fonce: #a67c52;
-    --ocre: #d4a574;
-    --orange-sahara: #e8b87d;
-    --marron: #8b6914;
-    --bleu-lagune: #5b9aa0;
-    --noir-sahara: #2c2416;
-    --blanc-casse: #faf6f0;
+    --bleu-ocean: #1a5276;        /* Bleu profond océan */
+    --bleu-clair: #2e86ab;        /* Bleu clair */
+    --bleu-lagune: #5dade2;       /* Bleu lagune */
+    --bleu-ciel: #85c1e9;         /* Bleu ciel */
+    --bleu-pale: #d4e6f1;         /* Bleu très pâle */
+    --sable: #e8d5b7;             /* Sable doré */
+    --sable-clair: #f5e6d3;       /* Sable clair */
+    --orange-coucher: #e67e22;    /* Orange coucher de soleil */
+    --corail: #f39c12;            /* Corail */
+    --blanc-creme: #fef9e7;       /* Blanc crème */
+    --noir-profond: #1a252f;      /* Noir bleuté */
+    --gris-ardoise: #34495e;      /* Gris ardoise */
 }
 
 /* RESET */
@@ -28,31 +29,31 @@ html {
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--sable-clair);
-    color: var(--noir-sahara);
+    background-color: var(--bleu-pale);
+    color: var(--noir-profond);
     line-height: 1.6;
 }
 
 /* ============================================
-   NAVIGATION
+   NAVIGATION - BLEU OCÉAN
    ============================================ */
 .navbar {
     position: fixed;
     top: 0;
     width: 100%;
-    background: linear-gradient(135deg, var(--terre) 0%, var(--sable-fonce) 100%);
+    background: linear-gradient(135deg, var(--bleu-ocean) 0%, var(--bleu-clair) 100%);
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 1000;
-    box-shadow: 0 2px 10px rgba(139, 105, 20, 0.3);
+    box-shadow: 0 2px 15px rgba(26, 82, 118, 0.4);
 }
 
 .nav-brand {
     font-size: 1.8rem;
     font-weight: bold;
-    color: var(--blanc-casse);
+    color: var(--blanc-creme);
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
@@ -63,7 +64,7 @@ body {
 }
 
 .nav-links a {
-    color: var(--blanc-casse);
+    color: var(--blanc-creme);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s;
@@ -71,7 +72,7 @@ body {
 }
 
 .nav-links a:hover {
-    color: var(--orange-sahara);
+    color: var(--orange-coucher);
 }
 
 .nav-links a::after {
@@ -81,7 +82,7 @@ body {
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--orange-sahara);
+    background: var(--orange-coucher);
     transition: width 0.3s;
 }
 
@@ -92,30 +93,37 @@ body {
 .hamburger {
     display: none;
     font-size: 1.5rem;
-    color: var(--blanc-casse);
+    color: var(--blanc-creme);
     cursor: pointer;
 }
 
-/* 
-   HERO
-    */
-/* 
-   HERO - IMAGE RÉELLE DE DAKHLA
-    */
+/* ============================================
+   HERO - GRADIENT OCÉAN
+   ============================================ */
+/* HERO SECTION */
 .hero {
     height: 100vh;
-    /* Image réelle de Dakhla : vue aérienne de la lagune avec kitesurfers */
-    background: linear-gradient(rgba(44, 36, 22, 0.4), rgba(44, 36, 22, 0.6)),
-                url('https://res.cloudinary.com/dk-wassersport/image/upload/v1662986062/surf/M3185604-ngTxFluG.jpg') center/cover;
+    background: linear-gradient(
+        rgba(0,0,0,0.4),
+        rgba(0,0,0,0.4)
+    ),
+    url('images/hero1.jpg');
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
+
+    color: white;
     position: relative;
 }
 
 .hero-content {
-    color: var(--blanc-casse);
+    color: var(--blanc-creme);
     animation: fadeInUp 1s ease-out;
 }
 
@@ -129,7 +137,7 @@ body {
 .hero-subtitle {
     font-size: 2rem;
     margin-bottom: 1rem;
-    color: var(--orange-sahara);
+    color: var(--orange-coucher);
 }
 
 .hero-description {
@@ -142,7 +150,7 @@ body {
     position: absolute;
     bottom: 2rem;
     font-size: 2rem;
-    color: var(--blanc-casse);
+    color: var(--blanc-creme);
     animation: bounce 2s infinite;
     cursor: pointer;
 }
@@ -153,7 +161,7 @@ body {
 .section-title {
     text-align: center;
     font-size: 2.5rem;
-    color: var(--marron);
+    color: var(--bleu-ocean);
     margin-bottom: 0.5rem;
     padding-bottom: 1rem;
     position: relative;
@@ -167,19 +175,19 @@ body {
     transform: translateX(-50%);
     width: 80px;
     height: 3px;
-    background: linear-gradient(90deg, var(--terre), var(--orange-sahara));
+    background: linear-gradient(90deg, var(--bleu-clair), var(--orange-coucher));
     border-radius: 2px;
 }
 
 .section-subtitle {
     text-align: center;
-    color: var(--terre-fonce);
+    color: var(--bleu-clair);
     margin-bottom: 2rem;
     font-style: italic;
 }
 
 /* ============================================
-   BOUTONS FILTRE
+   BOUTONS FILTRE - BLEU OCÉAN
    ============================================ */
 .filter-buttons {
     display: flex;
@@ -191,9 +199,9 @@ body {
 
 .filter-btn {
     padding: 0.6rem 1.5rem;
-    border: 2px solid var(--terre);
+    border: 2px solid var(--bleu-clair);
     background: transparent;
-    color: var(--terre-fonce);
+    color: var(--bleu-ocean);
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s;
@@ -201,18 +209,18 @@ body {
 }
 
 .filter-btn:hover, .filter-btn.active {
-    background: var(--terre);
-    color: var(--blanc-casse);
+    background: var(--bleu-clair);
+    color: var(--blanc-creme);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(201, 168, 108, 0.4);
+    box-shadow: 0 4px 12px rgba(46, 134, 171, 0.4);
 }
 
 /* ============================================
-   ACTIVITÉS
+   ACTIVITÉS - FOND SABLE
    ============================================ */
 .activites {
     padding: 5rem 2rem;
-    background: var(--blanc-casse);
+    background: var(--sable-clair);
 }
 
 .cards-grid {
@@ -224,17 +232,17 @@ body {
 }
 
 .activity-card {
-    background: var(--sable-clair);
+    background: var(--blanc-creme);
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(139, 105, 20, 0.15);
+    box-shadow: 0 5px 15px rgba(26, 82, 118, 0.15);
     transition: transform 0.3s, box-shadow 0.3s;
-    border: 1px solid var(--sable);
+    border: 1px solid var(--bleu-pale);
 }
 
 .activity-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(139, 105, 20, 0.25);
+    box-shadow: 0 15px 30px rgba(26, 82, 118, 0.25);
 }
 
 .activity-card.hidden {
@@ -262,7 +270,7 @@ body {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: var(--terre);
+    background: var(--bleu-ocean);
     color: white;
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
@@ -275,7 +283,7 @@ body {
 }
 
 .card-badge.culture {
-    background: var(--marron);
+    background: var(--corail);
 }
 
 .card-content {
@@ -283,16 +291,16 @@ body {
 }
 
 .card-content h3 {
-    color: var(--marron);
+    color: var(--bleu-ocean);
     margin-bottom: 0.5rem;
 }
 
 /* ============================================
-   GALERIE
+   GALERIE - DÉGRADÉ OCÉAN
    ============================================ */
 .galerie {
     padding: 5rem 2rem;
-    background: linear-gradient(180deg, var(--sable-clair) 0%, var(--sable) 100%);
+    background: linear-gradient(180deg, var(--bleu-pale) 0%, var(--sable) 100%);
 }
 
 .gallery-grid {
@@ -309,7 +317,7 @@ body {
     border-radius: 10px;
     cursor: pointer;
     aspect-ratio: 1;
-    border: 3px solid var(--sable-fonce);
+    border: 3px solid var(--bleu-ciel);
 }
 
 .gallery-item img {
@@ -328,7 +336,7 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(transparent, rgba(44, 36, 22, 0.8));
+    background: linear-gradient(transparent, rgba(26, 37, 47, 0.8));
     color: white;
     padding: 2rem 1rem 1rem;
     transform: translateY(100%);
@@ -349,7 +357,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(44, 36, 22, 0.95);
+    background: rgba(26, 37, 47, 0.95);
     z-index: 2000;
     justify-content: center;
     align-items: center;
@@ -363,7 +371,7 @@ body {
     max-width: 90%;
     max-height: 80vh;
     border-radius: 10px;
-    border: 5px solid var(--sable);
+    border: 5px solid var(--bleu-ciel);
 }
 
 .lightbox-close {
@@ -371,18 +379,18 @@ body {
     top: 2rem;
     right: 2rem;
     font-size: 3rem;
-    color: var(--blanc-casse);
+    color: var(--blanc-creme);
     cursor: pointer;
 }
 
 .lightbox-close:hover {
-    color: var(--orange-sahara);
+    color: var(--orange-coucher);
 }
 
 .lightbox-caption {
     position: absolute;
     bottom: 2rem;
-    color: var(--blanc-casse);
+    color: var(--blanc-creme);
     font-size: 1.5rem;
 }
 
@@ -390,7 +398,7 @@ body {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(201, 168, 108, 0.7);
+    background: rgba(46, 134, 171, 0.7);
     color: white;
     border: none;
     padding: 1rem 1.5rem;
@@ -400,7 +408,7 @@ body {
 }
 
 .lightbox-prev:hover, .lightbox-next:hover {
-    background: var(--terre);
+    background: var(--bleu-clair);
 }
 
 .lightbox-prev { left: 2rem; }
@@ -411,15 +419,15 @@ body {
    ============================================ */
 .restaurants {
     padding: 5rem 2rem;
-    background: var(--blanc-casse);
+    background: var(--sable-clair);
 }
 
 .establishment-card {
-    background: var(--sable-clair);
+    background: var(--blanc-creme);
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(139, 105, 20, 0.15);
-    border: 2px solid var(--sable);
+    box-shadow: 0 5px 15px rgba(26, 82, 118, 0.15);
+    border: 2px solid var(--bleu-pale);
     transition: transform 0.3s;
 }
 
@@ -449,7 +457,7 @@ body {
 }
 
 .estab-type {
-    background: var(--terre);
+    background: var(--bleu-ocean);
     color: white;
     padding: 0.3rem 0.8rem;
     border-radius: 15px;
@@ -464,12 +472,12 @@ body {
 }
 
 .estab-type.riad-badge {
-    background: var(--marron);
+    background: var(--corail);
 }
 
 .establishment-card h3 {
     padding: 0 1.5rem;
-    color: var(--marron);
+    color: var(--bleu-ocean);
     margin-top: 0.5rem;
 }
 
@@ -483,39 +491,39 @@ body {
 }
 
 .star {
-    color: var(--sable-fonce);
+    color: var(--bleu-pale);
     font-size: 1.2rem;
     cursor: pointer;
     transition: color 0.2s;
 }
 
 .star.active, .star:hover {
-    color: var(--orange-sahara);
+    color: var(--orange-coucher);
 }
 
 .estab-price {
-    color: var(--terre-fonce);
+    color: var(--bleu-clair);
     font-weight: bold;
     margin: 0.5rem 0;
 }
 
 .estab-address {
-    color: var(--terre-fonce);
+    color: var(--gris-ardoise);
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
 }
 
 .establishment-card p:last-child {
     padding-bottom: 1.5rem;
-    color: var(--terre-fonce);
+    color: var(--gris-ardoise);
 }
 
 /* ============================================
-   CARTE
+   CARTE - BLEU OCÉAN
    ============================================ */
 .carte-section {
     padding: 5rem 2rem;
-    background: linear-gradient(180deg, var(--sable) 0%, var(--sable-clair) 100%);
+    background: linear-gradient(180deg, var(--sable) 0%, var(--bleu-pale) 100%);
 }
 
 .map-container {
@@ -531,20 +539,20 @@ body {
     width: 100%;
     height: 100%;
     border-radius: 15px;
-    border: 3px solid var(--terre);
-    box-shadow: 0 5px 20px rgba(139, 105, 20, 0.2);
+    border: 3px solid var(--bleu-clair);
+    box-shadow: 0 5px 20px rgba(26, 82, 118, 0.2);
 }
 
 .places-list {
-    background: var(--blanc-casse);
+    background: var(--blanc-creme);
     border-radius: 15px;
     padding: 1.5rem;
-    border: 2px solid var(--sable);
+    border: 2px solid var(--bleu-pale);
     overflow-y: auto;
 }
 
 .places-list h3 {
-    color: var(--marron);
+    color: var(--bleu-ocean);
     margin-bottom: 1rem;
     text-align: center;
 }
@@ -556,15 +564,15 @@ body {
 .places-list li {
     padding: 0.8rem;
     margin-bottom: 0.5rem;
-    background: var(--sable-clair);
+    background: var(--bleu-pale);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s;
-    border-left: 4px solid var(--terre);
+    border-left: 4px solid var(--bleu-clair);
 }
 
 .places-list li:hover {
-    background: var(--terre);
+    background: var(--bleu-clair);
     color: white;
     transform: translateX(5px);
 }
@@ -574,7 +582,7 @@ body {
    ============================================ */
 .contact-section {
     padding: 5rem 2rem;
-    background: var(--blanc-casse);
+    background: var(--sable-clair);
 }
 
 .contact-grid {
@@ -586,28 +594,28 @@ body {
 }
 
 .weather-widget, .contact-form {
-    background: linear-gradient(135deg, var(--sable-clair) 0%, var(--sable) 100%);
+    background: linear-gradient(135deg, var(--bleu-pale) 0%, var(--sable) 100%);
     padding: 2rem;
     border-radius: 15px;
-    border: 2px solid var(--sable-fonce);
-    box-shadow: 0 5px 15px rgba(139, 105, 20, 0.15);
+    border: 2px solid var(--bleu-ciel);
+    box-shadow: 0 5px 15px rgba(26, 82, 118, 0.15);
 }
 
 .weather-widget h3, .contact-form h3 {
-    color: var(--marron);
+    color: var(--bleu-ocean);
     margin-bottom: 1.5rem;
     text-align: center;
 }
 
 .weather-temp {
     font-size: 3rem;
-    color: var(--terre);
+    color: var(--bleu-clair);
     font-weight: bold;
     text-align: center;
 }
 
 .weather-desc {
-    color: var(--terre-fonce);
+    color: var(--bleu-ocean);
     font-size: 1.2rem;
     text-align: center;
     margin: 1rem 0;
@@ -615,7 +623,7 @@ body {
 
 .weather-widget p {
     text-align: center;
-    color: var(--terre-fonce);
+    color: var(--gris-ardoise);
     margin: 0.5rem 0;
 }
 
@@ -626,7 +634,7 @@ body {
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    color: var(--terre-fonce);
+    color: var(--bleu-ocean);
     font-weight: 500;
 }
 
@@ -634,21 +642,21 @@ body {
 .form-group textarea {
     width: 100%;
     padding: 0.8rem;
-    border: 2px solid var(--sable-fonce);
+    border: 2px solid var(--bleu-ciel);
     border-radius: 8px;
-    background: var(--blanc-casse);
-    color: var(--noir-sahara);
+    background: var(--blanc-creme);
+    color: var(--noir-profond);
     transition: border-color 0.3s;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: var(--terre);
+    border-color: var(--bleu-clair);
 }
 
 .error {
-    color: #c0392b;
+    color: #e74c3c;
     font-size: 0.85rem;
     display: none;
 }
@@ -656,7 +664,7 @@ body {
 .submit-btn {
     width: 100%;
     padding: 1rem;
-    background: linear-gradient(135deg, var(--terre) 0%, var(--orange-sahara) 100%);
+    background: linear-gradient(135deg, var(--bleu-ocean) 0%, var(--bleu-clair) 100%);
     color: white;
     border: none;
     border-radius: 8px;
@@ -667,15 +675,15 @@ body {
 
 .submit-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(201, 168, 108, 0.4);
+    box-shadow: 0 5px 15px rgba(26, 82, 118, 0.4);
 }
 
 /* ============================================
-   FOOTER
+   FOOTER - BLEU PROFOND
    ============================================ */
 .footer {
-    background: linear-gradient(135deg, var(--terre-fonce) 0%, var(--marron) 100%);
-    color: var(--blanc-casse);
+    background: linear-gradient(135deg, var(--bleu-ocean) 0%, var(--gris-ardoise) 100%);
+    color: var(--blanc-creme);
     text-align: center;
     padding: 2rem;
 }
@@ -710,7 +718,7 @@ body {
         top: 100%;
         left: 0;
         width: 100%;
-        background: var(--terre);
+        background: var(--bleu-ocean);
         flex-direction: column;
         padding: 1rem;
     }
