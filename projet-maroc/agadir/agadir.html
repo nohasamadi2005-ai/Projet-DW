@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dakhla – Perle du Sahara Atlantique</title>
+<title>Agadir – Perle du Sud Marocain</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 /* ══════════════════════════════════════════
-   VARIABLES – PALETTE SAHARA ATLANTIQUE
+   VARIABLES – PALETTE BLEU OCÉAN AGADIR
 ══════════════════════════════════════════ */
 :root {
-  --terra:      #a0522d;
-  --terra-mid:  #b5651d;
-  --terra-dark: #6b3a1f;
-  --terra-acc:  #cd7f32;
+  --ocean:      #1a5276;
+  --ocean-mid:  #2e86ab;
+  --ocean-dark: #154360;
+  --ocean-acc:  #5dade2;
   --gold:       #c9a96e;
-  --sand:       #f5e6c8;
-  --cream:      #faf4e8;
+  --sand:       #e8d5b7;
+  --cream:      #f5f9fc;
   --white:      #ffffff;
-  --dark:       #1a1100;
-  --lagoon:     #5b9aa0;
+  --dark:       #1a252f;
+  --sunset:     #e67e22;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -29,7 +29,7 @@ body{font-family:'Raleway',sans-serif;background:var(--cream);color:var(--dark);
 
 /* ══════ TOP BAR ══════ */
 .top-bar{
-  background:var(--terra-dark);color:#fff;
+  background:var(--ocean-dark);color:#fff;
   text-align:center;padding:7px;
   font-size:12px;letter-spacing:1.5px;
 }
@@ -39,13 +39,13 @@ nav{
   position:sticky;top:0;z-index:900;
   background:rgba(255,255,255,0.97);
   backdrop-filter:blur(12px);
-  box-shadow:0 2px 24px rgba(160,82,45,.13);
+  box-shadow:0 2px 24px rgba(26,82,118,.13);
   display:flex;align-items:center;justify-content:space-between;
   padding:0 48px;height:68px;
 }
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
 .nav-logo svg{width:38px;height:38px;}
-.logo-text .city{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--terra);letter-spacing:2px;}
+.logo-text .city{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--ocean);letter-spacing:2px;}
 .logo-text .sub{font-size:9.5px;color:#999;letter-spacing:2px;text-transform:uppercase;}
 .nav-links{display:flex;list-style:none;gap:0;align-items:center;}
 .nav-links a{
@@ -54,34 +54,34 @@ nav{
   font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
   transition:color .2s;white-space:nowrap;
 }
-.nav-links a:hover{color:var(--terra);}
-.nav-links a.active{color:var(--terra);border-bottom:2px solid var(--terra);}
-.hamburger{display:none;font-size:1.5rem;cursor:pointer;color:var(--terra);}
+.nav-links a:hover{color:var(--ocean);}
+.nav-links a.active{color:var(--ocean);border-bottom:2px solid var(--ocean);}
+.hamburger{display:none;font-size:1.5rem;cursor:pointer;color:var(--ocean);}
 
 /* ══════ HERO ══════ */
 #hero{
   position:relative;height:100vh;min-height:580px;
   display:flex;align-items:center;justify-content:center;overflow:hidden;
-  background:#1a0e06;
+  background:#0a1a26;
 }
 .hero-img{
   position:absolute;inset:0;
-  background:url('https://res.cloudinary.com/dk-wassersport/image/upload/v1662986062/surf/M3185604-ngTxFluG.jpg') center/cover no-repeat;
-  background-color:#a0522d;
+  background:url('images/plage.jpg') center/cover no-repeat;
+  background-color:#1a5276;
   opacity:.65;transition:opacity 1s;
 }
 .hero-overlay{
   position:absolute;inset:0;
-  background:linear-gradient(to bottom,rgba(107,58,31,.45) 0%,rgba(26,14,6,.72) 100%);
+  background:linear-gradient(to bottom,rgba(21,67,96,.45) 0%,rgba(10,26,38,.75) 100%);
 }
 .hero-pattern{
-  position:absolute;inset:0;opacity:.06;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M30 5 L55 30 L30 55 L5 30 Z' fill='none' stroke='%23fff' stroke-width='1'/%3E%3Ccircle cx='30' cy='30' r='8' fill='none' stroke='%23fff' stroke-width='.8'/%3E%3C/svg%3E");
+  position:absolute;inset:0;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ccircle cx='40' cy='40' r='30' fill='none' stroke='%23fff' stroke-width='1'/%3E%3Ccircle cx='40' cy='40' r='18' fill='none' stroke='%23fff' stroke-width='.7'/%3E%3Cline x1='10' y1='40' x2='70' y2='40' stroke='%23fff' stroke-width='.5'/%3E%3Cline x1='40' y1='10' x2='40' y2='70' stroke='%23fff' stroke-width='.5'/%3E%3C/svg%3E");
 }
 .hero-content{position:relative;z-index:2;text-align:center;color:#fff;padding:0 24px;}
 .hero-tag{
-  display:inline-block;border:1px solid rgba(201,169,110,.6);
-  color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  display:inline-block;border:1px solid rgba(93,173,226,.6);
+  color:var(--ocean-acc);font-size:11px;letter-spacing:3px;text-transform:uppercase;
   padding:6px 20px;border-radius:2px;margin-bottom:22px;
   animation:fadeDown .9s ease both;
 }
@@ -95,7 +95,7 @@ nav{
 .hero-title em{font-style:italic;color:var(--gold);}
 .hero-sub{
   font-size:15px;letter-spacing:4px;opacity:.8;text-transform:uppercase;
-  margin:14px 0 38px;animation:fadeDown .9s .3s ease both;
+  margin:14px 0 14px;animation:fadeDown .9s .3s ease both;
 }
 .hero-desc{
   font-size:14px;letter-spacing:1px;opacity:.7;
@@ -105,12 +105,12 @@ nav{
 }
 .hero-btns{display:flex;gap:14px;justify-content:center;animation:fadeDown .9s .45s ease both;}
 .btn-primary{
-  background:var(--terra);color:#fff;text-decoration:none;
+  background:var(--ocean);color:#fff;text-decoration:none;
   padding:14px 40px;border-radius:40px;font-size:12px;font-weight:700;
   letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:none;
-  box-shadow:0 4px 24px rgba(160,82,45,.5);transition:all .3s;
+  box-shadow:0 4px 24px rgba(26,82,118,.5);transition:all .3s;
 }
-.btn-primary:hover{background:var(--terra-acc);transform:translateY(-2px);}
+.btn-primary:hover{background:var(--ocean-mid);transform:translateY(-2px);}
 .btn-outline{
   background:transparent;color:#fff;text-decoration:none;
   padding:14px 40px;border-radius:40px;font-size:12px;font-weight:700;
@@ -135,7 +135,7 @@ nav{
   display:inline-block;font-size:10px;font-weight:700;letter-spacing:3px;
   text-transform:uppercase;color:var(--gold);margin-bottom:10px;
 }
-.sec-head h2{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);color:var(--terra);}
+.sec-head h2{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);color:var(--ocean);}
 .sec-head h2 em{font-style:italic;}
 .sec-head .divider{
   display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;
@@ -150,11 +150,11 @@ nav{
   display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:44px;
 }
 .filter-btn{
-  padding:8px 22px;border-radius:30px;border:2px solid var(--terra);
-  background:transparent;color:var(--terra);font-size:12px;font-weight:700;
+  padding:8px 22px;border-radius:30px;border:2px solid var(--ocean);
+  background:transparent;color:var(--ocean);font-size:12px;font-weight:700;
   letter-spacing:1px;cursor:pointer;transition:all .25s;text-transform:uppercase;
 }
-.filter-btn:hover,.filter-btn.active{background:var(--terra);color:#fff;}
+.filter-btn:hover,.filter-btn.active{background:var(--ocean);color:#fff;}
 
 .cards-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
@@ -165,7 +165,7 @@ nav{
   box-shadow:0 4px 24px rgba(0,0,0,.09);
   transition:transform .3s,box-shadow .3s;cursor:pointer;
 }
-.act-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(160,82,45,.18);}
+.act-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(26,82,118,.18);}
 .act-card.hidden{display:none;}
 .card-img-wrap{position:relative;height:210px;overflow:hidden;}
 .card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
@@ -175,19 +175,19 @@ nav{
   padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;
 }
 .badge-sport{background:#1a5c3a;}
-.badge-culture{background:var(--terra-dark);}
-.badge-nature{background:var(--lagoon);}
+.badge-culture{background:var(--ocean-dark);}
+.badge-nature{background:var(--ocean-mid);}
 .card-body{padding:18px 20px 20px;}
 .card-body h3{font-family:'Playfair Display',serif;font-size:19px;margin-bottom:6px;color:var(--dark);}
 .card-body p{font-size:12.5px;color:#777;line-height:1.65;margin-bottom:14px;}
 .card-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
-.card-meta span{font-size:11px;background:var(--cream);padding:3px 10px;border-radius:12px;color:var(--terra);font-weight:600;}
+.card-meta span{font-size:11px;background:var(--cream);padding:3px 10px;border-radius:12px;color:var(--ocean);font-weight:600;}
 .btn-sm{
-  background:var(--terra);color:#fff;border:none;
+  background:var(--ocean);color:#fff;border:none;
   padding:9px 20px;border-radius:20px;font-size:11px;font-weight:700;
   cursor:pointer;letter-spacing:.8px;transition:background .2s;
 }
-.btn-sm:hover{background:var(--terra-acc);}
+.btn-sm:hover{background:var(--ocean-mid);}
 
 /* ══════ SECTION 3 – GALERIE ══════ */
 #galerie{padding:80px 60px;background:var(--cream);}
@@ -209,11 +209,11 @@ nav{
 .gal-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s;}
 .gal-item:hover img{transform:scale(1.06);}
 .gal-overlay{
-  position:absolute;inset:0;background:rgba(160,82,45,0);
+  position:absolute;inset:0;background:rgba(26,82,118,0);
   display:flex;align-items:center;justify-content:center;
   transition:background .3s;
 }
-.gal-item:hover .gal-overlay{background:rgba(160,82,45,.35);}
+.gal-item:hover .gal-overlay{background:rgba(26,82,118,.35);}
 .gal-overlay svg{opacity:0;transition:opacity .3s;width:40px;height:40px;fill:#fff;}
 .gal-item:hover .gal-overlay svg{opacity:1;}
 
@@ -229,11 +229,11 @@ nav{
 .lb-close:hover{opacity:1;}
 .lb-nav{
   position:absolute;top:50%;transform:translateY(-50%);
-  background:rgba(160,82,45,.7);border:none;color:#fff;
+  background:rgba(26,82,118,.7);border:none;color:#fff;
   width:44px;height:44px;border-radius:50%;font-size:20px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:background .2s;
 }
-.lb-nav:hover{background:var(--terra);}
+.lb-nav:hover{background:var(--ocean);}
 .lb-prev{left:-56px;}
 .lb-next{right:-56px;}
 .lb-caption{
@@ -242,7 +242,7 @@ nav{
 }
 
 /* ══════ SECTION 4 – RESTAURANTS & HÉBERGEMENT ══════ */
-#restaurants{padding:80px 60px;background:var(--terra-mid);}
+#restaurants{padding:80px 60px;background:var(--ocean-mid);}
 #restaurants .sec-head h2{color:#fff;}
 #restaurants .sec-head .eyebrow{color:var(--gold);}
 #restaurants .sec-head p{color:rgba(255,255,255,.65);}
@@ -252,7 +252,7 @@ nav{
   background:transparent;color:rgba(255,255,255,.85);font-size:11px;font-weight:700;
   letter-spacing:1px;cursor:pointer;transition:all .25s;text-transform:uppercase;
 }
-.rh-filter-btn:hover,.rh-filter-btn.active{background:#fff;color:var(--terra);}
+.rh-filter-btn:hover,.rh-filter-btn.active{background:#fff;color:var(--ocean);}
 .rh-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
   gap:26px;max-width:1200px;margin:0 auto;
@@ -271,8 +271,8 @@ nav{
   position:absolute;top:12px;left:12px;
   padding:5px 12px;border-radius:16px;font-size:10px;font-weight:700;color:#fff;
 }
-.badge-resto{background:var(--terra-acc);}
-.badge-hotel{background:#1a3a5c;}
+.badge-resto{background:var(--sunset);}
+.badge-hotel{background:var(--ocean-dark);}
 .badge-riad{background:#1a5c3a;}
 .stars-disp{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.5);color:var(--gold);padding:4px 10px;border-radius:12px;font-size:11px;}
 .rh-body{padding:18px 20px 20px;}
@@ -280,12 +280,7 @@ nav{
 .rh-body h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--dark);margin-bottom:7px;}
 .rh-body p{font-size:12.5px;color:#777;line-height:1.65;margin-bottom:12px;}
 .rh-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
-.rh-meta span{font-size:11px;background:var(--cream);padding:3px 10px;border-radius:12px;color:var(--terra);font-weight:600;}
-
-/* interactive stars */
-.stars-wrap{display:flex;gap:3px;margin-bottom:10px;}
-.star{color:#d4c4a8;font-size:18px;cursor:pointer;transition:color .2s;line-height:1;}
-.star.active,.star:hover{color:var(--gold);}
+.rh-meta span{font-size:11px;background:var(--cream);padding:3px 10px;border-radius:12px;color:var(--ocean);font-weight:600;}
 
 /* ══════ SECTION 5 – CARTE ══════ */
 #carte{padding:80px 60px;background:#fff;}
@@ -298,7 +293,7 @@ nav{
   background:var(--cream);border-radius:10px;padding:14px 16px;cursor:pointer;
   border-left:4px solid transparent;transition:all .2s;
 }
-.map-item:hover,.map-item.active-place{border-left-color:var(--terra);background:#fff;box-shadow:0 2px 12px rgba(160,82,45,.1);}
+.map-item:hover,.map-item.active-place{border-left-color:var(--ocean);background:#fff;box-shadow:0 2px 12px rgba(26,82,118,.1);}
 .map-item h4{font-size:13.5px;font-weight:700;color:var(--dark);margin-bottom:3px;}
 .map-item p{font-size:11.5px;color:#888;}
 .map-item .type-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
@@ -308,9 +303,9 @@ nav{
 .mc-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;max-width:1000px;margin:0 auto;}
 
 .meteo-box{
-  background:linear-gradient(135deg,var(--terra-dark) 0%,var(--terra-mid) 60%,#c9712a 100%);
+  background:linear-gradient(135deg,var(--ocean-dark) 0%,var(--ocean-mid) 60%,#5dade2 100%);
   border-radius:18px;padding:32px;color:#fff;
-  box-shadow:0 8px 40px rgba(160,82,45,.35);
+  box-shadow:0 8px 40px rgba(26,82,118,.35);
 }
 .meteo-city{font-size:12px;letter-spacing:3px;text-transform:uppercase;opacity:.7;margin-bottom:4px;}
 .meteo-temp{font-family:'Playfair Display',serif;font-size:72px;font-weight:700;line-height:1;}
@@ -321,19 +316,18 @@ nav{
 .meteo-item .val{font-size:18px;font-weight:700;}
 
 .contact-box{background:#fff;border-radius:18px;padding:36px;box-shadow:0 4px 30px rgba(0,0,0,.08);}
-.contact-box h3{font-family:'Playfair Display',serif;font-size:24px;color:var(--terra);margin-bottom:6px;}
+.contact-box h3{font-family:'Playfair Display',serif;font-size:24px;color:var(--ocean);margin-bottom:6px;}
 .contact-box .sub{font-size:13px;color:#888;margin-bottom:24px;}
 .form-group{margin-bottom:16px;}
 .form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;margin-bottom:6px;}
 .form-group input,.form-group textarea,.form-group select{
-  width:100%;padding:11px 14px;border:1.5px solid #e0d8c8;border-radius:8px;
+  width:100%;padding:11px 14px;border:1.5px solid #d4e6f1;border-radius:8px;
   font-family:'Raleway',sans-serif;font-size:13px;color:var(--dark);
-  background:#faf4e8;transition:border-color .2s;outline:none;
+  background:#f5f9fc;transition:border-color .2s;outline:none;
 }
-.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--terra);}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--ocean);}
 .form-group textarea{resize:vertical;min-height:110px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.error-msg{color:#c0392b;font-size:11px;display:none;margin-top:4px;}
 .form-success{
   display:none;background:#f0fdf4;border:1px solid #86efac;
   color:#166534;padding:14px;border-radius:8px;font-size:13px;margin-top:14px;
@@ -341,7 +335,7 @@ nav{
 
 /* ══════ FOOTER ══════ */
 footer{
-  background:var(--terra-dark);color:rgba(255,255,255,.75);
+  background:var(--ocean-dark);color:rgba(255,255,255,.75);
   padding:50px 60px 30px;text-align:center;
 }
 .foot-logo{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;letter-spacing:5px;color:#fff;margin-bottom:4px;}
@@ -368,7 +362,7 @@ footer{
   font-size:17px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;
   transition:background .2s;
 }
-.modal-close:hover{background:var(--terra);}
+.modal-close:hover{background:var(--ocean);}
 .modal-img{width:100%;height:300px;object-fit:cover;display:block;}
 .modal-body{padding:28px 30px 32px;}
 .modal-body .m-cat{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
@@ -384,12 +378,12 @@ footer{
 /* ══════ SIDEBAR ══════ */
 .sidebar{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:800;display:flex;flex-direction:column;gap:4px;}
 .s-btn{
-  background:var(--terra);color:#fff;width:42px;height:42px;
+  background:var(--ocean);color:#fff;width:42px;height:42px;
   display:flex;align-items:center;justify-content:center;
   font-size:17px;border-radius:4px 0 0 4px;cursor:pointer;
   transition:background .2s;border:none;
 }
-.s-btn:hover{background:var(--terra-acc);}
+.s-btn:hover{background:var(--ocean-mid);}
 
 /* ══════ RESPONSIVE ══════ */
 @media(max-width:900px){
@@ -418,22 +412,23 @@ footer{
 <body>
 
 <!-- TOP BAR -->
-<div class="top-bar">🏄 Dakhla — Perle du Sahara Atlantique · Kitesurf Capital du Monde</div>
+<div class="top-bar">🌴 Agadir — Perle du Sud Marocain · 300 jours de soleil par an</div>
 
 <!-- NAVBAR -->
 <nav>
   <a class="nav-logo" href="#">
     <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-      <!-- dune silhouette + sun -->
-      <path d="M5,45 Q15,20 30,28 Q45,36 55,45 Z" fill="none" stroke="#a0522d" stroke-width="2"/>
-      <circle cx="30" cy="18" r="9" fill="none" stroke="#c9a96e" stroke-width="1.8"/>
-      <line x1="30" y1="6" x2="30" y2="4" stroke="#c9a96e" stroke-width="1.5"/>
-      <line x1="42" y1="10" x2="43.5" y2="8.5" stroke="#c9a96e" stroke-width="1.5"/>
-      <line x1="18" y1="10" x2="16.5" y2="8.5" stroke="#c9a96e" stroke-width="1.5"/>
+      <!-- vague + soleil couchant -->
+      <path d="M5,42 Q15,30 25,38 Q35,46 45,34 Q52,26 55,30" fill="none" stroke="#1a5276" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M5,50 Q20,38 30,44 Q40,50 55,40" fill="none" stroke="#2e86ab" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
+      <circle cx="30" cy="20" r="9" fill="none" stroke="#c9a96e" stroke-width="1.8"/>
+      <line x1="30" y1="7" x2="30" y2="5" stroke="#c9a96e" stroke-width="1.5"/>
+      <line x1="42" y1="12" x2="43.5" y2="10" stroke="#c9a96e" stroke-width="1.5"/>
+      <line x1="18" y1="12" x2="16.5" y2="10" stroke="#c9a96e" stroke-width="1.5"/>
     </svg>
     <div class="logo-text">
-      <div class="city">DAKHLA</div>
-      <div class="sub">Perle du Sahara Atlantique</div>
+      <div class="city">AGADIR</div>
+      <div class="sub">Perle du Sud Marocain</div>
     </div>
   </a>
   <ul class="nav-links" id="navLinks">
@@ -443,6 +438,7 @@ footer{
     <li><a href="#restaurants">Restaurants & Hôtels</a></li>
     <li><a href="#carte">Carte</a></li>
     <li><a href="#contact">Météo & Contact</a></li>
+    <li><a href="dashboard.html">Retour au Dashboard</a></li>
   </ul>
   <div class="hamburger" id="hamburger">☰</div>
 </nav>
@@ -452,16 +448,16 @@ footer{
   <div class="hero-img"></div>
   <div class="hero-overlay"></div>
   <div class="hero-pattern"></div>
-  <!-- dunes wave -->
+  <!-- vagues -->
   <svg class="hero-wave" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-    <path d="M0,120 L0,85 L200,50 L400,90 L600,40 L800,80 L1000,30 L1200,70 L1440,45 L1440,120Z" fill="rgba(26,14,6,.5)"/>
-    <path d="M0,120 L0,100 L300,70 L600,105 L900,62 L1200,88 L1440,72 L1440,120Z" fill="rgba(26,14,6,.68)"/>
+    <path d="M0,120 L0,80 Q180,20 360,75 Q540,130 720,65 Q900,0 1080,68 Q1260,136 1440,72 L1440,120Z" fill="rgba(10,26,38,.5)"/>
+    <path d="M0,120 L0,100 Q240,60 480,95 Q720,130 960,80 Q1200,30 1440,85 L1440,120Z" fill="rgba(10,26,38,.68)"/>
   </svg>
   <div class="hero-content">
-    <div class="hero-tag">Maroc · Sahara Atlantique</div>
-    <h1 class="hero-title">DAK<em>HLA</em></h1>
-    <p class="hero-sub">Là où le Désert rencontre l'Océan</p>
-    <p class="hero-desc">Sable doré, lagune turquoise et vents constants — capitale mondiale du kitesurf</p>
+    <div class="hero-tag">Maroc · Souss-Massa · Atlantique</div>
+    <h1 class="hero-title">AGA<em>DIR</em></h1>
+    <p class="hero-sub">Là où l'Océan rencontre l'Anti-Atlas</p>
+    <p class="hero-desc">10 km de plage dorée, 300 jours de soleil et la douceur de vivre marocaine</p>
     <div class="hero-btns">
       <button class="btn-primary" onclick="document.getElementById('activites').scrollIntoView({behavior:'smooth'})">Découvrir</button>
       <button class="btn-outline" onclick="document.getElementById('galerie').scrollIntoView({behavior:'smooth'})">Voir la galerie</button>
@@ -479,7 +475,7 @@ footer{
     <div class="eyebrow">À découvrir</div>
     <h2>Activités <em>touristiques</em></h2>
     <div class="divider"><span></span><i>✦</i><span></span></div>
-    <p>Du kitesurf légendaire aux dunes infinies du Sahara, Dakhla regorge d'expériences inoubliables.</p>
+    <p>De la plage mythique aux sommets de l'Anti-Atlas, Agadir offre une diversité d'expériences inoubliables.</p>
   </div>
   <div class="filter-bar">
     <button class="filter-btn active" onclick="filterAct('all',this)">Tout</button>
@@ -489,86 +485,86 @@ footer{
   </div>
   <div class="cards-grid" id="actGrid">
 
-    <div class="act-card" data-cat="sport" onclick="openModal('kitesurf')">
+    <div class="act-card" data-cat="sport" onclick="openModal('surf')">
       <div class="card-img-wrap">
-        <img src="images/kitesurf_dakhla.jpg" alt="Kitesurf à Dakhla"
-             onerror="this.style.cssText='width:100%;height:210px;display:block;background:linear-gradient(135deg,#1a5c3a,#5b9aa0)'">
+        <img src="images/surf.jpg" alt="Surf à Agadir"
+             onerror="this.style.cssText='width:100%;height:210px;display:block;background:linear-gradient(135deg,#1a5276,#5dade2)'">
         <span class="card-badge badge-sport">Sport</span>
       </div>
       <div class="card-body">
-        <h3>Kitesurf</h3>
-        <p>Spot mondial avec des vents constants et une lagune parfaite pour tous niveaux. Plus de 300 jours de vent par an.</p>
-        <div class="card-meta"><span>🪁 Toute l'année</span><span>💨 25–35 km/h</span></div>
+        <h3>Surf & Plage</h3>
+        <p>Spot de surf renommé avec des vagues parfaites pour tous niveaux, de la baie d'Agadir à Taghazout.</p>
+        <div class="card-meta"><span>🏄 Toute l'année</span><span>🌊 Tous niveaux</span></div>
         <button class="btn-sm">Savoir plus →</button>
       </div>
     </div>
 
-    <div class="act-card" data-cat="nature" onclick="openModal('desert')">
+    <div class="act-card" data-cat="nature" onclick="openModal('vallee')">
       <div class="card-img-wrap">
-        <img src="images/chamau.jpg" alt="Excursion chameau Dakhla"
-             onerror="this.style.cssText='width:100%;height:210px;display:block;background:linear-gradient(135deg,#a0522d,#c9a96e)'">
+        <img src="images/v.jpg" alt="Vallée du Paradis"
+             onerror="this.style.cssText='width:100%;height:210px;display:block;background:linear-gradient(135deg,#1a5c3a,#2e86ab)'">
         <span class="card-badge badge-nature">Nature</span>
       </div>
       <div class="card-body">
-        <h3>Excursion dans le Désert</h3>
-        <p>Balade à dos de chameau et traversée des dunes dorées du Sahara au coucher du soleil.</p>
-        <div class="card-meta"><span>🐪 Sunset tour</span><span>🌅 2h–4h</span></div>
+        <h3>Vallée du Paradis</h3>
+        <p>Oasis luxuriante avec piscines naturelles, falaises spectaculaires et paysages verdoyants à 1h d'Agadir.</p>
+        <div class="card-meta"><span>🌿 Excursion 1 journée</span><span>🏊 Baignade naturelle</span></div>
         <button class="btn-sm">Savoir plus →</button>
       </div>
     </div>
 
-    <div class="act-card" data-cat="culture" onclick="openModal('culture')">
+    <div class="act-card" data-cat="culture" onclick="openModal('kasbah')">
       <div class="card-img-wrap">
-        <img src="images/culture.jpg" alt="Culture Sahraouie"
-             onerror="this.style.cssText='width:100%;height:210px;display:block;background:linear-gradient(135deg,#6b3a1f,#a0522d)'">
+        <img src="images/kasbah.jpg" alt="Kasbah d'Agadir"
+             onerror="this.style.cssText='width:100%;height:210px;display:block;background:linear-gradient(135deg,#154360,#1a5276)'">
         <span class="card-badge badge-culture">Culture</span>
       </div>
       <div class="card-body">
-        <h3>Culture Sahraouie</h3>
-        <p>Immergez-vous dans les traditions nomades, la musique hassanie et l'artisanat sahraoui millénaire.</p>
-        <div class="card-meta"><span>🎶 Musique gnawa</span><span>🏺 Artisanat</span></div>
+        <h3>Kasbah d'Agadir Oufella</h3>
+        <p>Forteresse historique du XVIe siècle dominant la baie — vue panoramique sur la ville et l'Atlantique.</p>
+        <div class="card-meta"><span>🏰 XVIe siècle</span><span>🌅 Vue panoramique</span></div>
         <button class="btn-sm">Savoir plus →</button>
       </div>
     </div>
 
-    <div class="act-card" data-cat="sport" onclick="openModal('surf')">
+    <div class="act-card" data-cat="sport" onclick="openModal('telepherique')">
       <div class="card-img-wrap">
-        <img src="images/surf.jpg" alt="Surf à Dakhla"
-             onerror="this.style.cssText='width:100%;height:210px;display:block;background:linear-gradient(135deg,#1a3a5c,#5b9aa0)'">
+        <img src="images/telepherique.jpg" alt="Téléphérique d'Agadir"
+             onerror="this.style.cssText='width:100%;height:210px;display:block;background:linear-gradient(135deg,#1a5276,#e67e22)'">
         <span class="card-badge badge-sport">Sport</span>
       </div>
       <div class="card-body">
-        <h3>Surf</h3>
-        <p>Les meilleurs spots de surf de la côte atlantique avec des vagues parfaites pour débutants et confirmés.</p>
-        <div class="card-meta"><span>🌊 Spots variés</span><span>🏄 Tous niveaux</span></div>
+        <h3>Téléphérique</h3>
+        <p>Unique au Maroc ! Montez en téléphérique jusqu'à la Kasbah pour une vue imprenable sur la baie d'Agadir.</p>
+        <div class="card-meta"><span>🚡 Unique au Maroc</span><span>⏱ 10 min de trajet</span></div>
         <button class="btn-sm">Savoir plus →</button>
       </div>
     </div>
 
-    <div class="act-card" data-cat="sport" onclick="openModal('peche')">
+    <div class="act-card" data-cat="nature" onclick="openModal('crocoparc')">
       <div class="card-img-wrap">
-        <img src="images/peche.jpg" alt="Pêche à Dakhla"
-             onerror="this.style.cssText='width:100%;height:210px;display:block;background:linear-gradient(135deg,#1a3a5c,#1a5c3a)'">
-        <span class="card-badge badge-sport">Sport</span>
+        <img src="images/crocoparc.jpg" alt="Crocoparc Agadir"
+             onerror="this.style.cssText='width:100%;height:210px;display:block;background:linear-gradient(135deg,#1a5c3a,#1a5276)'">
+        <span class="card-badge badge-nature">Nature</span>
       </div>
       <div class="card-body">
-        <h3>Pêche en Haute Mer</h3>
-        <p>Partez à la pêche aux thons, dorades et autres poissons de l'Atlantique sud avec des guides locaux.</p>
-        <div class="card-meta"><span>🎣 Demi-journée</span><span>🐟 Thon, dorade</span></div>
+        <h3>Crocoparc</h3>
+        <p>Parc animalier unique au Maroc avec crocodiles du Nil, jardins exotiques tropicaux et aires de jeux.</p>
+        <div class="card-meta"><span>🐊 200+ crocodiles</span><span>🌺 Jardins exotiques</span></div>
         <button class="btn-sm">Savoir plus →</button>
       </div>
     </div>
 
-    <div class="act-card" data-cat="culture" onclick="openModal('artisanat')">
+    <div class="act-card" data-cat="culture" onclick="openModal('medina')">
       <div class="card-img-wrap">
-        <img src="images/cult.jpg" alt="Artisanat Local"
-             onerror="this.style.cssText='width:100%;height:210px;display:block;background:linear-gradient(135deg,#6b3a1f,#c9a96e)'">
+        <img src="images/medina.jpg" alt="Médina Coco Polizzi"
+             onerror="this.style.cssText='width:100%;height:210px;display:block;background:linear-gradient(135deg,#154360,#c9a96e)'">
         <span class="card-badge badge-culture">Culture</span>
       </div>
       <div class="card-body">
-        <h3>Artisanat Local</h3>
-        <p>Découvrez les tapis kilims, la poterie et les bijoux en argent et pierres semi-précieuses sahraouis.</p>
-        <div class="card-meta"><span>🪆 Kilims & bijoux</span><span>🏪 Souks</span></div>
+        <h3>Médina Coco Polizzi</h3>
+        <p>Médina artisanale reconstruite avec amour, ateliers d'artisans actifs et architecture traditionnelle berbère.</p>
+        <div class="card-meta"><span>🏺 Artisanat berbère</span><span>🎨 Ateliers actifs</span></div>
         <button class="btn-sm">Savoir plus →</button>
       </div>
     </div>
@@ -586,33 +582,33 @@ footer{
   </div>
   <div class="gallery-grid">
     <div class="gal-item" onclick="openLb(0)">
-      <img src="images/dun.jpg" alt="Dunes Dorées de Dakhla"
-           onerror="this.style.cssText='width:100%;height:100%;display:block;background:linear-gradient(135deg,#a0522d,#c9a96e)'">
+      <img src="images/plage.jpg" alt="Plage d'Agadir"
+           onerror="this.style.cssText='width:100%;height:100%;display:block;background:linear-gradient(135deg,#1a5276,#5dade2)'">
       <div class="gal-overlay"><svg viewBox="0 0 24 24" stroke-width="2" stroke="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
     </div>
     <div class="gal-item" onclick="openLb(1)">
-      <img src="images/plage.jpg" alt="Plage Paradisiaque"
-           onerror="this.style.cssText='width:100%;height:100%;display:block;background:linear-gradient(135deg,#5b9aa0,#1a3a5c)'">
+      <img src="images/k.jpg" alt="Kasbah vue panoramique"
+           onerror="this.style.cssText='width:100%;height:100%;display:block;background:linear-gradient(135deg,#154360,#1a5276)'">
       <div class="gal-overlay"><svg viewBox="0 0 24 24" stroke-width="2" stroke="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
     </div>
     <div class="gal-item" onclick="openLb(2)">
-      <img src="images/kit.jpg" alt="Kitesurf sur la Lagune"
-           onerror="this.style.cssText='width:100%;height:100%;display:block;background:linear-gradient(135deg,#1a5c3a,#5b9aa0)'">
+      <img src="images/taghazout.jpg" alt="Taghazout"
+           onerror="this.style.cssText='width:100%;height:100%;display:block;background:linear-gradient(135deg,#2e86ab,#1a5276)'">
       <div class="gal-overlay"><svg viewBox="0 0 24 24" stroke-width="2" stroke="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
     </div>
     <div class="gal-item" onclick="openLb(3)">
-      <img src="images/couche.jpg" alt="Coucher de Soleil sur le Sahara"
-           onerror="this.style.cssText='width:100%;height:100%;display:block;background:linear-gradient(135deg,#c9712a,#a0522d)'">
+      <img src="images/aghroud.jpg" alt="Aghroud"
+           onerror="this.style.cssText='width:100%;height:100%;display:block;background:linear-gradient(135deg,#e67e22,#1a5276)'">
       <div class="gal-overlay"><svg viewBox="0 0 24 24" stroke-width="2" stroke="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
     </div>
     <div class="gal-item" onclick="openLb(4)">
-      <img src="images/flm.jpg" alt="Flamants Roses de la Lagune"
-           onerror="this.style.cssText='width:100%;height:100%;display:block;background:linear-gradient(135deg,#e91e8c,#5b9aa0)'">
+      <img src="images/souk.jpg" alt="Souk El Had"
+           onerror="this.style.cssText='width:100%;height:100%;display:block;background:linear-gradient(135deg,#c9a96e,#1a5276)'">
       <div class="gal-overlay"><svg viewBox="0 0 24 24" stroke-width="2" stroke="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
     </div>
     <div class="gal-item" onclick="openLb(5)">
-      <img src="images/lagune.jpg" alt="Lagune de Dakhla vue du ciel"
-           onerror="this.style.cssText='width:100%;height:100%;display:block;background:linear-gradient(135deg,#1a3a5c,#5b9aa0)'">
+      <img src="images/port.jpg" alt="Port de Pêche"
+           onerror="this.style.cssText='width:100%;height:100%;display:block;background:linear-gradient(135deg,#154360,#2e86ab)'">
       <div class="gal-overlay"><svg viewBox="0 0 24 24" stroke-width="2" stroke="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
     </div>
   </div>
@@ -635,7 +631,7 @@ footer{
     <div class="eyebrow">Où manger & dormir</div>
     <h2>Restaurants & <em>Hébergement</em></h2>
     <div class="divider"><span></span><i>✦</i><span></span></div>
-    <p style="color:rgba(255,255,255,.65)">Les meilleures adresses de la perle du Sahara.</p>
+    <p style="color:rgba(255,255,255,.65)">Les meilleures adresses de la perle du Sud.</p>
   </div>
   <div class="rh-filter-bar">
     <button class="rh-filter-btn active" onclick="filterRH('all',this)">Tout</button>
@@ -646,68 +642,68 @@ footer{
   <div class="rh-grid" id="rhGrid">
 
     <!-- RESTAURANTS -->
-    <div class="rh-card" data-rh="restaurant" onclick="openModal('talhamar')">
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('jardindeau')">
       <div class="rh-card-img">
-        <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/16/54/41/69/talhamar.jpg?w=900&h=500&s=1" alt="Talhamar"
-             onerror="this.style.cssText='width:100%;height:195px;display:block;background:linear-gradient(135deg,#a0522d,#c9a96e)'">
+        <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/02/68/47/14/le-jardin-d-eau.jpg?w=500&h=-1&s=1" alt="Le Jardin d'Eau"
+             onerror="this.style.cssText='width:100%;height:195px;display:block;background:linear-gradient(135deg,#1a5276,#5dade2)'">
         <span class="rh-badge badge-resto">Restaurant</span>
         <span class="stars-disp">★★★★☆</span>
       </div>
       <div class="rh-body">
-        <div class="cat">🐟 Fruits de Mer</div>
-        <h3>Talhamar</h3>
-        <p>Restaurant sur l'eau spécialisé en fruits de mer frais et poissons grillés avec vue panoramique sur la lagune.</p>
-        <div class="rh-meta"><span>💰 200–400 MAD</span><span>📍 Avenue de la Plage</span></div>
+        <div class="cat">🍽️ Gastronomique</div>
+        <h3>Le Jardin d'Eau</h3>
+        <p>Cuisine française raffinée et fruits de mer dans un cadre élégant avec jardin intérieur et bassin central.</p>
+        <div class="rh-meta"><span>💰 200–400 MAD</span><span>📍 Bd du 20 Août</span></div>
         <button class="btn-sm">Savoir plus →</button>
       </div>
     </div>
 
-    <div class="rh-card" data-rh="restaurant" onclick="openModal('saharien')">
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('lascala')">
       <div class="rh-card-img">
-        <img src="https://gomorocconow.com/fr/wp-content/uploads/2025/02/Best-Moroccan-Restaurants-in-Dakhla.jpg" alt="Le Saharien"
-             onerror="this.style.cssText='width:100%;height:195px;display:block;background:linear-gradient(135deg,#6b3a1f,#a0522d)'">
+        <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/28/c2/aa/b3/terre-mer.jpg?w=900&h=500&s=1" alt="La Scala"
+             onerror="this.style.cssText='width:100%;height:195px;display:block;background:linear-gradient(135deg,#154360,#e67e22)'">
         <span class="rh-badge badge-resto">Restaurant</span>
         <span class="stars-disp">★★★☆☆</span>
       </div>
       <div class="rh-body">
-        <div class="cat">🍲 Cuisine Marocaine</div>
-        <h3>Le Saharien</h3>
-        <p>Cuisine marocaine traditionnelle : tagines parfumés, couscous royal et pastilla dans un cadre saharien authentique.</p>
-        <div class="rh-meta"><span>💰 80–200 MAD</span><span>📍 Route de l'Aéroport</span></div>
+        <div class="cat">🐟 Poissons & Fruits de Mer</div>
+        <h3>La Scala</h3>
+        <p>Poissons grillés frais du jour et cuisine marocaine traditionnelle face au port de pêche d'Agadir.</p>
+        <div class="rh-meta"><span>💰 80–200 MAD</span><span>📍 Rue Oued Souss</span></div>
         <button class="btn-sm">Savoir plus →</button>
       </div>
     </div>
 
     <!-- RIADS -->
-    <div class="rh-card" data-rh="riad" onclick="openModal('riadsahara')">
+    <div class="rh-card" data-rh="riad" onclick="openModal('villablanche')">
       <div class="rh-card-img">
-        <img src="https://www.visitmorocco.com/sites/default/files/riad_0.jpg" alt="Riad Sahara Dakhla"
-             onerror="this.style.cssText='width:100%;height:195px;display:block;background:linear-gradient(135deg,#1a5c3a,#6b3a1f)'">
+        <img src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/364612157.jpg?k=ee0374e48c613cc07e4a8bf26a9209ff1631638cbc291d414cd881cc8985e60f&o=" alt="Riad Villa Blanche"
+             onerror="this.style.cssText='width:100%;height:195px;display:block;background:linear-gradient(135deg,#1a5c3a,#1a5276)'">
         <span class="rh-badge badge-riad">Riad</span>
-        <span class="stars-disp">★★★★☆</span>
+        <span class="stars-disp">★★★★★</span>
       </div>
       <div class="rh-body">
-        <div class="cat">🌿 Riad Authentique</div>
-        <h3>Riad Sahara</h3>
-        <p>Authentique riad sahraoui avec patio ombragé, fontaine en zellige et terrasse panoramique sur le désert et la lagune.</p>
-        <div class="rh-meta"><span>💰 600–1200 MAD/nuit</span><span>📍 Centre Dakhla</span></div>
+        <div class="cat">🌿 Riad de Luxe</div>
+        <h3>Riad Villa Blanche</h3>
+        <p>Riad de luxe avec patio andalou, hammam traditionnel, restaurant gastronomique et ambiance intimiste.</p>
+        <div class="rh-meta"><span>💰 1500–3000 MAD/nuit</span><span>📍 Rue des Tennis</span></div>
         <button class="btn-sm">Savoir plus →</button>
       </div>
     </div>
 
     <!-- HÔTELS -->
-    <div class="rh-card" data-rh="hotel" onclick="openModal('dakhlaattitude')">
+    <div class="rh-card" data-rh="hotel" onclick="openModal('royalatlas')">
       <div class="rh-card-img">
-        <img src="https://images.trvl-media.com/lodging/19000000/18160000/18156800/18156714/e9d81780.jpg?impolicy=resizecrop&rw=575&rh=575&ra=fill" alt="Dakhla Attitude"
-             onerror="this.style.cssText='width:100%;height:195px;display:block;background:linear-gradient(135deg,#1a3a5c,#5b9aa0)'">
+        <img src="https://www.directgolfholidays.com/wp-content/uploads/2020/12/Royal_Atlas_9.jpg" alt="Royal Atlas Spa"
+             onerror="this.style.cssText='width:100%;height:195px;display:block;background:linear-gradient(135deg,#154360,#2e86ab)'">
         <span class="rh-badge badge-hotel">Hôtel</span>
         <span class="stars-disp">★★★★★</span>
       </div>
       <div class="rh-body">
-        <div class="cat">🏨 Resort de Luxe</div>
-        <h3>Dakhla Attitude</h3>
-        <p>Resort de luxe avec spa, piscine à débordement et accès direct à la lagune. La référence du kitesurf haut de gamme.</p>
-        <div class="rh-meta"><span>💰 2000–4500 MAD/nuit</span><span>📍 Pointe de la Lagune</span></div>
+        <div class="cat">🏨 Hôtel 5 étoiles</div>
+        <h3>Royal Atlas & Spa</h3>
+        <p>Hôtel 5 étoiles avec spa, piscines extérieures et vue imprenable sur l'océan Atlantique et la baie d'Agadir.</p>
+        <div class="rh-meta"><span>💰 2000–5000 MAD/nuit</span><span>📍 Av. de l'Université</span></div>
         <button class="btn-sm">Savoir plus →</button>
       </div>
     </div>
@@ -742,21 +738,21 @@ footer{
 
     <!-- MÉTÉO -->
     <div class="meteo-box">
-      <div class="meteo-city">🏜️ Dakhla, Maroc</div>
-      <div class="meteo-temp">24°C</div>
-      <div class="meteo-desc">☀️ Ensoleillé, vent constant</div>
+      <div class="meteo-city">🌴 Agadir, Maroc</div>
+      <div class="meteo-temp">22°C</div>
+      <div class="meteo-desc">☀️ Ensoleillé, 300 jours/an</div>
       <div class="meteo-grid">
-        <div class="meteo-item"><div class="label">Ressenti</div><div class="val">26°C</div></div>
-        <div class="meteo-item"><div class="label">Humidité</div><div class="val">65%</div></div>
-        <div class="meteo-item"><div class="label">Vent</div><div class="val">25 km/h</div></div>
-        <div class="meteo-item"><div class="label">Direction</div><div class="val">Nord-Est</div></div>
+        <div class="meteo-item"><div class="label">Ressenti</div><div class="val">24°C</div></div>
+        <div class="meteo-item"><div class="label">Humidité</div><div class="val">68%</div></div>
+        <div class="meteo-item"><div class="label">Vent</div><div class="val">18 km/h</div></div>
+        <div class="meteo-item"><div class="label">Ensoleillement</div><div class="val">3000h/an</div></div>
       </div>
     </div>
 
     <!-- CONTACT FORM -->
     <div class="contact-box">
       <h3>Nous contacter</h3>
-      <p class="sub">Une question sur Dakhla ? Écrivez-nous !</p>
+      <p class="sub">Une question sur Agadir ? Écrivez-nous !</p>
       <div class="form-row">
         <div class="form-group">
           <label>Prénom</label>
@@ -775,8 +771,8 @@ footer{
         <label>Sujet</label>
         <select id="fSujet">
           <option value="">Choisir un sujet…</option>
-          <option>Kitesurf & Sports nautiques</option>
-          <option>Excursions & Désert</option>
+          <option>Surf & Sports nautiques</option>
+          <option>Excursions & Nature</option>
           <option>Restaurants & Hébergement</option>
           <option>Infos pratiques</option>
           <option>Autre</option>
@@ -794,8 +790,8 @@ footer{
 
 <!-- FOOTER -->
 <footer>
-  <div class="foot-logo">DAKHLA</div>
-  <div class="foot-sub">Perle du Sahara Atlantique · Capitale du Kitesurf</div>
+  <div class="foot-logo">AGADIR</div>
+  <div class="foot-sub">Perle du Sud Marocain · 300 jours de soleil</div>
   <div class="foot-links">
     <a href="#hero">Accueil</a>
     <a href="#activites">Activités</a>
@@ -804,7 +800,7 @@ footer{
     <a href="#carte">Carte</a>
     <a href="#contact">Contact</a>
   </div>
-  <p style="font-size:11px;opacity:.4;">© Dakhla Tourisme · Tous droits réservés</p>
+  <p style="font-size:11px;opacity:.4;">© Agadir Tourisme · Tous droits réservés</p>
 </footer>
 
 <!-- SIDEBAR -->
@@ -834,75 +830,75 @@ footer{
    MODAL DATA
 ══════════════════════════════════════ */
 const modalData = {
-  kitesurf:{
-    img:'images/kitesurf_dakhla.jpg',
-    cat:'⛵ Sport · Lagune de Dakhla',
-    title:'Kitesurf à Dakhla',
-    desc:'Dakhla est reconnue comme l\'une des meilleures destinations de kitesurf au monde. La lagune de 40 km offre des conditions idéales : eau plate, vents constants du nord-est (Alizés) et faible danger. Tous les niveaux sont accueillis, des débutants aux riders professionnels qui viennent s\'entraîner pour les compétitions IKA.',
-    dets:[['Meilleure saison','Novembre à Avril'],['Vents','25–35 km/h en moyenne'],['Niveau','Tous niveaux'],['Écoles','10+ centres certifiés IKA'],['Prix cours','800–1500 MAD / jour'],['Note',' 4.9 / 5']]
-  },
-  desert:{
-    img:'images/chamau.jpg',
-    cat:'🏜️ Nature · Sahara Atlantique',
-    title:'Excursion dans le Désert',
-    desc:'À quelques kilomètres de la ville, les immenses dunes de sable dorées du Sahara vous attendent. Des guides locaux proposent des excursions en dromadaire au lever ou au coucher du soleil, des bivouacs sous les étoiles et des sorties en quad ou en 4x4 pour explorer les pistes sahariennes. Une expérience inoubliable entre sable et silence.',
-    dets:[['Durée','2h à 2 jours'],['Coucher de soleil','17h30–19h00'],['Transport','4x4, dromadaire, quad'],['Bivouac','Nuit sous les étoiles disponible'],['Prix','200–1500 MAD/pers'],['Note',' 4.7 / 5']]
-  },
-  culture:{
-    img:'images/culture.jpg',
-    cat:'🎭 Culture · Médina de Dakhla',
-    title:'Culture Sahraouie',
-    desc:'La culture sahraouie est riche de traditions nomades millénaires. Le thé à la menthe servi en trois verres symbolise l\'hospitalité. La musique hassanie, les danses traditionnelles et les contes du désert font partie du quotidien. Les femmes perpétuent l\'art du tissage de kilims aux motifs géométriques colorés. Une visite au marché artisanal est indispensable.',
-    dets:[['À faire','Cérémonie du thé sahraoui'],['Musique','Hassanie, gnawa'],['Artisanat','Kilims, bijoux argent'],['Marché','Souk du vendredi'],['Langue locale','Hassaniya (dialecte arabe)'],['Note',' 4.6 / 5']]
-  },
   surf:{
     img:'images/surf.jpg',
-    cat:'🌊 Sport · Côte Atlantique',
-    title:'Surf à Dakhla',
-    desc:'Les côtes de Dakhla offrent certains des meilleurs spots de surf du Maroc. La Pointe de la Lagune, Foum el-Bouir et Oum el-Achar sont des breaks réputés. Les houles atlantiques génèrent des vagues régulières de 1 à 3 mètres selon la saison. Les écoles de surf proposent des cours pour tous niveaux.',
-    dets:[['Meilleure saison','Octobre à Mars'],['Taille des vagues','1 – 3 mètres'],['Spots','Foum el-Bouir, Oum el-Achar'],['Niveau','Débutant à expert'],['Cours','400–800 MAD / session'],['Note',' 4.5 / 5']]
+    cat:'🏄 Sport · Baie d\'Agadir & Taghazout',
+    title:'Surf & Plage à Agadir',
+    desc:'La baie d\'Agadir et le village de Taghazout à 20 km au nord constituent l\'un des meilleurs spots de surf d\'Afrique. Des vagues régulières de type beach break conviennent aux débutants, tandis que les reefs de Taghazout (Hash Point, Anchor Point) attirent les surfeurs expérimentés du monde entier. La saison optimale s\'étend d\'octobre à mars.',
+    dets:[['Meilleur spot','Taghazout, Anchor Point'],['Saison','Octobre à Mars'],['Niveau','Débutant à expert'],['Vagues','Beach break & reef'],['Cours','300–600 MAD / session'],['Note',' 4.7 / 5']]
   },
-  peche:{
-    img:'images/peche.jpg',
-    cat:'🎣 Sport · Atlantique Sud',
-    title:'Pêche en Haute Mer',
-    desc:'Les eaux de Dakhla sont parmi les plus poissonneuses d\'Afrique grâce au courant froid des Canaries. Thons, dorades, marlins et mérous abondent. Les sorties en bateau de 4h à la journée sont organisées par des pêcheurs locaux expérimentés. Une expérience authentique entre ciel et océan atlantique.',
-    dets:[['Espèces','Thon, dorade, marlin'],['Durée','Demi-journée ou journée'],['Départ','Port de Dakhla, 6h00'],['Équipement','Fourni'],['Prix','500–1200 MAD/pers'],['Note',' 4.4 / 5']]
+  vallee:{
+    img:'images/v.jpg',
+    cat:'🌿 Nature · Anti-Atlas',
+    title:'Vallée du Paradis',
+    desc:'Nichée dans les gorges de l\'Anti-Atlas à environ 80 km d\'Agadir, la Vallée du Paradis est une oasis verdoyante contrastant spectaculairement avec le paysage aride environnant. Des piscines naturelles d\'eau douce limpide se forment entre les rochers rouges. Idéale pour la baignade, la randonnée et la détente dans un cadre naturel préservé.',
+    dets:[['Distance','80 km d\'Agadir'],['Durée','Journée complète'],['Activités','Baignade, randonnée, pique-nique'],['Accès','4x4 ou transport local'],['Meilleure période','Printemps et automne'],['Note',' 4.6 / 5']]
   },
-  artisanat:{
-    img:'images/cult.jpg',
-    cat:'🏺 Culture · Souks de Dakhla',
-    title:'Artisanat Local Sahraoui',
-    desc:'L\'artisanat de Dakhla témoigne du génie créatif des peuples nomades du Sahara. Les kilims aux motifs géométriques, les bijoux en argent incrustés de pierres semi-précieuses (cornaline, turquoise), la poterie et les sacs en cuir sont les spécialités locales. Le marché hebdomadaire du vendredi est l\'endroit idéal pour trouver des pièces authentiques.',
-    dets:[['Spécialités','Kilims, bijoux argent'],['Marché','Vendredi matin'],['Matières','Argent, cuir, laine'],['Souvenir emblématique','Bracelet en argent niellé'],['Prix kilims','300–3000 MAD'],['Note',' 4.5 / 5']]
+  kasbah:{
+    img:'images/kasbah.jpg',
+    cat:'🏰 Culture · Agadir Oufella',
+    title:'Kasbah d\'Agadir Oufella',
+    desc:'Perchée à 236 mètres d\'altitude sur la colline dominant la baie, la Kasbah d\'Agadir Oufella est la principale trace historique de la ville avant le séisme dévastateur de 1960. Construite au XVIe siècle, elle accueille aujourd\'hui une inscription en pierres géantes sur son flanc : "God, Country, King" en arabe, visible depuis toute la baie la nuit.',
+    dets:[['Altitude','236 mètres'],['Construite au','XVIe siècle'],['Accès','Téléphérique ou route'],['Vue','Panoramique sur toute la baie'],['Entrée','Gratuite (extérieur)'],['Note',' 4.5 / 5']]
   },
-  talhamar:{
-    img:'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/16/54/41/69/talhamar.jpg?w=900&h=500&s=1',
-    cat:'🐟 Restaurant · Avenue de la Plage',
-    title:'Talhamar',
-    desc:'Talhamar est LE restaurant de fruits de mer incontournable de Dakhla. Construit sur pilotis directement au-dessus de la lagune, il propose une carte axée sur la pêche du jour : homards, langoustes, crevettes géantes, mérou et dorades grillées. La vue sur la lagune et les kitesurfers en arrière-plan rend l\'expérience unique.',
-    dets:[['Cuisine','Fruits de mer, poissons'],['Prix moyen','200–400 MAD / personne'],['Horaires','12h–23h (tlj)'],['Vue','Panoramique sur la lagune'],['Spécialité','Homard grillé et couscous poisson'],['Note',' 4.5 / 5']]
+  telepherique:{
+    img:'images/telepherique.jpg',
+    cat:'🚡 Sport · Unique au Maroc',
+    title:'Téléphérique d\'Agadir',
+    desc:'Le téléphérique d\'Agadir est une attraction unique dans tout le Maroc. Il relie la ville basse à la Kasbah en seulement 10 minutes, offrant une vue progressive et spectaculaire sur la baie, l\'océan Atlantique et les massifs de l\'Anti-Atlas. Ouvert en 2018, il est devenu l\'une des activités incontournables de la destination.',
+    dets:[['Ouverture','2018'],['Durée trajet','10 minutes'],['Dénivelé','236 mètres'],['Vue','Baie, océan, Anti-Atlas'],['Horaires','9h – 20h'],['Note',' 4.8 / 5']]
   },
-  saharien:{
-    img:'https://gomorocconow.com/fr/wp-content/uploads/2025/02/Best-Moroccan-Restaurants-in-Dakhla.jpg',
-    cat:'🍲 Restaurant · Route de l\'Aéroport',
-    title:'Le Saharien',
-    desc:'Restaurant familial proposant une cuisine marocaine traditionnelle dans un décor inspiré du Sahara. Tagines de chameau, couscous aux sept légumes, pastilla au poisson et harira maison. Ambiance chaleureuse, service attentionné et rapport qualité-prix excellent pour découvrir la gastronomie saharienne.',
-    dets:[['Cuisine','Marocaine traditionnelle'],['Prix moyen','80–200 MAD / personne'],['Horaires','11h30–22h'],['Ambiance','Familiale, authentique'],['Spécialité','Tagine de chameau'],['Note',' 4.2 / 5']]
+  crocoparc:{
+    img:'images/crocoparc.jpg',
+    cat:'🐊 Nature · Bd Mohammed V',
+    title:'Crocoparc d\'Agadir',
+    desc:'Le Crocoparc est un parc animalier unique en son genre au Maroc, abritant plus de 300 crocodiles du Nil dans un cadre de jardins tropicaux et exotiques luxuriants. En plus des crocodiles, le parc accueille diverses espèces de reptiles, oiseaux tropicaux et propose des aires de jeux pour enfants. Un lieu éducatif et spectaculaire pour toute la famille.',
+    dets:[['Espèce principale','Crocodile du Nil'],['Nombre','300+ crocodiles'],['Jardins','Tropicaux et exotiques'],['Public','Familles, enfants'],['Horaires','9h – 18h30 (tlj)'],['Note',' 4.3 / 5']]
   },
-  riadsahara:{
-    img:'https://www.visitmorocco.com/sites/default/files/riad_0.jpg',
-    cat:'🌿 Riad · Centre de Dakhla',
-    title:'Riad Sahara',
-    desc:'Au cœur de Dakhla, ce riad authentique réinterprète l\'architecture sahraouie : patios ombragés, fontaines en zellige, arches en terre crue et terrasse panoramique. Les 8 suites sont décorées avec des textiles traditionnels et mobilier artisanal. Petit-déjeuner marocain servi sur la terrasse avec vue sur la lagune.',
-    dets:[['Catégorie','Riad Boutique'],['Prix','600–1200 MAD / nuit'],['Suites','8 suites décorées'],['Équipements','Terrasse, patio, fontaine'],['Petit-déjeuner','Inclus'],['Note',' 4.4 / 5']]
+  medina:{
+    img:'images/medina.jpg',
+    cat:'🏺 Culture · Médina Coco Polizzi',
+    title:'Médina Coco Polizzi',
+    desc:'Unique en son genre, la Médina Coco Polizzi est une médina entièrement reconstruite à partir de matériaux anciens récupérés à travers le Maroc, sur le projet d\'un artiste italien nommé Coco Polizzi. Ses ruelles sinueuses, ses mosaïques de zellige, ses artisans au travail et son architecture mêlant berbère, arabe et andalou en font un lieu authentique et vivant.',
+    dets:[['Fondateur','Coco Polizzi (artiste)'],['Style','Berbère, arabe, andalou'],['Artisans','Actifs sur place'],['Ateliers','Poterie, maroquinerie, bijoux'],['Horaires','9h – 19h'],['Note',' 4.4 / 5']]
   },
-  dakhlaattitude:{
-    img:'https://images.trvl-media.com/lodging/19000000/18160000/18156800/18156714/e9d81780.jpg?impolicy=resizecrop&rw=575&rh=575&ra=fill',
-    cat:'🏨 Resort · Pointe de la Lagune',
-    title:'Dakhla Attitude',
-    desc:'Dakhla Attitude est le resort de référence pour les kitesurfers du monde entier. Idéalement situé à la Pointe de la Lagune, il propose un accès direct au spot, une école de kite certifiée, un matériel professionnel, un spa, une piscine à débordement avec vue sur la lagune et 3 restaurants. Un séjour clé en main dans un cadre exceptionnel.',
-    dets:[['Catégorie','Resort 5 étoiles'],['Prix','2000–4500 MAD / nuit'],['Piscine','Piscine à débordement'],['Spa','Hammam & massages'],['Restaurants','3 restaurants'],['Note',' 4.8 / 5']]
+  jardindeau:{
+    img:'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/02/68/47/14/le-jardin-d-eau.jpg?w=500&h=-1&s=1',
+    cat:'🍽️ Restaurant · Boulevard du 20 Août',
+    title:'Le Jardin d\'Eau',
+    desc:'Véritable institution gastronomique d\'Agadir, Le Jardin d\'Eau propose une cuisine française raffinée revisitée avec des accents marocains. Son cadre exceptionnel — jardins verdoyants, bassins aquatiques et terrasse ombragée — en fait l\'adresse parfaite pour un déjeuner ou dîner élégant. Fruits de mer frais et poissons de l\'Atlantique sont les spécialités de la maison.',
+    dets:[['Cuisine','Française & fruits de mer'],['Prix moyen','200–400 MAD / pers'],['Horaires','12h – 15h, 19h – 23h'],['Cadre','Jardin avec bassins'],['Spécialité','Homard et sole meunière'],['Note',' 4.5 / 5']]
+  },
+  lascala:{
+    img:'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/28/c2/aa/b3/terre-mer.jpg?w=900&h=500&s=1',
+    cat:'🐟 Restaurant · Port d\'Agadir',
+    title:'La Scala',
+    desc:'Adresse incontournable des amateurs de poissons frais, La Scala est installée face au port de pêche d\'Agadir. Les poissons et fruits de mer arrivent directement des bateaux le matin. Sardines grillées, calamars, loup de mer et dorade royale sont préparés à la plancha avec des épices marocaines. Ambiance décontractée et vue sur le port.',
+    dets:[['Cuisine','Poissons grillés, marocaine'],['Prix moyen','80–200 MAD / pers'],['Horaires','11h30 – 22h'],['Emplacement','Face au port de pêche'],['Spécialité','Sardines grillées'],['Note',' 4.2 / 5']]
+  },
+  villablanche:{
+    img:'https://cf.bstatic.com/xdata/images/hotel/max1024x768/364612157.jpg?k=ee0374e48c613cc07e4a8bf26a9209ff1631638cbc291d414cd881cc8985e60f&o=',
+    cat:'🌿 Riad · Quartier résidentiel',
+    title:'Riad Villa Blanche',
+    desc:'Havre de paix au cœur d\'Agadir, le Riad Villa Blanche est une demeure andalouse d\'exception. Son patio central avec fontaine en zellige, ses chambres luxueusement décorées, son hammam traditionnel aux soins à l\'huile d\'argan et son restaurant gastronomique en font l\'une des adresses les plus prisées de la ville. Petit-déjeuner marocain inclus.',
+    dets:[['Catégorie','Riad Boutique 5 étoiles'],['Prix','1500–3000 MAD / nuit'],['Chambres','12 suites'],['Spa','Hammam traditionnel'],['Restaurant','Gastronomique inclus'],['Note',' 4.7 / 5']]
+  },
+  royalatlas:{
+    img:'https://www.directgolfholidays.com/wp-content/uploads/2020/12/Royal_Atlas_9.jpg',
+    cat:'🏨 Hôtel · Avenue de l\'Université',
+    title:'Royal Atlas & Spa',
+    desc:'Figure emblématique de l\'hôtellerie de luxe à Agadir, le Royal Atlas & Spa offre une vue imprenable sur la baie depuis ses chambres et terrasses. L\'hôtel dispose d\'un spa primé, de plusieurs piscines dont une en bord de mer, de 5 restaurants aux cuisines du monde et d\'un accès direct à la plage. Le symbole du tourisme haut de gamme à Agadir.',
+    dets:[['Catégorie','Hôtel 5 étoiles'],['Prix','2000–5000 MAD / nuit'],['Piscines','3 piscines extérieures'],['Spa','Royal Spa & Wellness'],['Restaurants','5 restaurants & bars'],['Note',' 4.6 / 5']]
   }
 };
 
@@ -910,7 +906,7 @@ function openModal(key){
   const d=modalData[key]; if(!d)return;
   const img=document.getElementById('mImg');
   img.src=d.img;
-  img.onerror=function(){this.style.cssText='width:100%;height:300px;display:block;background:linear-gradient(135deg,#a0522d,#c9a96e)';};
+  img.onerror=function(){this.style.cssText='width:100%;height:300px;display:block;background:linear-gradient(135deg,#1a5276,#5dade2)';};
   document.getElementById('mCat').textContent=d.cat;
   document.getElementById('mTitle').textContent=d.title;
   document.getElementById('mDesc2').textContent=d.desc;
@@ -945,12 +941,12 @@ function filterRH(cat,btn){
 
 /* ══ LIGHTBOX ══ */
 const lbSrcs=[
-  {src:'images/dun.jpg',       cap:'Dakhla — Dunes Dorées du Sahara'},
-  {src:'images/plage.jpg',     cap:'Plage Paradisiaque de Dakhla'},
-  {src:'images/kit.jpg',       cap:'Kitesurf sur la Lagune de Dakhla'},
-  {src:'images/couche.jpg',    cap:'Coucher de Soleil sur le Sahara Atlantique'},
-  {src:'images/flm.jpg',       cap:'Flamants Roses — Lagune de Dakhla'},
-  {src:'images/lagune.jpg',    cap:'Lagune de Dakhla — Vue aérienne'},
+  {src:'images/plage.jpg',       cap:'Agadir — 10 km de plage de sable fin'},
+  {src:'images/k.jpg',           cap:'Kasbah d\'Agadir Oufella — vue panoramique'},
+  {src:'images/taghazout.jpg',   cap:'Taghazout — Village de surf'},
+  {src:'images/aghroud.jpg',     cap:'Aghroud — Plage sauvage'},
+  {src:'images/souk.jpg',        cap:'Souk El Had — Plus grand souk du Maroc'},
+  {src:'images/port.jpg',        cap:'Port de pêche d\'Agadir'},
 ];
 let lbIdx=0;
 function openLb(i){
@@ -976,23 +972,23 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ══ LEAFLET MAP ══ */
-const dakhlaPlaces=[
-  {name:'Lagune de Dakhla',    lat:23.7141,lng:-15.9364,type:'nature',  col:'#5b9aa0',desc:'Spot de kitesurf mondial, 40 km de long'},
-  {name:'Port de Dakhla',      lat:23.6928,lng:-15.9382,type:'culture', col:'#a0522d',desc:'Port de pêche traditionnel sahraoui'},
-  {name:'Dunes de Blanc',      lat:23.7500,lng:-15.9000,type:'nature',  col:'#c9a96e',desc:'Dunes blanches spectaculaires du Sahara'},
-  {name:'Plage de Foum Labouir',lat:23.6800,lng:-15.9500,type:'nature', col:'#1a5c3a',desc:'Plage paradisiaque, spot de surf'},
-  {name:'Centre-ville Dakhla', lat:23.6845,lng:-15.9389,type:'culture', col:'#6b3a1f',desc:'Médina, souks et marché artisanal'},
-  {name:'Dakhla Attitude',     lat:23.7200,lng:-15.9280,type:'hotel',   col:'#1a3a5c',desc:'Resort de luxe et école de kitesurf'},
+const agadirPlaces=[
+  {name:'Plage d\'Agadir',      lat:30.4278,lng:-9.5981,type:'nature', col:'#2e86ab',   desc:'10 km de plage de sable fin'},
+  {name:'Kasbah Oufella',       lat:30.4260,lng:-9.6120,type:'culture',col:'#154360',   desc:'Forteresse historique XVIe siècle, 236m d\'altitude'},
+  {name:'Souk El Had',          lat:30.4030,lng:-9.6000,type:'culture',col:'#c9a96e',   desc:'Plus grand souk couvert du Maroc'},
+  {name:'Vallée du Paradis',    lat:30.3800,lng:-9.5500,type:'nature', col:'#1a5c3a',   desc:'Oasis naturelle et piscines, Anti-Atlas'},
+  {name:'Port de Pêche',        lat:30.4150,lng:-9.6200,type:'culture',col:'#e67e22',   desc:'Port sardinière animé, poissons frais'},
+  {name:'Corniche d\'Agadir',   lat:30.4300,lng:-9.5900,type:'nature', col:'#5dade2',   desc:'Promenade en bord de mer'},
 ];
 
 window.addEventListener('load',()=>{
-  const leafletMap=L.map('map').setView([23.7050,-15.9370],12);
+  const leafletMap=L.map('map').setView([30.4200,-9.5900],12);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
     attribution:'© OpenStreetMap contributors'
   }).addTo(leafletMap);
   const listEl=document.getElementById('mapList');
-  const typeCol={culture:'#a0522d',nature:'#5b9aa0',hotel:'#1a3a5c'};
-  dakhlaPlaces.forEach((p,i)=>{
+  const typeCol={culture:'#154360',nature:'#2e86ab',hotel:'#1a5c3a'};
+  agadirPlaces.forEach((p,i)=>{
     const icon=L.divIcon({
       className:'',
       html:`<div style="background:${p.col};width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;">${i+1}</div>`,
