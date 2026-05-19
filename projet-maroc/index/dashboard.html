@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<!-- Déclaration HTML5 obligatoire en première ligne -->
+<html lang="fr">
+<!-- lang="fr" : langue française pour le référencement et l'accessibilité -->
+
+<head>
+  
+  <meta charset="UTF-8">
+  <!-- Encodage UTF-8 : supporte les accents, l'arabe, etc. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Viewport : rend le site responsive sur mobile -->
+  <meta name="description" content="Portail officiel du tourisme au Maroc — Découvrez les plus belles villes du Royaume">
+  <!-- Description pour les moteurs de recherche -->
+  <title>🇲🇦 Maroc — Royaume de Lumière | Portail Touristique</title>
+  <!-- Titre dans l'onglet navigateur -->
+
+  <!-- Google Fonts : Playfair Display (titres élégants) + Raleway (corps moderne) -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Raleway:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    
+   
+    :root {
+      --rouge:        #8B1A1A;    /* Rouge chérifien du drapeau marocain */
+      --rouge-vif:    #C0392B;    /* Rouge plus vif pour les accents */
+      --rouge-sombre: #5C1010;    /* Rouge foncé pour les overlays */
+      --or:           #C9A84C;    /* Or du soleil marocain */
+      --or-pale:      #F0D98A;    /* Or clair pour les textes lumineux */
+      --blanc:        #FFFFFF;
+      --blanc-casse:  #FAF7F2;    /* Blanc chaud comme le sable */
+      --noir-nuit:    #0A0A0A;    /* Noir profond pour le fond hero */
+      --gris-doux:    #E8E4DC;
+      --texte-sombre: #1A1208;    /* Texte très sombre chaud */
+      --transition:   0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+   
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box; /* Bordures incluses dans les dimensions */
+    }
+
+    html {
+      scroll-behavior: smooth; /* Défilement animé entre sections */
+      font-size: 16px;
+    }
+
+    body {
+      font-family: 'Raleway', sans-serif; /* Police principale */
+      background: var(--noir-nuit);
+      color: var(--blanc);
+      overflow-x: hidden; /* Pas de scroll horizontal */
+    }
+
+    img {
+      max-width: 100%;
+      display: block; /* Supprime espace sous les images */
+    }
+
+    
+    .top-bar {
+      background: var(--rouge);
+      color: var(--or-pale);
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 100;
+    }
+
+    /* 
+       NAVIGATION PRINCIPALE
+   */
+    nav {
+      position: fixed;      /* Collé en haut de l'écran lors du scroll */
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 999;         /* Au-dessus de tout */
+      background: rgba(10, 10, 10, 0.92);
+      backdrop-filter: blur(16px); /* Effet verre dépoli */
+      border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+      padding: 0 48px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: var(--transition);
+    }
+
+    /* Logo navigation */
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    /* Étoile chérifienne SVG dans le logo */
+    .nav-etoile {
+      width: 38px;
+      height: 38px;
+    }
+
+    .nav-logo-texte strong {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--blanc);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: block;
+    }
+
+    .nav-logo-texte span {
+      font-size: 0.62rem;
+      color: var(--or);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    /* Liens de navigation */
+    .nav-liens {
+      display: flex;
+      list-style: none;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .nav-liens a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding-bottom: 3px;
+      border-bottom: 1px solid transparent;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    .nav-liens a:hover {
+      color: var(--or);
+      border-bottom-color: var(--or);
+    }
+
+    /* Bouton hamburger (mobile) */
+    .hamburger {
+      display: none; /* Caché sur desktop */
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      width: 24px;
+      height: 2px;
+      background: var(--blanc);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+
+    /* 
+       SECTION HERO — Diaporama plein écran avec transition
+       Les images changent automatiquement toutes les 5 secondes
+     */
+    #hero {
+      position: relative;
+      height: 100vh;        /* Pleine hauteur de l'écran */
+      min-height: 700px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Conteneur du diaporama (slides empilées) */
+    .hero-slides {
+      position: absolute;
+      inset: 0;             /* Couvre toute la section */
+      z-index: 0;
+    }
+
+    /* Chaque slide individuelle */
+    .hero-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;            /* Invisible par défaut */
+      transition: opacity 1.5s ease; /* Fondu enchaîné doux */
+    }
+
+    /* Slide active (visible) */
+    .hero-slide.actif {
+      opacity: 1;
+    }
+
+    /* Image de fond de chaque slide */
+    .hero-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;    /* Couvre sans déformer */
+      object-position: center;
+      transform: scale(1.05); /* Légèrement zoomée — effet Ken Burns */
+      transition: transform 8s ease; /* Zoom lent pendant l'affichage */
+    }
+
+    .hero-slide.actif img {
+      transform: scale(1);  /* Revient à taille normale → effet zoom out */
+    }
+
+    /* Overlay dégradé sur le diaporama */
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10,10,10,0.3) 0%,
+        rgba(10,10,10,0.15) 30%,
+        rgba(10,10,10,0.6) 70%,
+        rgba(10,10,10,0.92) 100%
+      );
+      z-index: 1;
+    }
+
+    /* Pattern géométrique islamique en filigrane */
+    .hero-pattern {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40 0L80 40L40 80L0 40Z' fill='none' stroke='rgba(201,168,76,0.06)' stroke-width='1'/%3E%3Cpath d='M20 20L60 20L60 60L20 60Z' fill='none' stroke='rgba(255,255,255,0.03)' stroke-width='0.5'/%3E%3C/svg%3E");
+    }
+
+    /* Contenu textuel du hero */
+    .hero-contenu {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+      padding: 0 24px;
+      max-width: 900px;
+    }
+
+    /* Badge "Royaume du Maroc" */
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(201,168,76,0.15);
+      border: 1px solid rgba(201,168,76,0.4);
+      color: var(--or);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 8px 22px;
+      border-radius: 50px;
+      margin-bottom: 28px;
+      animation: apparitre 1s 0.2s ease both;
+      /* animation : nom durée délai timing-function remplissage */
+    }
+
+    /* Slogan principal */
+    .hero-slogan {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 8vw, 7rem); /* Taille fluide responsive */
+      font-weight: 900;
+      line-height: 1.0;
+      margin-bottom: 10px;
+      animation: apparitre 1s 0.4s ease both;
+      letter-spacing: -0.02em;
+    }
+
+    /* Première ligne du slogan */
+    .hero-slogan .ligne1 {
+      color: var(--blanc);
+      display: block;
+    }
+
+    /* Deuxième ligne en italique doré */
+    .hero-slogan .ligne2 {
+      color: var(--or);
+      font-style: italic;
+      display: block;
+    }
+
+    /* Sous-titre */
+    .hero-sous-titre {
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+      font-weight: 300;
+      margin-bottom: 50px;
+      animation: apparitre 1s 0.6s ease both;
+    }
+
+    /* Bouton principal hero */
+    .hero-cta {
+      display: inline-block;
+      background: var(--rouge);
+      color: var(--blanc);
+      text-decoration: none;
+      padding: 18px 48px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: var(--transition);
+      animation: apparitre 1s 0.8s ease both;
+      border: 2px solid var(--rouge);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Effet brillance au survol (pseudo-élément qui passe) */
+    .hero-cta::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .hero-cta:hover::before {
+      left: 100%; /* La brillance traverse le bouton */
+    }
+
+    .hero-cta:hover {
+      background: var(--or);
+      border-color: var(--or);
+      color: var(--texte-sombre);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(201,168,76,0.4);
+    }
+
+    /* Indicateurs de slide (points en bas du hero) */
+    .hero-indicateurs {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Chaque point indicateur */
+    .hero-indicateur {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      padding: 0;
+    }
+
+    /* Point actif (slide en cours) */
+    .hero-indicateur.actif {
+      background: var(--or);
+      width: 28px;         /* S'étire horizontalement */
+      border-radius: 4px;
+    }
+
+    /* Nom de la ville affiché en haut à droite pendant le diaporama */
+    .hero-ville-label {
+      position: absolute;
+      top: 50%;
+      right: 48px;
+      transform: translateY(-50%);
+      z-index: 4;
+      text-align: right;
+    }
+
+    .hero-ville-nom {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--or);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0;           /* Géré par JS lors des transitions */
+      transition: opacity 0.8s ease;
+    }
+
+    .hero-ville-nom.visible { opacity: 1; }
+
+    .separateur {
+      text-align: center;
+      padding: 60px 24px 40px;
+      background: var(--noir-nuit);
+    }
+
+    .separateur-ligne {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .separateur-ligne::before,
+    .separateur-ligne::after {
+      content: '';
+      flex: 1;
+      max-width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.5));
+    }
+
+    .separateur-ligne::after {
+      background: linear-gradient(90deg, rgba(201,168,76,0.5), transparent);
+    }
+
+   
+    #villes {
+      background: var(--noir-nuit);
+      padding: 20px 48px 100px;
+    }
+
+    /* Titre de section */
+    .section-titre {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 16px;
+      color: var(--blanc);
+    }
+
+    .section-titre .accent {
+      color: var(--or);
+      font-style: italic;
+    }
+
+    /* Sous-titre de section */
+    .section-sous-titre {
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.88rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 60px;
+      font-weight: 300;
+    }
+
+    /* Grille des cards villes */
+    .villes-grille {
+      display: grid;
+      /* 3 colonnes : grande | petite | grande pour effet asymétrique */
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* Card ville individuelle */
+    .ville-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;        /* Coins légèrement arrondis */
+      cursor: pointer;
+      text-decoration: none;     /* Pas de soulignement (c'est un lien) */
+      display: block;
+      /* Hauteurs variables pour effet mosaïque dynamique */
+    }
+
+    /* Hauteurs différentes selon la position pour l'effet éditorial — 10 villes */
+    .ville-card:nth-child(1)  { height: 520px; grid-column: span 1; }
+    .ville-card:nth-child(2)  { height: 340px; grid-column: span 1; }
+    .ville-card:nth-child(3)  { height: 340px; grid-column: span 1; }
+    .ville-card:nth-child(4)  { height: 340px; grid-column: span 1; }
+    .ville-card:nth-child(5)  { height: 340px; grid-column: span 1; }
+    .ville-card:nth-child(6)  { height: 520px; grid-column: span 1; }
+    .ville-card:nth-child(7)  { height: 400px; grid-column: span 2; }
+    .ville-card:nth-child(8)  { height: 400px; grid-column: span 1; }
+    .ville-card:nth-child(9)  { height: 400px; grid-column: span 1; }
+    .ville-card:nth-child(10) { height: 400px; grid-column: span 2; }
+
+    /* Image de fond de la card */
+    .ville-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: transform 0.8s ease; /* Zoom au survol */
+      filter: brightness(0.8);         /* Légèrement assombrie par défaut */
+    }
+
+    .ville-card:hover .ville-card-img {
+      transform: scale(1.08);   /* Zoom zoom ! */
+      filter: brightness(0.65); /* Plus sombre au survol pour faire ressortir le texte */
+    }
+
+    /* Overlay dégradé permanent */
+    .ville-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(10,10,10,0.95) 0%,
+        rgba(10,10,10,0.4) 40%,
+        rgba(10,10,10,0.1) 70%,
+        transparent 100%
+      );
+      transition: background 0.5s ease;
+    }
+
+    .ville-card:hover .ville-card-overlay {
+      background: linear-gradient(
+        to top,
+        rgba(139,26,26,0.85) 0%,
+        rgba(10,10,10,0.5) 50%,
+        rgba(10,10,10,0.15) 100%
+      );
+    }
+
+    /* Contenu textuel de la card ville */
+    .ville-card-contenu {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 28px 28px 32px;
+      z-index: 2;
+    }
+
+    /* Numéro de destination */
+    .ville-numero {
+      font-size: 0.68rem;
+      color: var(--or);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 6px;
+      opacity: 0.8;
+    }
+
+    /* Nom de la ville */
+    .ville-nom {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 3vw, 2.4rem);
+      font-weight: 900;
+      color: var(--blanc);
+      line-height: 1.1;
+      margin-bottom: 8px;
+      transition: color 0.3s ease;
+    }
+
+    .ville-card:hover .ville-nom {
+      color: var(--or-pale);
+    }
+
+    /* Slogan / description courte de la ville */
+    .ville-slogan {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.65);
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+      max-width: 300px;
+    }
+
+    /* Bouton "Découvrir" dans la card */
+    .ville-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--blanc);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0;               /* Invisible par défaut */
+      transform: translateY(8px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .ville-card:hover .ville-btn {
+      opacity: 1;               /* Apparaît au survol */
+      transform: translateY(0);
+    }
+
+    /* Flèche dans le bouton */
+    .ville-btn::after {
+      content: '→';
+      font-size: 1rem;
+      transition: transform 0.3s ease;
+    }
+
+    .ville-card:hover .ville-btn::after {
+      transform: translateX(4px); /* La flèche avance */
+    }
+
+    /* Badge catégorie de la ville (coin supérieur droit) */
+    .ville-tag {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 3;
+      background: rgba(139,26,26,0.85);
+      color: var(--or-pale);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 50px;
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .ville-card:hover .ville-tag {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 
+       SECTION CHIFFRES — Faits sur le tourisme marocain
+     */
+    #chiffres {
+      background: var(--rouge-sombre);
+      padding: 80px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Pattern géométrique en fond */
+    #chiffres::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpolygon points='30,0 60,30 30,60 0,30' fill='none' stroke='rgba(201,168,76,0.08)' stroke-width='1'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+
+    /* Grille des statistiques */
+    .chiffres-grille {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Item statistique */
+    .chiffre-item {
+      text-align: center;
+    }
+
+    /* Grand nombre */
+    .chiffre-nombre {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 900;
+      color: var(--or);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    /* Description du chiffre */
+    .chiffre-desc {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 300;
+    }
+
+    /* 
+       FOOTER
+     */
+    footer {
+      background: #050505;
+      border-top: 1px solid rgba(201,168,76,0.15);
+      padding: 60px 48px 30px;
+    }
+
+    .footer-grille {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      max-width: 1200px;
+      margin: 0 auto 48px;
+    }
+
+    .footer-marque p {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--blanc);
+      margin-bottom: 12px;
+    }
+
+    .footer-marque small {
+      color: rgba(255,255,255,0.4);
+      font-size: 0.82rem;
+      line-height: 1.8;
+      display: block;
+    }
+
+    /* Bande de couleur or sous le texte marque */
+    .footer-marque-trait {
+      width: 48px;
+      height: 2px;
+      background: var(--or);
+      margin: 14px 0;
+    }
+
+    .footer-col h4 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--or);
+      margin-bottom: 18px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col ul li {
+      margin-bottom: 10px;
+    }
+
+    .footer-col ul li a {
+      color: rgba(255,255,255,0.45);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.3s;
+    }
+
+    .footer-col ul li a:hover {
+      color: var(--or);
+    }
+
+    /* Bas du footer */
+    .footer-bas {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 24px;
+      text-align: center;
+      color: rgba(255,255,255,0.25);
+      font-size: 0.78rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* 
+       ANIMATIONS CSS
+    */
+    @keyframes apparitre {
+      /* Animation d'apparition du bas vers le haut avec opacité */
+      from {
+        opacity: 0;
+        transform: translateY(30px); /* Part de 30px en dessous */
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulser {
+      /* Animation pulsation pour les badges */
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.02); }
+    }
+
+    /* 
+       RESPONSIVE — Tablette (< 1024px) et Mobile (< 768px)
+     */
+    @media (max-width: 1024px) {
+      nav { padding: 0 24px; }
+      #villes { padding: 20px 24px 80px; }
+
+      .villes-grille {
+        grid-template-columns: repeat(2, 1fr); /* 2 colonnes */
+      }
+
+      /* Réinitialise les hauteurs et spans pour 2 colonnes */
+      .ville-card { height: 360px !important; }
+      .ville-card:nth-child(1),
+      .ville-card:nth-child(6),
+      .ville-card:nth-child(7),
+      .ville-card:nth-child(10) { grid-column: span 1 !important; }
+
+      .chiffres-grille { grid-template-columns: repeat(2, 1fr); }
+      .footer-grille   { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      /* Navigation mobile */
+      .nav-liens {
+        display: none;
+        position: fixed;
+        top: 72px;
+        left: 0;
+        right: 0;
+        background: rgba(10,10,10,0.98);
+        flex-direction: column;
+        padding: 24px;
+        gap: 0;
+        border-top: 1px solid rgba(201,168,76,0.2);
+      }
+
+      .nav-liens.ouvert { display: flex; }
+
+      .nav-liens li {
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+
+      .nav-liens a {
+        padding: 16px 0;
+        display: block;
+        font-size: 0.9rem;
+      }
+
+      .hamburger { display: flex; }
+
+      /* Hero */
+      .hero-ville-label { display: none; }
+      .hero-indicateurs { bottom: 20px; }
+
+      /* Villes */
+      #villes { padding: 20px 16px 60px; }
+
+      .villes-grille {
+        grid-template-columns: 1fr; /* 1 colonne sur mobile */
+      }
+
+      .ville-card { height: 300px !important; grid-column: span 1 !important; }
+
+      .ville-btn { opacity: 1; transform: translateY(0); } /* Toujours visible sur mobile */
+      .ville-tag { opacity: 1; transform: translateY(0); }
+
+      /* Chiffres */
+      #chiffres { padding: 60px 24px; }
+      .chiffres-grille { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+
+      /* Footer */
+      footer { padding: 48px 24px 24px; }
+      .footer-grille { grid-template-columns: 1fr; gap: 32px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  
+  <div class="top-bar">
+    &#9733; &nbsp; Maroc — Royaume de Lumière &nbsp; · &nbsp; 10 Destinations Exceptionnelles &nbsp; · &nbsp; Découvrez votre prochain voyage &nbsp; &#9733;
+  </div>
+
+  
+  <nav id="navbar">
+    <!-- Logo -->
+    <a href="#hero" class="nav-logo">
+      <!-- Étoile chérifienne SVG (symbole national du Maroc) -->
+      <svg class="nav-etoile" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <!-- Hexagramme stylisé inspiré de l'étoile du drapeau -->
+        <polygon points="20,2 24,16 38,16 27,25 31,38 20,30 9,38 13,25 2,16 16,16"
+                 fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+        <polygon points="20,8 22.5,17 32,17 24,22.5 27,31.5 20,26.5 13,31.5 16,22.5 8,17 17.5,17"
+                 fill="rgba(201,168,76,0.15)" stroke="#C9A84C" stroke-width="0.8"/>
+      </svg>
+      <div class="nav-logo-texte">
+        <strong>Maroc</strong>
+        <span>Portail du Tourisme</span>
+      </div>
+    </a>
+
+    <!-- Hamburger mobile -->
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Liens de navigation -->
+    <ul class="nav-liens" id="nav-liens">
+      <li><a href="#hero">Accueil</a></li>
+      <li><a href="#villes">Destinations</a></li>
+      <li><a href="#chiffres">Le Maroc en chiffres</a></li>
+    </ul>
+  </nav>
+
+
+  
+  <section id="hero">
+
+    <!-- Conteneur des slides -->
+    <div class="hero-slides" id="hero-slides">
+
+      
+
+      <!-- Slide 1 : Marrakech -->
+      <div class="hero-slide actif" data-ville="Marrakech">
+        
+        <img src="images/pca.jpg" alt="Mosquée Koutoubia de Marrakech se reflétant dans les eaux">
+      </div>
+
+      <!-- Slide 2 : Dakhla -->
+      <div class="hero-slide" data-ville="Dakhla">
+        
+        <img src="images/pcb.jpg" alt="Lagune de Dakhla — dunes dorées rencontrent l'eau turquoise">
+      </div>
+
+      <!-- Slide 3 : Chefchaouen -->
+      <div class="hero-slide" data-ville="Chefchaouen">
+        
+        <img src="images/pcc.jpg" alt="Vue sur la ville bleue de Chefchaouen depuis une terrasse">
+      </div>
+
+      <!-- Slide 4 : Merzouga -->
+      <div class="hero-slide" data-ville="Merzouga">
+        
+        <img src="images/pcd.jpg" alt="Camp de tentes dans les dunes de Merzouga au coucher du soleil">
+      </div>
+
+      <!-- Slide 5 : Safi -->
+      <div class="hero-slide" data-ville="Safi">
+        
+        <img src="images/pce.jpg" alt="Vue panoramique du port de Safi et de l'Atlantique">
+      </div>
+
+      <!-- Slide 6 : Agadir -->
+      <div class="hero-slide" data-ville="Agadir">
+        
+        <img src="images/pcf.jpg" alt="Vue aérienne de la baie et de la plage d'Agadir">
+      </div>
+
+      <!-- Slide 7 : Rabat -->
+      <div class="hero-slide" data-ville="Rabat">
+        
+        <img src="images/pcg.jpg" alt="Avenue Mohammed V de Rabat bordée de palmiers menant à la Tour Hassan">
+      </div>
+
+      <!-- Slide 8 : Essaouira -->
+      <div class="hero-slide" data-ville="Essaouira">
+        
+        <img src="images/pch.jpg" alt="Tour fortifiée de la Sqala d'Essaouira dominant l'Atlantique">
+      </div>
+
+      <!-- Slide 9 : Fès -->
+      <div class="hero-slide" data-ville="Fès">
+        
+        <img src="images/pci.jpg" alt="Vue nocturne de Fès depuis un riad avec piscine illuminée">
+      </div>
+
+      <!-- Slide 10 : Ouarzazate -->
+      <div class="hero-slide" data-ville="Ouarzazate">
+        
+        <img src="images/pcj.jpg" alt="Ksar Aït Benhaddou d'Ouarzazate — kasbahs ocres et chameaux se reflétant dans l'oued">
+      </div>
+
+    </div>
+    <!-- Fin hero-slides -->
+
+    <!-- Overlay dégradé sombre -->
+    <div class="hero-overlay"></div>
+
+    <!-- Pattern géométrique islamique -->
+    <div class="hero-pattern"></div>
+
+    <!-- Nom de la ville actuelle (haut droite) -->
+    <div class="hero-ville-label">
+      <div class="hero-ville-nom" id="hero-ville-nom"></div>
+    </div>
+
+    <!-- Contenu textuel central -->
+    <div class="hero-contenu">
+      <!-- Badge -->
+      <div class="hero-badge">
+        <!-- Étoile emoji + texte -->
+        <span>&#9733;</span>
+        <span>Royaume du Maroc · Portail Officiel du Tourisme</span>
+      </div>
+
+      <!-- Slogan principal bilingue / poétique -->
+      <h1 class="hero-slogan">
+        <span class="ligne1">Bienvenue au</span>
+        <span class="ligne2">Royaume de Lumière</span>
+      </h1>
+
+      <!-- Sous-titre évocateur -->
+      <p class="hero-sous-titre">
+        Mille ans d'histoire · Mille couleurs · Un seul Royaume
+      </p>
+
+      <!-- Bouton d'appel à l'action -->
+      <a href="#villes" class="hero-cta">
+        Explorer les destinations
+      </a>
+    </div>
+
+    <!-- Points indicateurs de slide (navigation) -->
+    <div class="hero-indicateurs" id="hero-indicateurs">
+      <!-- Générés par JavaScript -->
+    </div>
+
+  </section>
+  <!-- Fin Section Hero -->
+
+
+  
+  <div class="separateur">
+    <div class="separateur-ligne">
+      <!-- Étoile chérifienne centrale décorative -->
+      <svg width="36" height="36" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="20,2 24,16 38,16 27,25 31,38 20,30 9,38 13,25 2,16 16,16"
+                 fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <p style="color:rgba(255,255,255,0.3);font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;">
+      10 Destinations · 1 Royaume
+    </p>
+  </div>
+
+
+  
+  <section id="villes">
+
+    <!-- Titre de section -->
+    <h2 class="section-titre">
+      Nos <span class="accent">Destinations</span>
+    </h2>
+    <p class="section-sous-titre">
+      10 villes d'exception — Cliquez pour explorer chaque destination
+    </p>
+
+    <!-- ── Grille des 10 villes ── -->
+    <div class="villes-grille">
+
+      <!-- ── CARD 1 : MARRAKECH ── -->
+      
+      <a href="../marrakech/marrakech.html" class="ville-card">
+        
+        <img src="images/pca.jpg" alt="Marrakech — La Ville Rouge" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <!-- Badge catégorie -->
+        <div class="ville-tag">Ville Impériale</div>
+        <!-- Contenu texte -->
+        <div class="ville-card-contenu">
+          <div class="ville-numero">01 — Marrakech</div>
+          <h3 class="ville-nom">Marrakech</h3>
+          <p class="ville-slogan">La Ville Rouge · Perle du Sud</p>
+          <span class="ville-btn">Découvrir</span>
+        </div>
+      </a>
+
+      <!-- ── CARD 2 : DAKHLA ── -->
+      <a href="../dakhla/dakhla.html" class="ville-card">
+        
+        <img src="images/pcb.jpg" alt="Dakhla — Lagune et dunes" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Désert & Océan</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">02 — Dakhla</div>
+          <h3 class="ville-nom">Dakhla</h3>
+          <p class="ville-slogan">Lagune Bleue · Capitale du Kitesurf</p>
+          <span class="ville-btn">Découvrir</span>
+        </div>
+      </a>
+
+      <!-- ── CARD 3 : CHEFCHAOUEN ── -->
+      <a href="../chefchaouen/chefchaouen.html" class="ville-card">
+        <!--
+          pcc.jpg = Photo de Chefchaouen
+          Image 4 de tes uploads : piscine avec vue sur la ville bleue
+        -->
+        <img src="images/pcc.jpg" alt="Chefchaouen — La Ville Bleue" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Ville Bleue</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">03 — Chefchaouen</div>
+          <h3 class="ville-nom">Chefchaouen</h3>
+          <p class="ville-slogan">La Perle Bleue du Rif</p>
+          <span class="ville-btn">Découvrir</span>
+        </div>
+      </a>
+
+      <!-- ── CARD 4 : MERZOUGA ── -->
+      <a href="../merzouga/merzouga.html" class="ville-card">
+        <!--
+          pcd.jpg = Photo de Merzouga
+          Image 5 de tes uploads : camp tentes dans le désert
+        -->
+        <img src="images/pcd.jpg" alt="Merzouga — Dunes de l'Erg Chebbi" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Sahara</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">04 — Merzouga</div>
+          <h3 class="ville-nom">Merzouga</h3>
+          <p class="ville-slogan">Porte du Sahara · Erg Chebbi</p>
+          <span class="ville-btn">Découvrir</span>
+        </div>
+      </a>
+
+      <!-- ── CARD 5 : SAFI ── -->
+      <a href="../safi/safi.html" class="ville-card">
+        <!--
+          pce.jpg = Photo de Safi
+          Image 6 de tes uploads : côte et port de Safi
+        -->
+        <img src="images/pce.jpg" alt="Safi — Cité des Potiers" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Cité des Potiers</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">05 — Safi</div>
+          <h3 class="ville-nom">Safi</h3>
+          <p class="ville-slogan">Capitale Mondiale de la Céramique</p>
+          <span class="ville-btn">Découvrir</span>
+        </div>
+      </a>
+
+      <!-- ── CARD 6 : AGADIR ── -->
+      <a href="../agadir/agadir.html" class="ville-card">
+        <!--
+          pcf.jpg = Photo d'Agadir
+          Image 7 de tes uploads : vue aérienne baie d'Agadir
+        -->
+        <img src="images/pcf.jpg" alt="Agadir — Baie de Soleil" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Balnéaire</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">06 — Agadir</div>
+          <h3 class="ville-nom">Agadir</h3>
+          <p class="ville-slogan">Baie du Soleil · Riviera Marocaine</p>
+          <span class="ville-btn">Découvrir</span>
+        </div>
+      </a>
+
+      <!-- ── CARD 7 : RABAT (large — 2 colonnes) ── -->
+      <a href="../rabat/rabat.html" class="ville-card">
+        <!--
+          pcg.jpg = Photo de Rabat
+          Image 8 de tes uploads : Avenue Mohammed V, palmiers, Tour Hassan
+        -->
+        <img src="images/pcg.jpg" alt="Rabat — Capitale du Royaume" class="ville-card-img"
+             style="object-position: center 30%;">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Capitale</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">07 — Rabat</div>
+          <h3 class="ville-nom">Rabat</h3>
+          <p class="ville-slogan">Capitale du Royaume · Ville Lumière</p>
+          <span class="ville-btn">Découvrir</span>
+        </div>
+      </a>
+
+      <!-- ── CARD 8 : ESSAOUIRA ── -->
+      <a href="../essaouira/essaouira.html" class="ville-card">
+        <!--
+          pch.jpg = Photo d'Essaouira
+          Image 9 de tes uploads : Tour de la Sqala sur l'Atlantique
+        -->
+        <img src="images/pch.jpg" alt="Essaouira — Cité des Vents" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Cité des Vents</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">08 — Essaouira</div>
+          <h3 class="ville-nom">Essaouira</h3>
+          <p class="ville-slogan">Mogador · Joyau de l'Atlantique</p>
+          <span class="ville-btn">Découvrir</span>
+        </div>
+      </a>
+
+      <!-- ── CARD 9 : FÈS ── -->
+      <a href="../fes.html" class="ville-card">
+        <!--
+          pci.jpg = Photo de Fès
+          Image 10 de tes uploads : panorama nocturne de Fès depuis un riad
+        -->
+        <img src="images/pci.jpg" alt="Fès — Capitale Spirituelle" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Ville Impériale</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">09 — Fès</div>
+          <h3 class="ville-nom">Fès</h3>
+          <p class="ville-slogan">Capitale Spirituelle · Médina UNESCO</p>
+          <span class="ville-btn">Découvrir</span>
+        </div>
+      </a>
+
+      <!-- ── CARD 10 : OUARZAZATE (large — 2 colonnes) ── -->
+      <a href="../ouarzazate.html" class="ville-card">
+        <!--
+          pcj.jpg = Photo d'Ouarzazate — Ksar Aït Benhaddou
+          C'est la photo que tu as uploadée : kasbahs ocres, chameaux,
+          reflet dans l'oued, ciel bleu vif
+          Renomme ta photo : pcj.jpg
+          Recherche alternative : "Ait Benhaddou kasbah Morocco sunrise"
+        -->
+        <img src="images/pcj.jpg"
+             alt="Ouarzazate — Ksar Aït Benhaddou avec chameaux et reflet dans l'oued"
+             class="ville-card-img"
+             style="object-position: center 60%;">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Hollywood du Désert</div>
+        <!-- Badge spécial : Ouarzazate est connue comme "Hollywood d'Afrique" -->
+        <div class="ville-card-contenu">
+          <div class="ville-numero">10 — Ouarzazate</div>
+          <h3 class="ville-nom">Ouarzazate</h3>
+          <p class="ville-slogan">Aït Benhaddou · Porte du Sahara · Hollywood d'Afrique</p>
+          <!-- Ouarzazate a accueilli des tournages de Game of Thrones, Gladiator, Lawrence d'Arabie -->
+          <span class="ville-btn">Découvrir</span>
+        </div>
+      </a>
+
+    </div>
+    <!-- Fin villes-grille -->
+
+  </section>
+  <!-- Fin Section Villes -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 3 — LE MAROC EN CHIFFRES
+       Faits réels sur le tourisme marocain
+  ══════════════════════════════════════════════════════════════════ -->
+  <section id="chiffres">
+    <h2 class="section-titre" style="margin-bottom:48px;">
+      Le Maroc en <span class="accent">Chiffres</span>
+    </h2>
+
+    <!-- Grille 4 statistiques -->
+    <div class="chiffres-grille">
+
+      <!-- Stat 1 : Visiteurs -->
+      <div class="chiffre-item">
+        <div class="chiffre-nombre" id="count1">0</div>
+        <!-- Nombre animé par JavaScript (compteur) -->
+        <div class="chiffre-desc">Millions de touristes par an</div>
+      </div>
+
+      <!-- Stat 2 : Sites UNESCO -->
+      <div class="chiffre-item">
+        <div class="chiffre-nombre" id="count2">0</div>
+        <div class="chiffre-desc">Sites inscrits à l'UNESCO</div>
+      </div>
+
+      <!-- Stat 3 : Villes impériales -->
+      <div class="chiffre-item">
+        <div class="chiffre-nombre" id="count3">0</div>
+        <div class="chiffre-desc">Villes impériales historiques</div>
+      </div>
+
+      <!-- Stat 4 : Kilomètres de côtes -->
+      <div class="chiffre-item">
+        <div class="chiffre-nombre" id="count4">0</div>
+        <div class="chiffre-desc">Km de côtes atlantiques & méditerranéennes</div>
+      </div>
+
+    </div>
+  </section>
+  <!-- Fin Section Chiffres -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-grille">
+
+      <!-- Colonne marque -->
+      <div class="footer-marque">
+        <p>🇲🇦 Maroc Tourisme</p>
+        <div class="footer-marque-trait"></div>
+        <small>
+          Portail officiel du tourisme au Maroc.<br>
+          Découvrez les merveilles du Royaume : médinas millénaires,
+          désert du Sahara, côtes atlantiques et méditerranéennes,
+          montagnes de l'Atlas et gastronomie incomparable.
+        </small>
+      </div>
+
+      <!-- Colonne destinations -->
+      <div class="footer-col">
+        <h4>Destinations</h4>
+        <ul>
+          <li><a href="../marrakech/marrakech.html">Marrakech</a></li>
+          <li><a href="../dakhla/dakhla.html">Dakhla</a></li>
+          <li><a href="../chefchaoun/chefchaoun.html">Chefchaouen</a></li>
+          <li><a href="../merzouga/merzouga.html">Merzouga</a></li>
+          <li><a href="../Safi/Safi.html">Safi</a></li>
+        </ul>
+      </div>
+
+      <!-- Colonne plus de destinations -->
+      <div class="footer-col">
+        <h4>Découvrir</h4>
+        <ul>
+          <li><a href="../agadir/agadir.html">Agadir</a></li>
+          <li><a href="../rabat/rabat.html">Rabat</a></li>
+          <li><a href="../essaouira/essaouira.html">Essaouira</a></li>
+          <li><a href="../fes/fes.html">Fès</a></li>
+          <li><a href="../ouarzazate/ouarzazate.html">Ouarzazate</a></li>
+        </ul>
+      </div>
+
+      <!-- Colonne infos pratiques -->
+      <div class="footer-col">
+        <h4>Infos Pratiques</h4>
+        <ul>
+          <li><a href="#">Visas & Entrée</a></li>
+          <li><a href="#">Transports</a></li>
+          <li><a href="#">Meilleure période</a></li>
+          <li><a href="#">Culture & Traditions</a></li>
+          <li><a href="#">Gastronomie</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bas du footer -->
+    <div class="footer-bas">
+      <p>© 2026 — Portail Tourisme Maroc &nbsp;|&nbsp; Projet GI1-2026 &nbsp;|&nbsp; 10 Destinations · 1 Royaume &nbsp;|&nbsp; Fait avec ❤️ pour promouvoir le Maroc</p>
+    </div>
+  </footer>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       JAVASCRIPT — Intégré en fin de body
+       1. Navigation hamburger + actif au scroll
+       2. Diaporama automatique du hero (toutes les 5 secondes)
+       3. Animation compteur des chiffres au scroll
+       4. Effet d'apparition des cards au défilement
+  ══════════════════════════════════════════════════════════════════ -->
+  <script>
+    /* ──────────────────────────────────────────────────────────────
+       1. NAVIGATION — Hamburger mobile + lien actif
+    ────────────────────────────────────────────────────────────── */
+
+    const hamburger = document.getElementById('hamburger');
+    const navLiens  = document.getElementById('nav-liens');
+
+    /* Clic hamburger : ouvre/ferme le menu mobile */
+    hamburger.addEventListener('click', function() {
+      navLiens.classList.toggle('ouvert');
+      /* toggle : ajoute la classe si absente, la retire si présente */
+    });
+
+    /* Ferme le menu mobile quand on clique sur un lien */
+    document.querySelectorAll('.nav-liens a').forEach(function(lien) {
+      lien.addEventListener('click', function() {
+        navLiens.classList.remove('ouvert');
+      });
+    });
+
+    /* Navbar : change de style au défilement (devient plus opaque) */
+    window.addEventListener('scroll', function() {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 80) {
+        navbar.style.borderBottom = '1px solid rgba(201,168,76,0.35)';
+      } else {
+        navbar.style.borderBottom = '1px solid rgba(201,168,76,0.2)';
+      }
+    });
+
+
+    /* ──────────────────────────────────────────────────────────────
+       2. DIAPORAMA HERO — Transition automatique toutes les 5s
+    ────────────────────────────────────────────────────────────── */
+
+    const slides     = document.querySelectorAll('.hero-slide');
+    /* Sélectionne tous les éléments .hero-slide */
+    const villeNom   = document.getElementById('hero-ville-nom');
+    const indicateurs = document.getElementById('hero-indicateurs');
+
+    let slideActuel  = 0;    /* Index de la slide actuellement affichée */
+    let intervalSlide;       /* Stocke l'intervalle pour pouvoir l'arrêter */
+
+    /* Crée les points indicateurs dynamiquement */
+    slides.forEach(function(slide, index) {
+      const btn = document.createElement('button');
+      /* createElement : crée un nouveau bouton HTML */
+      btn.className = 'hero-indicateur' + (index === 0 ? ' actif' : '');
+      /* Premier bouton actif par défaut */
+      btn.setAttribute('aria-label', 'Slide ' + (index + 1));
+
+      /* Clic sur indicateur → va à cette slide */
+      btn.addEventListener('click', function() {
+        allerASlide(index);    /* Change immédiatement à la slide choisie */
+        clearInterval(intervalSlide); /* Arrête l'auto-défilement */
+        intervalSlide = setInterval(slidesSuivante, 5000); /* Repart */
+      });
+
+      indicateurs.appendChild(btn); /* Ajoute le bouton dans le DOM */
+    });
+
+    /* Fonction : affiche la slide à l'index donné */
+    function allerASlide(index) {
+      /* 1) Retire la classe 'actif' de la slide actuelle */
+      slides[slideActuel].classList.remove('actif');
+
+      /* 2) Met à jour l'indicateur (points en bas) */
+      document.querySelectorAll('.hero-indicateur').forEach(function(btn, i) {
+        btn.classList.toggle('actif', i === index);
+        /* toggle(classe, condition) : ajoute si condition=true, retire sinon */
+      });
+
+      /* 3) Mise à jour du nom de la ville affiché en haut à droite */
+      villeNom.classList.remove('visible'); /* Cache le nom actuel */
+      setTimeout(function() {
+        /* Après 300ms : affiche le nouveau nom */
+        villeNom.textContent = slides[index].getAttribute('data-ville');
+        /* getAttribute('data-ville') lit l'attribut HTML data-ville="..." */
+        villeNom.classList.add('visible');
+      }, 300); /* 300 millisecondes de délai */
+
+      /* 4) Active la nouvelle slide */
+      slideActuel = index;
+      slides[slideActuel].classList.add('actif');
+    }
+
+    /* Fonction : passe à la slide suivante (en boucle) */
+    function slidesSuivante() {
+      let prochain = (slideActuel + 1) % slides.length;
+      /* Modulo : revient à 0 après la dernière slide */
+      allerASlide(prochain);
+    }
+
+    /* Démarre le diaporama automatique toutes les 5000ms = 5 secondes */
+    intervalSlide = setInterval(slidesSuivante, 5000);
+
+    /* Affiche le nom de la première ville immédiatement */
+    setTimeout(function() {
+      villeNom.textContent = slides[0].getAttribute('data-ville');
+      villeNom.classList.add('visible');
+    }, 800); /* Délai de 800ms pour laisser le hero charger */
+
+
+    /* ──────────────────────────────────────────────────────────────
+       3. ANIMATION COMPTEUR (Section Chiffres)
+       Les nombres s'incrémentent quand la section devient visible
+    ────────────────────────────────────────────────────────────── */
+
+    /* Valeurs cibles réelles pour le Maroc */
+    const cibles = {
+      'count1': 14,    /* 14 millions de touristes (2023) */
+      'count2': 9,     /* 9 sites UNESCO au Maroc */
+      'count3': 4,     /* 4 villes impériales : Fès, Meknès, Marrakech, Rabat */
+      'count4': 3500   /* 3500 km de côtes */
+    };
+
+    /* Suffixes à ajouter après les nombres */
+    const suffixes = {
+      'count1': 'M',  /* Millions */
+      'count2': '',
+      'count3': '',
+      'count4': ''
+    };
+
+    /* Flag : les compteurs n'ont pas encore démarré */
+    let compteursActives = false;
+
+    /* Fonction : anime un compteur de 0 jusqu'à la cible */
+    function animerCompteur(id, cible, suffixe) {
+      const element = document.getElementById(id);
+      const duree   = 2000;   /* 2 secondes pour compter jusqu'à la cible */
+      const debut   = performance.now(); /* Timestamp de début */
+
+      function etape(maintenant) {
+        /* Calcul de la progression (0 à 1) */
+        const progres = Math.min((maintenant - debut) / duree, 1);
+        /* Math.min : ne dépasse jamais 1 */
+
+        /* Ease-out : accélère puis ralentit */
+        const eased = 1 - Math.pow(1 - progres, 3);
+
+        /* Calcul de la valeur actuelle */
+        const valeur = Math.floor(eased * cible);
+        element.textContent = valeur + suffixe;
+
+        if (progres < 1) {
+          requestAnimationFrame(etape); /* Continue l'animation */
+          /* requestAnimationFrame : optimisé par le navigateur (~60fps) */
+        } else {
+          element.textContent = cible + suffixe; /* Valeur finale exacte */
+        }
+      }
+
+      requestAnimationFrame(etape); /* Lance l'animation */
+    }
+
+    /* Observer : déclenche les compteurs quand la section est visible */
+    const observateurChiffres = new IntersectionObserver(function(entrees) {
+      if (entrees[0].isIntersecting && !compteursActives) {
+        /* isIntersecting = true : la section est à l'écran */
+        compteursActives = true; /* Marque comme activé (exécuté une seule fois) */
+
+        /* Lance chaque compteur avec un léger décalage */
+        Object.keys(cibles).forEach(function(id, index) {
+          setTimeout(function() {
+            animerCompteur(id, cibles[id], suffixes[id]);
+          }, index * 150); /* 150ms de délai entre chaque compteur */
+        });
+      }
+    }, { threshold: 0.4 }); /* Déclenche quand 40% de la section est visible */
+
+    const sectionChiffres = document.getElementById('chiffres');
+    if (sectionChiffres) {
+      observateurChiffres.observe(sectionChiffres);
+    }
+
+
+    
+
+    /* Sélectionne toutes les cards ville */
+    const cards = document.querySelectorAll('.ville-card');
+
+    /* État initial : invisible et décalée vers le bas */
+    cards.forEach(function(card, index) {
+      card.style.opacity   = '0';
+      card.style.transform = 'translateY(40px)';
+      card.style.transition = 'opacity 0.7s ease ' + (index * 0.08) + 's, transform 0.7s ease ' + (index * 0.08) + 's';
+      /* Délai progressif : chaque card apparaît 80ms après la précédente */
+    });
+
+    /* Observer : déclenche l'animation quand la card est visible */
+    const observateurCards = new IntersectionObserver(function(entrees) {
+      entrees.forEach(function(entree) {
+        if (entree.isIntersecting) {
+          entree.target.style.opacity   = '1';    /* Devient visible */
+          entree.target.style.transform = 'translateY(0)'; /* Remonte à sa place */
+          observateurCards.unobserve(entree.target); /* Stop (animation unique) */
+        }
+      });
+    }, { threshold: 0.1 }); /* Déclenche dès que 10% de la card est visible */
+
+    cards.forEach(function(card) {
+      observateurCards.observe(card); /* L'observateur surveille chaque card */
+    });
+
+
+    
+    window.addEventListener('scroll', function() {
+      const scrollY = window.scrollY;
+      if (scrollY < window.innerHeight) {
+        /* Seulement si on est encore dans la section hero */
+        const slideActuelle = document.querySelector('.hero-slide.actif img');
+        if (slideActuelle) {
+          /* translateY légèrement positif = descend légèrement = effet parallaxe */
+          slideActuelle.style.transform = 'scale(1) translateY(' + (scrollY * 0.3) + 'px)';
+        }
+      }
+    });
+
+  </script>
+  <!-- Fin JavaScript -->
+
+</body>
+</html>
