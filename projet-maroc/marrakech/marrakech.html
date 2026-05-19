@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<!-- Balise racine du document HTML
+     lang="fr" : indique au navigateur et aux moteurs de recherche
+     que la langue principale de la page est le français -->
+
+<head>
+
+  <meta charset="UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- meta viewport : rend le site RESPONSIVE (adapté aux mobiles)
+       width=device-width : la largeur de la page = largeur de l'écran
+       initial-scale=1.0 : pas de zoom au départ -->
+
+  <title>Marrakech – La Ville Rouge</title>
+  
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- link rel="stylesheet" : importe une feuille de style externe
+       Ici on importe 2 polices Google Fonts :
+       - Playfair Display : police élégante à empattements pour les titres
+       - Raleway : police moderne sans empattements pour le corps du texte
+       href : l'adresse URL de la ressource à charger -->
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <!-- Importation du CSS de Leaflet.js
+       Leaflet est une bibliothèque JavaScript open source pour les cartes interactives
+       Cette feuille de style CSS est nécessaire pour afficher correctement la carte (Section 5)
+       Version utilisée : 1.9.4 -->
+
+<style>
+
+/* ── Variables CSS (":root") ─────────────────────────────────
+   :root = sélecteur qui cible l'élément racine du document (html)
+   On y définit des variables CSS (custom properties) avec "--"
+   Ces variables peuvent ensuite être réutilisées partout avec var()
+   Avantage : changer une couleur ici la change partout dans la page
+   ──────────────────────────────────────────────────────────── */
+:root {
+  --red:      #7B1010;  /* Rouge foncé principal — couleur des remparts de Marrakech */
+  --red-mid:  #8B1A1A;  /* Rouge moyen — utilisé pour les sections et backgrounds */
+  --red-dark: #5a0a0a;  /* Rouge très foncé — pour la top-bar et le footer */
+  --red-acc:  #C0392B;  /* Rouge vif d'accentuation — pour les survols (hover) */
+  --gold:     #C9A96E;  /* Or chaud — couleur des ornements marocains (zellige, dorures) */
+  --sand:     #F5E6C8;  /* Sable clair — couleur du désert marocain */
+  --cream:    #FAF4E8;  /* Crème chaud — couleur de fond principale de la page */
+  --white:    #FFFFFF;  /* Blanc pur */
+  --dark:     #1a1100;  /* Presque noir chaud — couleur principale du texte */
+}
+
+/* ── Reset CSS ───────────────────────────────────────────────
+   * = sélecteur universel : sélectionne TOUS les éléments HTML
+   On annule les marges/paddings par défaut du navigateur
+   box-sizing:border-box = les bordures et paddings sont inclus
+   dans la largeur/hauteur déclarée (comportement plus intuitif)
+   ──────────────────────────────────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box;}
+
+/* scroll-behavior:smooth = défilement animé (fluide) entre les sections
+   quand on clique sur un lien d'ancre comme href="#activites" */
+html{scroll-behavior:smooth;}
+
+/* Styles de base du body (corps de la page) :
+   font-family : police par défaut pour tout le texte
+   background : couleur de fond de toute la page
+   color : couleur de texte par défaut
+   overflow-x:hidden : empêche le scroll horizontal non voulu */
+body{font-family:'Raleway',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;}
+
+/* 
+   SECTION NAVBAR — Barre de navigation
+   */
+
+/* Bandeau d'annonce supérieur (au-dessus de la nav)
+   text-align:center = texte centré horizontalement
+   letter-spacing = espacement entre les lettres */
+.top-bar{background:var(--red-dark);color:#fff;text-align:center;padding:7px;font-size:12px;letter-spacing:1.5px;}
+
+/* Barre de navigation principale :
+   position:sticky = reste collée en haut lors du scroll
+   top:0 = collée tout en haut de l'écran
+   z-index:900 = au-dessus des autres éléments (sauf la modale z-index:2000)
+   backdrop-filter:blur = effet "verre dépoli" sur le fond
+   display:flex = mise en page flexbox (logo à gauche, liens à droite)
+   justify-content:space-between = espace maximum entre logo et liens */
+nav{
+  position:sticky;top:0;z-index:900;
+  background:rgba(255,255,255,0.97); /* blanc légèrement transparent */
+  backdrop-filter:blur(12px);        /* flou derrière la nav */
+  box-shadow:0 2px 24px rgba(123,16,16,.13); /* ombre portée sous la nav */
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;height:68px; /* hauteur fixe de 68 pixels */
+}
+
+/* Logo de navigation : display:flex pour aligner l'icône et le texte
+   gap:10px = espace de 10px entre le SVG et le texte
+   text-decoration:none = supprime le soulignement (c'est un lien <a>) */
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+
+/* Taille du SVG de l'étoile chérifienne dans le logo */
+.nav-logo svg{width:38px;height:38px;}
+
+/* Style du nom de la ville dans le logo (MARRAKECH) */
+.logo-text .city{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--red);letter-spacing:2px;}
+
+/* Sous-titre du logo (La Ville Rouge) */
+.logo-text .sub{font-size:9.5px;color:#999;letter-spacing:2px;text-transform:uppercase;}
+
+/* Liste des liens de navigation :
+   display:flex = liens alignés horizontalement
+   list-style:none = supprime les puces de liste HTML */
+.nav-links{display:flex;list-style:none;gap:0;align-items:center;}
+
+/* Style de chaque lien de navigation :
+   display:block = le lien occupe toute la surface cliquable
+   text-decoration:none = supprime le soulignement
+   transition:color .2s = changement de couleur animé en 0.2s */
+.nav-links a{
+  display:block;padding:10px 14px;
+  text-decoration:none;color:#333;
+  font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  transition:color .2s;white-space:nowrap; /* nowrap : pas de retour à la ligne */
+}
+
+/* Au survol de la souris (hover) : change la couleur en rouge */
+.nav-links a:hover{color:var(--red);}
+
+/* Lien "actif" (section actuellement visible) :
+   Soulignement rouge en bas pour indiquer la section active
+   La classe "active" est ajoutée/retirée par JavaScript */
+.nav-links a.active{color:var(--red);border-bottom:2px solid var(--red);}
+
+/* 
+   SECTION 1 – HERO (grande image plein écran)
+   */
+
+/* Conteneur principal du hero :
+   height:100vh = hauteur = 100% de la hauteur visible de l'écran
+   min-height:580px = hauteur minimum même sur petit écran
+   display:flex + align-items:center + justify-content:center
+   = centre le contenu (titre, boutons) horizontalement ET verticalement
+   overflow:hidden = les éléments qui dépassent sont masqués */
+#hero{
+  position:relative;height:100vh;min-height:580px;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:#2c0606; /* fond de secours si l'image ne charge pas */
+}
+
+/* Image de fond du hero :
+   position:absolute + inset:0 = couvre toute la section
+   background:url() center/cover = image centrée qui couvre tout sans se déformer
+   opacity:.65 = légèrement transparente pour que le texte soit lisible */
+.hero-img{
+  position:absolute;inset:0;
+  background:url('images/photo1.jpg') center/cover no-repeat;
+  /* fallback gradient si photo manquante */
+  background-color:#7b1010;
+  opacity:.65;transition:opacity 1s; /* transition pour un fondu au chargement */
+}
+
+/* Overlay (couche) sombre sur l'image :
+   linear-gradient = dégradé du haut vers le bas
+   Rend le texte lisible sur l'image de fond */
+.hero-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(90,10,10,.45) 0%,rgba(20,3,3,.72) 100%);
+}
+
+/* Motif géométrique en filigrane (zellige marocain) :
+   SVG encodé en base64 dans l'URL — pas besoin de fichier externe
+   opacity:.07 = très discret, juste une texture subtile */
+/* Moroccan zellige pattern overlay */
+.hero-pattern{
+  position:absolute;inset:0;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpolygon points='40,5 55,20 75,20 62,33 68,52 40,42 12,52 18,33 5,20 25,20' fill='none' stroke='%23fff' stroke-width='1.2'/%3E%3C/svg%3E");
+}
+
+/* Contenu textuel au centre du hero :
+   position:relative + z-index:2 = au-dessus de l'image et de l'overlay */
+.hero-content{position:relative;z-index:2;text-align:center;color:#fff;padding:0 24px;}
+
+/* Badge "Côte Atlantique" au-dessus du titre :
+   display:inline-block = se rétrécit autour du texte
+   border-radius:2px = coins légèrement arrondis
+   animation:fadeDown = apparaît en glissant depuis le haut (définie plus bas) */
+.hero-tag{
+  display:inline-block;border:1px solid rgba(201,169,110,.6);
+  color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  padding:6px 20px;border-radius:2px;margin-bottom:22px;
+  animation:fadeDown .9s ease both; /* durée 0.9s, remplissage "both" */
+}
+
+/* Titre principal MARRAKECH :
+   clamp(min, préféré, max) = taille fluide selon la largeur de l'écran
+   clamp(52px, 9vw, 110px) = entre 52px et 110px selon la largeur
+   font-weight:700 = gras
+   animation avec délai .15s pour apparaître après le badge */
+.hero-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(52px,9vw,110px);font-weight:700;
+  letter-spacing:6px;line-height:1;
+  text-shadow:0 4px 40px rgba(0,0,0,.4); /* ombre portée sur le texte */
+  animation:fadeDown .9s .15s ease both; /* .15s = délai d'apparition */
+}
+
+/* La balise <em> dans le titre (KECH) : italique et couleur or */
+.hero-title em{font-style:italic;color:var(--gold);}
+
+/* Sous-titre "La Ville Rouge — Perle du Sud" */
+.hero-sub{
+  font-size:15px;letter-spacing:4px;opacity:.8;text-transform:uppercase;
+  margin:14px 0 38px;animation:fadeDown .9s .3s ease both; /* délai 0.3s */
+}
+
+/* Conteneur des deux boutons du hero : alignés en ligne avec gap */
+.hero-btns{display:flex;gap:14px;justify-content:center;animation:fadeDown .9s .45s ease both;}
+
+/* Bouton principal (fond rouge) :
+   border-radius:40px = bouton très arrondi (style "pill")
+   box-shadow = ombre portée sous le bouton
+   cursor:pointer = curseur main au survol
+   transition:all .3s = toutes les propriétés s'animent en 0.3s */
+.btn-primary{
+  background:var(--red);color:#fff;text-decoration:none;
+  padding:14px 40px;border-radius:40px;font-size:12px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:none;
+  box-shadow:0 4px 24px rgba(123,16,16,.5);transition:all .3s;
+}
+/* Au survol : fond plus vif + remonte légèrement (translateY(-2px)) */
+.btn-primary:hover{background:var(--red-acc);transform:translateY(-2px);}
+
+/* Bouton secondaire (contour blanc transparent) */
+.btn-outline{
+  background:transparent;color:#fff;text-decoration:none;
+  padding:14px 40px;border-radius:40px;font-size:12px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;cursor:pointer;
+  border:2px solid rgba(255,255,255,.5);transition:all .3s;
+}
+/* Au survol : contour blanc plein + fond légèrement blanc */
+.btn-outline:hover{border-color:#fff;background:rgba(255,255,255,.1);}
+
+/* SVG silhouette de montagnes en bas du hero :
+   position:absolute + bottom:0 = collé tout en bas du hero */
+/* mountains silhouette */
+.hero-wave{position:absolute;bottom:0;left:0;right:0;line-height:0;}
+
+/* Animation fadeDown : le contenu glisse depuis le haut en apparaissant
+   @keyframes = définit les étapes d'une animation CSS
+   "from" = état de départ | "to" = état final */
+@keyframes fadeDown{from{opacity:0;transform:translateY(-18px);}to{opacity:1;transform:translateY(0);}}
+
+/* Indicateur de scroll (flèche animée en bas du hero) :
+   position:absolute + bottom:38px + left:50% + transform:translateX(-50%)
+   = centré horizontalement en bas du hero
+   animation:bob = monte et descend en boucle infinie */
+.scroll-hint{
+  position:absolute;bottom:38px;left:50%;transform:translateX(-50%);
+  color:rgba(255,255,255,.5);font-size:11px;letter-spacing:2px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  animation:bob 2s ease-in-out infinite; /* infinite = répète sans fin */
+}
+/* Animation bob : monte légèrement puis redescend, en boucle */
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(6px);}}
+
+/* 
+   TITRES DE SECTION (réutilisés dans toutes les sections)
+   */
+
+/* Conteneur du titre de section : centré avec marge en bas */
+.sec-head{text-align:center;margin-bottom:52px;}
+
+/* "Eyebrow" = petit texte au-dessus du titre principal (ex: "À découvrir")
+   display:inline-block = se rétrécit autour du texte
+   letter-spacing:3px = lettres très espacées pour un effet élégant */
+.sec-head .eyebrow{
+  display:inline-block;font-size:10px;font-weight:700;letter-spacing:3px;
+  text-transform:uppercase;color:var(--gold);margin-bottom:10px;
+}
+
+/* Titre principal de section (h2) */
+.sec-head h2{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);color:var(--red);}
+/* La balise <em> dans le h2 = italique */
+.sec-head h2 em{font-style:italic;}
+
+/* Séparateur décoratif sous le titre :
+   Deux lignes dorées avec une étoile au centre
+   display:flex + align-items:center + gap = alignement horizontal */
+.sec-head .divider{
+  display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;
+}
+/* Les deux traits horizontaux dorés */
+.sec-head .divider span{width:60px;height:1px;background:var(--gold);opacity:.6;}
+/* L'icône ✦ entre les deux traits */
+.sec-head .divider i{color:var(--gold);font-size:12px;}
+/* Paragraphe descriptif sous le titre */
+.sec-head p{color:#777;font-size:13.5px;margin-top:14px;max-width:520px;margin-inline:auto;line-height:1.7;}
+
+/* 
+   SECTION 2 – ACTIVITÉS TOURISTIQUES
+    */
+
+/* Section activités : padding = espacement interne (haut/bas : 80px, gauche/droite : 60px) */
+#activites{padding:80px 60px;background:#fff;}
+
+/* Barre de filtres (boutons Tout / Culture / Nature / etc.) :
+   display:flex + flex-wrap:wrap = les boutons passent à la ligne si nécessaire */
+.filter-bar{
+  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:44px;
+}
+
+/* Bouton de filtre individuel :
+   border-radius:30px = bouton arrondi
+   background:transparent = fond vide par défaut (contour seulement)
+   cursor:pointer = curseur main
+   transition:all .25s = animation au survol */
+.filter-btn{
+  padding:8px 22px;border-radius:30px;border:2px solid var(--red);
+  background:transparent;color:var(--red);font-size:12px;font-weight:700;
+  letter-spacing:1px;cursor:pointer;transition:all .25s;text-transform:uppercase;
+}
+/* Au survol ET quand le bouton a la classe "active" (ajoutée par JavaScript) :
+   fond rouge plein avec texte blanc */
+.filter-btn:hover,.filter-btn.active{background:var(--red);color:#fff;}
+
+/* Grille des cards activités :
+   display:grid = mise en page en grille CSS
+   grid-template-columns:repeat(auto-fill, minmax(290px,1fr))
+   = crée autant de colonnes que possible, chacune d'au moins 290px
+   gap:28px = espacement entre les cards */
+.cards-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+  gap:28px;max-width:1200px;margin:0 auto; /* centré avec largeur max */
+}
+
+/* Card d'activité individuelle :
+   border-radius:14px = coins arrondis
+   overflow:hidden = les coins arrondis s'appliquent aux images
+   box-shadow = ombre portée sous la card
+   transition = animation au survol */
+.act-card{
+  border-radius:14px;overflow:hidden;background:#fff;
+  box-shadow:0 4px 24px rgba(0,0,0,.09);
+  transition:transform .3s,box-shadow .3s;cursor:pointer;
+}
+/* Au survol : la card remonte de 8px et l'ombre s'agrandit */
+.act-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(123,16,16,.18);}
+/* Classe ajoutée par JavaScript pour masquer les cards filtrées */
+.act-card.hidden{display:none;}
+
+/* Conteneur de l'image de la card : hauteur fixe pour uniformité */
+.card-img-wrap{position:relative;height:210px;overflow:hidden;}
+/* L'image couvre son conteneur sans se déformer (object-fit:cover)
+   transition:transform .5s = zoom animé au survol */
+.card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+/* Au survol de la card : l'image zoome légèrement (scale(1.07)) */
+.act-card:hover .card-img-wrap img{transform:scale(1.07);}
+
+/* Badge de catégorie (ex: "Culture", "Nature") :
+   position:absolute = positionné par rapport au conteneur de l'image
+   top:14px + left:14px = coin supérieur gauche de l'image */
+.card-badge{
+  position:absolute;top:14px;left:14px;
+  padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;
+}
+/* Couleurs des badges selon la catégorie */
+.badge-culture{background:#1a3a5c;}   /* bleu foncé pour Culture */
+.badge-sport{background:#1a5c3a;}     /* vert foncé pour Sport */
+.badge-nature{background:#4a3000;}    /* marron pour Nature */
+.badge-food{background:var(--red-acc);} /* rouge vif pour Gastronomie */
+.badge-bien-etre{background:#5c1a5c;} /* violet pour Bien-être */
+
+/* Corps de la card (texte sous l'image) */
+.card-body{padding:18px 20px 20px;}
+/* Titre de la card */
+.card-body h3{font-family:'Playfair Display',serif;font-size:19px;margin-bottom:6px;color:var(--dark);}
+/* Description de la card */
+.card-body p{font-size:12.5px;color:#777;line-height:1.65;margin-bottom:14px;}
+/* Métadonnées (horaires, prix) : flex pour les aligner en ligne */
+.card-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+/* Chaque métadonnée dans un "pill" (pastille) */
+.card-meta span{font-size:11px;background:var(--cream);padding:3px 10px;border-radius:12px;color:var(--red);font-weight:600;}
+/* Petit bouton "Savoir plus →" */
+.btn-sm{
+  background:var(--red);color:#fff;border:none;
+  padding:9px 20px;border-radius:20px;font-size:11px;font-weight:700;
+  cursor:pointer;letter-spacing:.8px;transition:background .2s;
+}
+.btn-sm:hover{background:var(--red-acc);}
+
+/* 
+   SECTION 3 – GALERIE PHOTOS
+    */
+
+/* Section galerie sur fond crème */
+#galerie{padding:80px 60px;background:var(--cream);}
+
+/* Grille de la galerie : 3 colonnes
+   grid-template-rows:auto = les lignes s'adaptent au contenu */
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr); /* 3 colonnes de largeur égale */
+  grid-template-rows:auto;
+  gap:10px;max-width:1100px;margin:0 auto;
+}
+
+/* Chaque item de la galerie :
+   overflow:hidden = les coins arrondis s'appliquent aux images
+   cursor:pointer = indique que c'est cliquable (ouvre le lightbox) */
+.gal-item{
+  overflow:hidden;border-radius:10px;
+  position:relative;cursor:pointer;
+}
+/* Disposition spéciale de chaque item pour créer un effet mosaïque :
+   grid-column:span 2 = l'item occupe 2 colonnes
+   height = hauteur fixe pour chaque item */
+.gal-item:nth-child(1){grid-column:span 2;height:300px;} /* 1er item : large */
+.gal-item:nth-child(2){height:300px;}
+.gal-item:nth-child(3){height:240px;}
+.gal-item:nth-child(4){height:240px;}
+.gal-item:nth-child(5){grid-column:span 1;height:240px;}
+.gal-item:nth-child(6){grid-column:span 3;height:260px;} /* 6e : pleine largeur */
+.gal-item:nth-child(7){grid-column:span 2;height:260px;} /* 7e : large */
+/* override 7 items nicely */
+
+/* Image de la galerie : couvre son conteneur, zoom au survol */
+.gal-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s;}
+.gal-item:hover img{transform:scale(1.06);}
+
+/* Overlay rouge sur l'image au survol : apparaît progressivement
+   display:flex + align-items:center + justify-content:center = centre l'icône */
+.gal-overlay{
+  position:absolute;inset:0;background:rgba(123,16,16,0); /* invisible par défaut */
+  display:flex;align-items:center;justify-content:center;
+  transition:background .3s;
+}
+.gal-item:hover .gal-overlay{background:rgba(123,16,16,.35);} /* rouge au survol */
+/* Icône SVG (loupe/agrandir) : invisible → visible au survol */
+.gal-overlay svg{opacity:0;transition:opacity .3s;width:40px;height:40px;fill:#fff;}
+.gal-item:hover .gal-overlay svg{opacity:1;}
+
+/* ── LIGHTBOX ────────────────────────────────────────────────
+   Fenêtre modale qui s'ouvre pour afficher une photo en grand
+   display:none = cachée par défaut
+   position:fixed = reste à l'écran pendant le scroll
+   inset:0 = couvre tout l'écran (top, right, bottom, left = 0)
+   z-index:3000 = au-dessus de tout le reste
+   ──────────────────────────────────────────────────────────── */
+.lightbox{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.92); /* fond noir opaque */
+  z-index:3000;align-items:center;justify-content:center;
+}
+/* La classe "open" est ajoutée par JavaScript pour afficher le lightbox */
+.lightbox.open{display:flex;}
+/* Conteneur intérieur du lightbox */
+.lb-inner{position:relative;max-width:88vw;max-height:88vh;}
+/* L'image agrandie : max 88% de l'écran */
+.lb-inner img{max-width:88vw;max-height:88vh;border-radius:8px;display:block;}
+/* Bouton de fermeture (X) : positionné au-dessus de l'image */
+.lb-close{position:absolute;top:-44px;right:0;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;opacity:.8;}
+.lb-close:hover{opacity:1;}
+/* Boutons de navigation (flèches précédent/suivant) */
+.lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(123,16,16,.7);border:none;color:#fff;
+  width:44px;height:44px;border-radius:50%;font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:background .2s;
+}
+.lb-nav:hover{background:var(--red);}
+.lb-prev{left:-56px;}   /* Flèche gauche (précédent) */
+.lb-next{right:-56px;}  /* Flèche droite (suivant) */
+/* Légende sous la photo */
+.lb-caption{
+  position:absolute;bottom:-36px;left:0;right:0;
+  text-align:center;color:rgba(255,255,255,.7);font-size:12px;letter-spacing:1px;
+}
+
+/*
+   SECTION 4 – RESTAURANTS & HÉBERGEMENT
+    */
+
+/* Section sur fond rouge moyen */
+#restaurants{padding:80px 60px;background:var(--red-mid);}
+/* Titres en blanc sur fond rouge */
+#restaurants .sec-head h2{color:#fff;}
+#restaurants .sec-head .eyebrow{color:var(--gold);}
+#restaurants .sec-head p{color:rgba(255,255,255,.65);}
+
+/* Barre de filtres de la section restaurants/hébergement */
+.rh-filter-bar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:44px;}
+/* Bouton filtre pour cette section : style différent (fond transparent + contour blanc) */
+.rh-filter-btn{
+  padding:7px 20px;border-radius:30px;border:2px solid rgba(255,255,255,.4);
+  background:transparent;color:rgba(255,255,255,.85);font-size:11px;font-weight:700;
+  letter-spacing:1px;cursor:pointer;transition:all .25s;text-transform:uppercase;
+}
+/* Bouton actif ou survolé : fond blanc avec texte rouge */
+.rh-filter-btn:hover,.rh-filter-btn.active{background:#fff;color:var(--red);}
+
+/* Grille des cards restaurants/hébergement */
+.rh-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:26px;max-width:1200px;margin:0 auto;
+}
+
+/* Card restaurant/hébergement : style similaire aux cards activités */
+.rh-card{
+  background:#fff;border-radius:14px;overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,.18);
+  transition:transform .3s,box-shadow .3s;cursor:pointer;
+}
+.rh-card:hover{transform:translateY(-8px);box-shadow:0 18px 52px rgba(0,0,0,.25);}
+/* Classe ajoutée par JavaScript pour masquer les cards filtrées */
+.rh-card.hidden{display:none;}
+
+/* Image de la card restaurant/hébergement */
+.rh-card-img{position:relative;height:195px;overflow:hidden;}
+.rh-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+.rh-card:hover .rh-card-img img{transform:scale(1.07);}
+
+/* Badge de type (Restaurant, Hôtel, Riad) */
+.rh-badge{
+  position:absolute;top:12px;left:12px;
+  padding:5px 12px;border-radius:16px;font-size:10px;font-weight:700;color:#fff;
+}
+/* Couleurs des badges par type */
+.badge-resto{background:var(--red-acc);}    /* Rouge pour Restaurant */
+.badge-hotel{background:#1a3a5c;}           /* Bleu pour Hôtel */
+.badge-riad{background:#1a5c3a;}            /* Vert pour Riad */
+
+/* Badge étoiles (★★★★★) en haut à droite de l'image */
+.stars{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.5);color:var(--gold);padding:4px 10px;border-radius:12px;font-size:11px;}
+
+/* Corps de la card restaurant/hébergement */
+.rh-body{padding:18px 20px 20px;}
+.rh-body .cat{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:5px;}
+.rh-body h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--dark);margin-bottom:7px;}
+.rh-body p{font-size:12.5px;color:#777;line-height:1.65;margin-bottom:12px;}
+.rh-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.rh-meta span{font-size:11px;background:var(--cream);padding:3px 10px;border-radius:12px;color:var(--red);font-weight:600;}
+
+/* 
+   SECTION 5 – CARTE INTERACTIVE (Leaflet.js)
+    */
+
+/* Section carte sur fond blanc */
+#carte{padding:80px 60px;background:#fff;}
+
+/* Mise en page : carte à gauche + liste des lieux à droite
+   grid-template-columns:1fr 320px = carte flexible + liste 320px de large */
+.map-layout{display:grid;grid-template-columns:1fr 320px;gap:28px;max-width:1100px;margin:0 auto;}
+
+/* Div qui contient la carte Leaflet : taille fixe requise par Leaflet
+   z-index:1 évite que la carte passe au-dessus de la navigation sticky */
+#map{height:480px;border-radius:14px;box-shadow:0 4px 30px rgba(0,0,0,.12);z-index:1;}
+
+/* Liste des lieux à droite de la carte : scrollable si trop d'items */
+.map-list{overflow-y:auto;max-height:480px;display:flex;flex-direction:column;gap:10px;}
+/* Scrollbar personnalisée (uniquement sur navigateurs WebKit comme Chrome) */
+.map-list::-webkit-scrollbar{width:4px;}
+.map-list::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
+
+/* Item de la liste des lieux :
+   border-left:4px solid transparent = espace pour la bordure d'activation
+   transition:all .2s = animation douce au survol et au clic */
+.map-item{
+  background:var(--cream);border-radius:10px;padding:14px 16px;cursor:pointer;
+  border-left:4px solid transparent;
+  transition:all .2s;
+}
+/* Lieu survolé ou actif (sélectionné) : bordure rouge à gauche */
+.map-item:hover,.map-item.active-place{border-left-color:var(--red);background:#fff;box-shadow:0 2px 12px rgba(123,16,16,.1);}
+.map-item h4{font-size:13.5px;font-weight:700;color:var(--dark);margin-bottom:3px;}
+.map-item p{font-size:11.5px;color:#888;}
+/* Petit point de couleur devant chaque lieu (bleu = culture, vert = nature, etc.) */
+.map-item .type-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+
+/*
+   SECTION 6 – MÉTÉO & CONTACT
+    */
+
+/* Section sur fond crème */
+#contact{padding:80px 60px;background:var(--cream);}
+/* Mise en page 2 colonnes : widget météo + formulaire de contact */
+.mc-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;max-width:1000px;margin:0 auto;}
+
+/* ── Widget météo ────────────────────────────────────────────
+   Fond dégradé rouge → marron, coins très arrondis (18px)
+    */
+.meteo-box{
+  background:linear-gradient(135deg,var(--red-dark) 0%,var(--red-mid) 60%,#c9712a 100%);
+  border-radius:18px;padding:32px;color:#fff;
+  box-shadow:0 8px 40px rgba(123,16,16,.35);
+}
+/* Nom de la ville en petit texte tout en haut */
+.meteo-city{font-size:12px;letter-spacing:3px;text-transform:uppercase;opacity:.7;margin-bottom:4px;}
+/* Grand chiffre de température (72px) */
+.meteo-temp{font-family:'Playfair Display',serif;font-size:72px;font-weight:700;line-height:1;}
+/* Description météo (ex: "Ensoleillé") */
+.meteo-desc{font-size:16px;margin:6px 0 24px;opacity:.85;}
+/* Grille 2x2 pour les détails météo (ressenti, humidité, vent, couverture) */
+.meteo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+/* Chaque case de détail météo : fond blanc semi-transparent */
+.meteo-item{background:rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;}
+.meteo-item .label{font-size:10px;letter-spacing:1.5px;opacity:.65;text-transform:uppercase;margin-bottom:4px;}
+.meteo-item .val{font-size:18px;font-weight:700;}
+.meteo-loading{opacity:.6;font-style:italic;font-size:14px;margin-top:10px;}
+.meteo-error{font-size:12px;opacity:.6;margin-top:10px;}
+
+/* ── Formulaire de contact ───────────────────────────────────
+   Fond blanc avec coins arrondis et ombre portée
+   */
+.contact-form{background:#fff;border-radius:18px;padding:36px;box-shadow:0 4px 30px rgba(0,0,0,.08);}
+.contact-form h3{font-family:'Playfair Display',serif;font-size:24px;color:var(--red);margin-bottom:6px;}
+.contact-form .sub{font-size:13px;color:#888;margin-bottom:24px;}
+
+/* Groupe label + input : margin-bottom pour espacer les champs */
+.form-group{margin-bottom:16px;}
+/* Label au-dessus de chaque champ : display:block = sur sa propre ligne */
+.form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;margin-bottom:6px;}
+/* Style commun pour input, textarea et select :
+   width:100% = prend toute la largeur disponible
+   border:1.5px solid = bordure légère
+   outline:none = supprime le contour bleu natif du navigateur au focus */
+.form-group input,.form-group textarea,.form-group select{
+  width:100%;padding:11px 14px;border:1.5px solid #e0d8c8;border-radius:8px;
+  font-family:'Raleway',sans-serif;font-size:13px;color:var(--dark);
+  background:#faf4e8;transition:border-color .2s;outline:none;
+}
+/* Au focus (quand l'utilisateur clique sur le champ) : bordure rouge */
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--red);}
+/* La textarea est redimensionnable uniquement verticalement */
+.form-group textarea{resize:vertical;min-height:110px;}
+/* Deux champs côte à côte (Prénom + Nom) grâce à une grille 2 colonnes */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+/* Message de succès affiché par JavaScript après envoi du formulaire */
+.form-success{
+  display:none; /* caché par défaut */
+  background:#f0fdf4;border:1px solid #86efac;
+  color:#166534;padding:14px;border-radius:8px;font-size:13px;margin-top:14px;
+}
+
+/* 
+   FOOTER (pied de page)
+   */
+
+/* Footer sur fond rouge foncé, texte centré */
+footer{
+  background:var(--red-dark);color:rgba(255,255,255,.75);
+  padding:50px 60px 30px;text-align:center;
+}
+/* Logo "MARRAKECH" en grand dans le footer */
+.foot-logo{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;letter-spacing:5px;color:#fff;margin-bottom:4px;}
+/* Sous-titre du footer */
+.foot-sub{font-size:10px;letter-spacing:3px;opacity:.5;margin-bottom:28px;}
+/* Liens du footer alignés en ligne
+   flex-wrap:wrap = retour à la ligne si nécessaire sur petit écran */
+.foot-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
+/* Style de chaque lien du footer */
+.foot-links a{color:rgba(255,255,255,.6);text-decoration:none;font-size:11px;letter-spacing:.5px;transition:color .2s;}
+.foot-links a:hover{color:#fff;}
+
+/* 
+   MODALE (fenêtre popup pour les détails d'un lieu)
+    */
+
+/* Overlay de la modale : fond sombre couvrant tout l'écran
+   display:none = cachée par défaut
+   position:fixed = reste en place lors du scroll
+   z-index:2000 = au-dessus de tout sauf le lightbox (z-index:3000) */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);
+  z-index:2000;align-items:center;justify-content:center;padding:20px;
+}
+/* La classe "open" est ajoutée par JavaScript pour afficher la modale */
+.modal-overlay.open{display:flex;}
+
+/* Fenêtre blanche de la modale :
+   max-width:780px = largeur maximale
+   max-height:90vh = hauteur maximale 90% de l'écran
+   overflow-y:auto = scrollable si le contenu dépasse
+   animation:modalIn = apparaît en glissant vers le haut */
+.modal{
+  background:#fff;border-radius:18px;max-width:780px;width:100%;
+  max-height:90vh;overflow-y:auto;position:relative;
+  animation:modalIn .3s ease;
+}
+/* Animation d'entrée de la modale : glisse depuis le bas en apparaissant */
+@keyframes modalIn{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+/* Bouton de fermeture de la modale (X) */
+.modal-close{
+  position:absolute;top:14px;right:14px;background:rgba(0,0,0,.45);
+  color:#fff;border:none;border-radius:50%;width:34px;height:34px;
+  font-size:17px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
+}
+.modal-close:hover{background:var(--red);}
+/* Grande image en haut de la modale */
+.modal-img{width:100%;height:300px;object-fit:cover;display:block;}
+/* Corps de la modale (texte et détails) */
+.modal-body{padding:28px 30px 32px;}
+.modal-body .m-cat{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+.modal-body h2{font-family:'Playfair Display',serif;font-size:28px;color:var(--dark);margin-bottom:14px;}
+.modal-body .m-desc{font-size:13.5px;color:#555;line-height:1.78;margin-bottom:22px;}
+/* Grille des détails (prix, horaires, etc.) : 2 colonnes */
+.modal-details{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  background:var(--cream);padding:20px;border-radius:12px;margin-bottom:20px;
+}
+/* Chaque détail : label en petit + valeur en grand */
+.modal-detail .d-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:3px;}
+.modal-detail .d-val{font-size:13.5px;font-weight:600;color:var(--dark);}
+
+/* ── Sidebar flottante (boutons sur le côté droit) ───────────
+   position:fixed = reste visible en permanence
+   right:0 = collée à droite de l'écran
+   top:50% + transform:translateY(-50%) = centrée verticalement
+   */
+/* sidebar */
+.sidebar{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:800;display:flex;flex-direction:column;gap:4px;}
+/* Bouton de la sidebar :
+   width:42px height:42px = taille carrée
+   border-radius:4px 0 0 4px = coins gauche arrondis (s'intègre au bord) */
+.s-btn{
+  background:var(--red);color:#fff;width:42px;height:42px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;border-radius:4px 0 0 4px;cursor:pointer;
+  transition:background .2s;border:none;
+}
+.s-btn:hover{background:var(--red-acc);}
+
+/* 
+   RESPONSIVE — Adaptation pour petits écrans (< 900px)
+   @media = règle CSS qui s'applique seulement si la condition est vraie
+   max-width:900px = s'applique quand l'écran fait moins de 900px de large
+    */
+@media(max-width:900px){
+  nav{padding:0 16px;}          /* Moins de padding sur mobile */
+  .nav-links{display:none;}     /* Cache les liens de nav (pas de hamburger ici) */
+  /* Moins de padding pour toutes les sections */
+  #activites,#galerie,#restaurants,#carte,#contact{padding:52px 18px;}
+  /* Passe en 1 colonne pour la carte et le formulaire */
+  .map-layout,.mc-layout{grid-template-columns:1fr;}
+  #map{height:320px;}           /* Carte plus petite sur mobile */
+  /* Galerie en 2 colonnes sur mobile */
+  .gallery-grid{grid-template-columns:1fr 1fr;}
+  /* Annule les spans spéciaux sur mobile (tous les items en 1 colonne) */
+  .gal-item:nth-child(1),.gal-item:nth-child(6),.gal-item:nth-child(7){grid-column:span 1;height:200px;}
+  /* Détails de la modale en 1 colonne sur mobile */
+  .modal-details{grid-template-columns:1fr;}
+  /* Flèches du lightbox plus proches de l'image sur mobile */
+  .lb-prev{left:-8px;}
+  .lb-next{right:-8px;}
+  /* Formulaire : les champs prénom+nom passent en 1 colonne */
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+
+<body>
+
+
+<!-- ── BARRE D'ANNONCE ───────────────────────────────────────
+     Petit bandeau rouge en haut de page avec le nom de la ville
+     ──────────────────────────────────────────────────────────── -->
+<!-- TOP BAR -->
+<div class="top-bar"> Marrakech — La Ville Rouge · Capitale du Sud</div>
+
+<!-- ── NAVIGATION ────────────────────────────────────────────
+     Barre de navigation sticky (reste visible lors du scroll)
+     Contient : logo à gauche + liens à droite
+     ──────────────────────────────────────────────────────────── -->
+<!-- NAVBAR -->
+<nav>
+  <!-- Logo cliquable (ramène en haut de page via href="#") -->
+  <a class="nav-logo" href="#">
+    <!-- SVG = image vectorielle (étoile chérifienne) dessinée en code
+         viewBox : système de coordonnées du SVG
+         polygon : forme géométrique définie par des points x,y
+         fill="none" : l'intérieur de l'étoile est transparent
+         stroke : couleur du contour | stroke-width : épaisseur du contour -->
+    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="30,4 36,22 56,22 40,33 46,52 30,40 14,52 20,33 4,22 24,22" fill="none" stroke="#7B1010" stroke-width="2.2"/>
+      <!-- circle = cercle SVG | cx,cy = centre | r = rayon | opacity = transparence -->
+      <circle cx="30" cy="30" r="5" fill="#C9A96E" opacity=".6"/>
+    </svg>
+    <div class="logo-text">
+      <!-- Nom de la ville en majuscules -->
+      <div class="city">MARRAKECH</div>
+      <!-- Sous-titre du logo -->
+      <div class="sub">La Ville Rouge</div>
+    </div>
+  </a>
+
+  <!-- Liste des liens de navigation
+       <ul> = liste non ordonnée | <li> = item de liste
+       href="#hero" = ancre vers la section avec id="hero"
+       class="active" = ce lien est actif au départ (JavaScript le met à jour) -->
+  <ul class="nav-links">
+    <li><a href="#hero" class="active">Accueil</a></li>
+    <li><a href="#activites">Activités</a></li>
+    <li><a href="#galerie">Galerie</a></li>
+    <li><a href="#restaurants">Restaurants & Hôtels</a></li>
+    <li><a href="#carte">Carte</a></li>
+    <li><a href="#contact">Météo & Contact</a></li>
+    <!-- Lien vers le dashboard principal (remonte d'un dossier avec ../) -->
+    <li><a href="../index/dashboard.html"> Dashboard</a></li>
+  </ul>
+</nav>
+
+<!-- 
+     SECTION 1 – HERO
+     Grande image plein écran avec titre animé et boutons
+     id="hero" : identifiant unique pour les liens d'ancre et le CSS
+      -->
+<!-- ══ SECTION 1 – HERO ══ -->
+<section id="hero">
+
+  <!-- Image de fond : chargée via CSS background:url() dans .hero-img
+       Cette div n'a pas de contenu texte, elle sert uniquement de fond -->
+  <div class="hero-img"></div>
+
+  <!-- Overlay sombre semi-transparent sur l'image pour rendre le texte lisible -->
+  <div class="hero-overlay"></div>
+
+  <!-- Motif géométrique zellige en filigrane (texture décorative) -->
+  <div class="hero-pattern"></div>
+
+  <!-- SVG de silhouette de montagnes (Atlas) en bas du hero
+       viewBox="0 0 1440 120" : coordonnées du SVG (1440px large, 120px haut)
+       preserveAspectRatio="none" : s'étire pour remplir toute la largeur
+       path d="..." : tracé de la forme géométrique (silhouette de montagnes)
+       fill : couleur de remplissage de la forme -->
+  <!-- SVG mountains -->
+  <svg class="hero-wave" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,120 L0,70 L180,20 L360,80 L540,30 L720,85 L900,18 L1080,72 L1260,28 L1440,60 L1440,120Z" fill="rgba(26,8,8,0.55)"/>
+    <path d="M0,120 L0,95 L240,65 L480,100 L720,55 L960,90 L1200,50 L1440,78 L1440,120Z" fill="rgba(26,8,8,0.7)"/>
+  </svg>
+
+  <!-- Contenu textuel du hero : titre + sous-titre + boutons -->
+  <div class="hero-content">
+    <!-- h1 = titre principal de la page (un seul h1 par page recommandé)
+         La balise <em> (emphasis) = italique + couleur or (via CSS .hero-title em) -->
+    <h1 class="hero-title">MARRA<em>KECH</em></h1>
+
+    <!-- Sous-titre descriptif -->
+    <p class="hero-sub">La Ville Rouge — Perle du Sud</p>
+
+    <!-- Groupe de deux boutons :
+         onclick = fonction JavaScript exécutée au clic
+         scrollIntoView({behavior:'smooth'}) = scroll animé vers la section -->
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('activites').scrollIntoView({behavior:'smooth'})">Découvrir</button>
+      <button class="btn-outline" onclick="document.getElementById('galerie').scrollIntoView({behavior:'smooth'})">Voir la galerie</button>
+    </div>
+  </div>
+
+  <!-- Indicateur de scroll : flèche animée qui invite à défiler vers le bas -->
+  <div class="scroll-hint">
+    <span style="font-size:10px;letter-spacing:2px;">DÉFILER</span>
+    <!-- Icône SVG de flèche vers le bas
+         viewBox="0 0 24 24" : coordonnées standard pour les icônes
+         fill="none" : fond transparent
+         stroke="currentColor" : hérite la couleur du texte parent
+         path d="M12 5v14M5 12l7 7 7-7" : tracé de la flèche -->
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 2 – ACTIVITÉS TOURISTIQUES
+     Cards avec photos, descriptions et boutons de filtre
+     ══════════════════════════════════════════════════════════ -->
+<!-- ══ SECTION 2 – ACTIVITÉS ══ -->
+<section id="activites">
+
+  <!-- En-tête de section : eyebrow + titre + séparateur décoratif + description -->
+  <div class="sec-head">
+    <div class="eyebrow">À découvrir</div>
+    <!-- h2 = titre de niveau 2 (sous-titre de section) -->
+    <h2>Activités <em>touristiques</em></h2>
+    <!-- Séparateur décoratif : deux traits + étoile ✦ -->
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <p>De la place Jemaa el-Fna aux jardins secrets, Marrakech regorge d'expériences inoubliables.</p>
+  </div>
+
+  <!-- Barre de filtres : chaque bouton filtre les cards par catégorie
+       onclick="filterAct('culture', this)" :
+       - filterAct = fonction JavaScript définie plus bas
+       - 'culture' = catégorie à filtrer
+       - this = référence au bouton cliqué (pour lui ajouter la classe active) -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterAct('all',this)">Tout</button>
+    <button class="filter-btn" onclick="filterAct('culture',this)">Culture</button>
+    <button class="filter-btn" onclick="filterAct('nature',this)">Nature</button>
+    <button class="filter-btn" onclick="filterAct('food',this)">Gastronomie</button>
+    <button class="filter-btn" onclick="filterAct('bien-etre',this)">Bien-être</button>
+  </div>
+
+  <!-- Grille des cards d'activités
+       id="actGrid" : identifiant utilisé par JavaScript pour sélectionner les cards -->
+  <div class="cards-grid" id="actGrid">
+
+    <!-- CARD : Place Jemaa el-Fna
+         data-cat="culture" : attribut personnalisé lu par JavaScript pour le filtrage
+         onclick="openModal('jemaa')" : ouvre la modale avec les données de 'jemaa' -->
+    <div class="act-card" data-cat="culture" onclick="openModal('jemaa')">
+      <div class="card-img-wrap">
+        <!-- img src : chemin relatif vers l'image dans le dossier images/
+             alt : texte alternatif (accessibilité + référencement)
+             onerror : JavaScript exécuté si l'image ne se charge pas (affiche un gradient) -->
+        <img src="images/photo2.jpg" alt="Jemaa el-Fna" onerror="this.style.background='linear-gradient(135deg,#7b1010,#c9712a)';this.style.height='210px'">
+        <!-- Badge de catégorie positionné en absolu sur l'image -->
+        <span class="card-badge badge-culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <h3>Place Jemaa el-Fna</h3>
+        <p>Le cœur battant de Marrakech — conteurs, musiciens, charmeurs de serpents et étals de jus d'orange.</p>
+        <div class="card-meta"><span> Toute la journée</span><span> Entrée libre</span></div>
+        <!-- onclick sur le bouton → ouvre la même modale que la card -->
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARD : Jardin Majorelle -->
+    <div class="act-card" data-cat="nature" onclick="openModal('majorelle')">
+      <div class="card-img-wrap">
+        <img src="images/photo3.jpg" alt="Jardin Majorelle" onerror="this.style.background='linear-gradient(135deg,#1a5c3a,#1a3a5c)';this.style.height='210px'">
+        <span class="card-badge badge-nature">Nature</span>
+      </div>
+      <div class="card-body">
+        <h3>Jardin Majorelle</h3>
+        <p>Un jardin botanique somptueux aux couleurs bleu cobalt et jaune, ancienne propriété d'Yves Saint Laurent.</p>
+        <div class="card-meta"><span> 8h–18h</span><span> 150 MAD</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARD : Palais Bahia -->
+    <div class="act-card" data-cat="culture" onclick="openModal('bahia')">
+      <div class="card-img-wrap">
+        <img src="images/photo4.jpg" alt="Palais Bahia" onerror="this.style.background='linear-gradient(135deg,#4a3000,#c9a96e)';this.style.height='210px'">
+        <span class="card-badge badge-culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <h3>Palais Bahia</h3>
+        <p>Un chef-d'œuvre de l'architecture arabo-andalouse du XIXe siècle, aux zelliges et stucs éblouissants.</p>
+        <div class="card-meta"><span> 9h–17h</span><span> 70 MAD</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARD : Mosquée Koutoubia -->
+    <div class="act-card" data-cat="culture" onclick="openModal('koutoubia')">
+      <div class="card-img-wrap">
+        <img src="images/photo7.jpg" alt="Mosquée Koutoubia" onerror="this.style.background='linear-gradient(135deg,#5a0a0a,#7b1010)';this.style.height='210px'">
+        <span class="card-badge badge-culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <h3>Mosquée Koutoubia</h3>
+        <p>Le symbole de Marrakech — un minaret du XIIe siècle de 69 mètres, visible de presque partout dans la ville.</p>
+        <div class="card-meta"><span> Extérieur libre</span><span> Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARD : Gastronomie marocaine -->
+    <div class="act-card" data-cat="food" onclick="openModal('tajine')">
+      <div class="card-img-wrap">
+        <img src="images/photo5.jpg" alt="Gastronomie marocaine" onerror="this.style.background='linear-gradient(135deg,#c0392b,#c9712a)';this.style.height='210px'">
+        <span class="card-badge badge-food">Gastronomie</span>
+      </div>
+      <div class="card-body">
+        <h3>Gastronomie marocaine</h3>
+        <p>Tajines parfumés, couscous royal, pastilla au pigeon et thé à la menthe — une cuisine mille et une nuits.</p>
+        <div class="card-meta"><span> Restaurants</span><span> 80–400 MAD</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARD : Riads & Spas -->
+    <div class="act-card" data-cat="bien-etre" onclick="openModal('riad')">
+      <div class="card-img-wrap">
+        <img src="images/photo6.jpg" alt="Riad & Spa" onerror="this.style.background='linear-gradient(135deg,#5c1a5c,#1a3a5c)';this.style.height='210px'">
+        <span class="card-badge badge-bien-etre">Bien-être</span>
+      </div>
+      <div class="card-body">
+        <h3>Riads & Spas</h3>
+        <p>S'évader dans un riad aux piscines turquoise et aux jardins secrets, avec hammam et soins à l'huile d'argan.</p>
+        <div class="card-meta"><span> Spa & Hammam</span><span> 300–1500 MAD</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+  </div>
+  <!-- Fin de la grille des activités -->
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 3 – GALERIE PHOTOS
+     Grille de photos en mosaïque avec lightbox au clic
+     ══════════════════════════════════════════════════════════ -->
+<!-- ══ SECTION 3 – GALERIE ══ -->
+<section id="galerie">
+  <div class="sec-head">
+    <div class="eyebrow">En images</div>
+    <h2><em>Galerie</em> photos</h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <p>Cliquez sur une photo pour l'agrandir.</p>
+  </div>
+
+  <!-- Grille galerie en mosaïque (CSS grid avec spans différents) -->
+  <div class="gallery-grid">
+    <!-- 7 photos numérotées photo1.jpg à photo7.jpg
+         onclick="openLb(0)" : ouvre le lightbox à l'index 0 (première photo)
+         Le chiffre correspond à l'index dans le tableau lbSrcs (JavaScript) -->
+    <div class="gal-item" onclick="openLb(0)">
+      <img src="images/photo1.jpg" alt="Marrakech remparts rouges coucher de soleil" onerror="this.style.background='linear-gradient(135deg,#7b1010,#c9712a)'">
+      <!-- Overlay avec icône "agrandir" : apparaît au survol via CSS -->
+      <div class="gal-overlay">
+        <!-- SVG d'icône "agrandir/plein écran" -->
+        <svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      </div>
+    </div>
+    <div class="gal-item" onclick="openLb(1)">
+      <img src="images/photo2.jpg" alt="Jemaa el-Fna de nuit" onerror="this.style.background='linear-gradient(135deg,#1a1100,#7b1010)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(2)">
+      <img src="images/photo3.jpg" alt="Jardin Majorelle bleu jaune" onerror="this.style.background='linear-gradient(135deg,#1a5c3a,#1a3a5c)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(3)">
+      <img src="images/photo4.jpg" alt="Palais Bahia mosaïque" onerror="this.style.background='linear-gradient(135deg,#4a3000,#c9a96e)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(4)">
+      <img src="images/photo5.jpg" alt="Tajine marocain" onerror="this.style.background='linear-gradient(135deg,#c0392b,#c9712a)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(5)">
+      <img src="images/photo6.jpg" alt="Riad piscine" onerror="this.style.background='linear-gradient(135deg,#5c1a5c,#1a3a5c)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(6)">
+      <img src="images/photo7.jpg" alt="Mosquée Koutoubia coucher de soleil" onerror="this.style.background='linear-gradient(135deg,#5a0a0a,#c9a96e)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+  </div>
+  <!-- Fin galerie-grid -->
+</section>
+
+<!-- ── LIGHTBOX : fenêtre popup pour afficher les photos en grand ──
+     Cachée par défaut (display:none en CSS)
+     La classe "open" est ajoutée par la fonction JavaScript openLb() -->
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-inner">
+    <!-- Bouton fermer (X) : onclick appelle la fonction closeLb() -->
+    <button class="lb-close" onclick="closeLb()">✕</button>
+    <!-- Bouton flèche gauche (précédent) : navLb(-1) = index - 1 -->
+    <button class="lb-nav lb-prev" onclick="navLb(-1)">‹</button>
+    <!-- Image agrandie : src et alt sont mis à jour par JavaScript -->
+    <img id="lbImg" src="" alt="">
+    <!-- Bouton flèche droite (suivant) : navLb(1) = index + 1 -->
+    <button class="lb-nav lb-next" onclick="navLb(1)">›</button>
+    <!-- Légende de la photo : textContent mis à jour par JavaScript -->
+    <div class="lb-caption" id="lbCap"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 4 – RESTAURANTS & HÉBERGEMENT
+     Cards avec filtres (Restaurant / Hôtel / Riad) et modales
+     ══════════════════════════════════════════════════════════ -->
+<!-- ══ SECTION 4 – RESTAURANTS & HÉBERGEMENT ══ -->
+<section id="restaurants">
+  <div class="sec-head">
+    <div class="eyebrow">Où manger & dormir</div>
+    <h2>Restaurants & <em>Hébergement</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <!-- style="color:..." appliqué inline car le texte est sur fond rouge -->
+    <p style="color:rgba(255,255,255,.65)">Les meilleures adresses de la ville ocre.</p>
+  </div>
+
+  <!-- Barre de filtres pour restaurants/hébergement
+       filterRH : fonction JavaScript différente de filterAct (cible #rhGrid) -->
+  <div class="rh-filter-bar">
+    <button class="rh-filter-btn active" onclick="filterRH('all',this)">Tout</button>
+    <button class="rh-filter-btn" onclick="filterRH('restaurant',this)">Restaurants</button>
+    <button class="rh-filter-btn" onclick="filterRH('hotel',this)">Hôtels</button>
+    <button class="rh-filter-btn" onclick="filterRH('riad',this)">Riads</button>
+  </div>
+
+  <!-- Grille des restaurants et hébergements
+       id="rhGrid" : ciblé par JavaScript pour le filtrage -->
+  <div class="rh-grid" id="rhGrid">
+
+    <!-- ── RESTAURANTS ── -->
+
+    <!-- CARD : Le Foundouk
+         data-rh="restaurant" : attribut de filtre pour JavaScript
+         ★★★★★ : étoiles en HTML (caractères Unicode) -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('foundouk')">
+      <div class="rh-card-img">
+        <img src="images/photo8.jpg" alt="Le Foundouk" onerror="this.style.background='linear-gradient(135deg,#7b1010,#c9712a)'">
+        <span class="rh-badge badge-resto">Restaurant</span>
+        <span class="stars">★★★★★</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Gastronomique</div>
+        <h3>Le Foundouk</h3>
+        <p>Restaurant gastronomique dans un caravansérail du XVIe siècle. Cuisine marocaine raffinée avec terrasse panoramique sur les toits de la médina.</p>
+        <div class="rh-meta"><span> 200–400 MAD</span><span> Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARD : Al Fassia -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('alfassia')">
+      <div class="rh-card-img">
+        <img src="images/photo5.jpg" alt="Al Fassia" onerror="this.style.background='linear-gradient(135deg,#4a3000,#c9a96e)'">
+        <span class="rh-badge badge-resto">Restaurant</span>
+        <span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Cuisine Fassia</div>
+        <h3>Al Fassia</h3>
+        <p>Fondé en 1987 et géré exclusivement par des femmes, Al Fassia perpétue les recettes traditionnelles de Fès — couscous royal, bastilla et tajines authentiques.</p>
+        <div class="rh-meta"><span> 150–300 MAD</span><span> Guéliz</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARD : Dar Moha -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('darmoha')">
+      <div class="rh-card-img">
+        <img src="images/photo12.jpg" alt="Dar Moha" onerror="this.style.background='linear-gradient(135deg,#7b1010,#c9a96e)'">
+        <span class="rh-badge badge-resto">Restaurant</span>
+        <span class="stars">★★★★★</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Cuisine Marocaine Créative</div>
+        <h3>Dar Moha</h3>
+        <p>Le chef Mohamed Fedal revisite la cuisine marocaine dans un riad du XVIIIe siècle avec piscine. Récompensé par le guide Gault&Millau Maroc.</p>
+        <div class="rh-meta"><span> 250–500 MAD</span><span> Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARD : Comptoir Darna -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('comptoir')">
+      <div class="rh-card-img">
+        <img src="images/photo13.jpg" alt="Comptoir Darna" onerror="this.style.background='linear-gradient(135deg,#1a3a5c,#c9712a)'">
+        <span class="rh-badge badge-resto">Restaurant</span>
+        <span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Cuisine Internationale</div>
+        <h3>Comptoir Darna</h3>
+        <p>Institution de la vie nocturne marrakchie depuis 1999. Cuisine internationale, shows de danse orientale chaque soir et cocktails signature dans un décor lounge.</p>
+        <div class="rh-meta"><span> 200–450 MAD</span><span> Hivernage</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARD : Nomad -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('nomad')">
+      <div class="rh-card-img">
+        <img src="images/photo14.jpg" alt="Nomad Restaurant" onerror="this.style.background='linear-gradient(135deg,#4a3000,#c9712a)'">
+        <span class="rh-badge badge-resto">Café & Rooftop</span>
+        <span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Café & Rooftop</div>
+        <h3>Nomad</h3>
+        <p>Rooftop branché face à la place des épices avec vue sur la médina. Cuisine marocaine moderne, mezze et cocktails. Lieu incontournable de Marrakech.</p>
+        <div class="rh-meta"><span> 80–200 MAD</span><span> Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARD : Café Clock -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('cafeclock')">
+      <div class="rh-card-img">
+        <img src="images/photo2.jpg" alt="Café Clock" onerror="this.style.background='linear-gradient(135deg,#5c1a5c,#c9712a)'">
+        <span class="rh-badge badge-resto">Café Culturel</span>
+        <span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Street Food & Culture</div>
+        <h3>Café Clock</h3>
+        <p>Café culturel de la médina avec cours de cuisine, musique gnawa et le célèbre burger de chameau. Lieu de rencontre entre artistes locaux et voyageurs.</p>
+        <div class="rh-meta"><span> 60–150 MAD</span><span> Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- ── RIADS ── -->
+
+    <!-- CARD : La Mamounia (Palace) -->
+    <div class="rh-card" data-rh="riad" onclick="openModal('mamounia')">
+      <div class="rh-card-img">
+        <img src="images/photo9.jpg" alt="La Mamounia" onerror="this.style.background='linear-gradient(135deg,#1a3a5c,#5c1a5c)'">
+        <span class="rh-badge badge-riad">Riad / Palace</span>
+        <span class="stars">★★★★★</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Palace Légendaire</div>
+        <h3>La Mamounia</h3>
+        <p>Ouvert en 1923, classé parmi les meilleurs hôtels du monde. Jardins centenaires, 7 restaurants, spa primé et architecture mauresque et art déco.</p>
+        <div class="rh-meta"><span> 3000–8000 MAD/nuit</span><span> Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARD : Riad Yima -->
+    <div class="rh-card" data-rh="riad" onclick="openModal('riadyma')">
+      <div class="rh-card-img">
+        <img src="images/photo6.jpg" alt="Riad Yima" onerror="this.style.background='linear-gradient(135deg,#c9712a,#7b1010)'">
+        <span class="rh-badge badge-riad">Riad</span>
+        <span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Riad Boutique</div>
+        <h3>Riad Yima</h3>
+        <p>Créé par l'artiste Hassan Hajjaj, ce riad boutique de 4 suites est une explosion de couleurs et de créativité. Café rooftop avec vue sur les toits de la médina.</p>
+        <div class="rh-meta"><span> 800–1400 MAD/nuit</span><span> Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- ── HÔTELS ── -->
+
+    <!-- CARD : Sofitel Marrakech -->
+    <div class="rh-card" data-rh="hotel" onclick="openModal('sofitel')">
+      <div class="rh-card-img">
+        <img src="images/photo10.jpg" alt="Sofitel Marrakech" onerror="this.style.background='linear-gradient(135deg,#1a5c3a,#1a3a5c)'">
+        <span class="rh-badge badge-hotel">Hôtel</span>
+        <span class="stars">★★★★★</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Hôtel 5 étoiles</div>
+        <h3>Sofitel Marrakech</h3>
+        <p>334 chambres, 7 ha de jardins, piscine olympique et spa So' Wellness de 2500 m². Alliance de l'élégance française et de l'architecture mauresque à Hivernage.</p>
+        <div class="rh-meta"><span> 1500–3500 MAD/nuit</span><span> Hivernage</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARD : Savoy Le Grand Hotel -->
+    <div class="rh-card" data-rh="hotel" onclick="openModal('savoy')">
+      <div class="rh-card-img">
+        <img src="images/photo11.jpg" alt="Savoy Le Grand Hotel" onerror="this.style.background='linear-gradient(135deg,#1a3a5c,#c9712a)'">
+        <span class="rh-badge badge-hotel">Hôtel</span>
+        <span class="stars">★★★★★</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Resort 5 étoiles</div>
+        <h3>Savoy Le Grand Hotel</h3>
+        <p>Resort de luxe à Hivernage avec 3 piscines extérieures, jardins tropicaux de 6 ha, spa Savoy Wellness et 5 restaurants. L'un des plus grands complexes hôteliers de Marrakech.</p>
+        <div class="rh-meta"><span> 2000–5000 MAD/nuit</span><span> Hivernage</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+  </div>
+  <!-- Fin rh-grid -->
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 5 – CARTE INTERACTIVE
+     Utilise Leaflet.js pour afficher une carte OpenStreetMap
+     avec des marqueurs personnalisés sur les lieux touristiques
+     ══════════════════════════════════════════════════════════ -->
+<!-- ══ SECTION 5 – CARTE ══ -->
+<section id="carte">
+  <div class="sec-head">
+    <div class="eyebrow">Se repérer</div>
+    <h2>Carte <em>interactive</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <p>Cliquez sur un lieu pour voir les infos. Cliquez dans la liste pour centrer la carte.</p>
+  </div>
+
+  <!-- Mise en page : carte à gauche + liste à droite -->
+  <div class="map-layout">
+    <!-- Div vide : Leaflet.js injecte la carte ici via JavaScript
+         id="map" : requis par Leaflet pour cibler ce div -->
+    <div id="map"></div>
+    <!-- Liste des lieux : items ajoutés dynamiquement par JavaScript -->
+    <div class="map-list" id="mapList">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!--
+     SECTION 6 – MÉTÉO & CONTACT
+     Widget météo (données statiques) + formulaire de contact validé par JS
+     -->
+<!-- ══ SECTION 6 – MÉTÉO & CONTACT ══ -->
+<section id="contact">
+  <div class="sec-head">
+    <div class="eyebrow">Infos pratiques</div>
+    <h2>Météo & <em>Contact</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+  </div>
+
+  <!-- Mise en page 2 colonnes : météo + formulaire -->
+  <div class="mc-layout">
+
+    <!-- WIDGET MÉTÉO
+         Les valeurs (température, description, etc.) sont
+         injectées par la fonction JavaScript loadMeteo() -->
+    <!-- MÉTÉO -->
+    <div class="meteo-box" id="meteoBox">
+      <!-- Nom de la ville -->
+      <div class="meteo-city"> Marrakech, Maroc</div>
+      <!-- Température : id="mTemp" permet à JS de mettre à jour le contenu -->
+      <div class="meteo-temp" id="mTemp">--°</div>
+      <!-- Description météo (ex: "Ensoleillé") -->
+      <div class="meteo-desc" id="mDesc">Chargement…</div>
+      <!-- Grille des 4 détails météo -->
+      <div class="meteo-grid">
+        <div class="meteo-item"><div class="label">Ressenti</div><div class="val" id="mFeel">--</div></div>
+        <div class="meteo-item"><div class="label">Humidité</div><div class="val" id="mHum">--</div></div>
+        <div class="meteo-item"><div class="label">Vent</div><div class="val" id="mWind">--</div></div>
+        <div class="meteo-item"><div class="label">Couverture</div><div class="val" id="mCloud">--</div></div>
+      </div>
+    </div>
+
+    <!-- FORMULAIRE DE CONTACT
+         La validation et l'envoi sont gérés par la fonction JavaScript sendForm()
+         Les <input> et <textarea> ont des id= pour que JS puisse lire leurs valeurs -->
+    <!-- CONTACT FORM -->
+    <div class="contact-form">
+      <h3>Nous contacter</h3>
+      <p class="sub">Une question sur Marrakech ? Écrivez-nous !</p>
+      <!-- Deux champs côte à côte grâce à form-row -->
+      <div class="form-row">
+        <div class="form-group">
+          <!-- label : clique sur le label = focus sur l'input associé -->
+          <label>Prénom</label>
+          <!-- type="text" : champ texte libre | placeholder : texte d'exemple -->
+          <input type="text" id="fPrenom" placeholder="Votre prénom">
+        </div>
+        <div class="form-group">
+          <label>Nom</label>
+          <input type="text" id="fNom" placeholder="Votre nom">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <!-- type="email" : validation du format email par le navigateur -->
+        <input type="email" id="fEmail" placeholder="email@exemple.com">
+      </div>
+      <div class="form-group">
+        <label>Sujet</label>
+        <!-- select : liste déroulante | option : chaque choix disponible -->
+        <select id="fSujet">
+          <option value="">Choisir un sujet…</option>
+          <option>Activités touristiques</option>
+          <option>Restaurants & Hébergement</option>
+          <option>Infos pratiques</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <!-- textarea : zone de texte multiligne
+             rows="5" : hauteur initiale (5 lignes) -->
+        <textarea id="fMsg" placeholder="Votre message…"></textarea>
+      </div>
+      <!-- Bouton d'envoi : onclick appelle sendForm() pour valider et envoyer -->
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="sendForm()">Envoyer le message</button>
+      <!-- Message de succès : caché par défaut (display:none), affiché par JS après envoi -->
+      <div class="form-success" id="formOk"> Message envoyé ! Merci, nous vous répondrons rapidement.</div>
+    </div>
+  </div>
+  <!-- Fin mc-layout -->
+</section>
+
+<!-- 
+     FOOTER (pied de page)
+     Liens internes (ancres) + lien de retour au dashboard
+   -->
+<!-- FOOTER -->
+<footer>
+  <!-- Grand nom de la ville en titre -->
+  <div class="foot-logo">MARRAKECH</div>
+  <!-- Sous-titre -->
+  <div class="foot-sub">La Ville Rouge · Capitale du Sud</div>
+  <!-- Liens de navigation interne (ancres vers les sections de la page)
+       + lien vers le dashboard principal (chemin relatif ../) -->
+  <div class="foot-links">
+    <a href="#hero">Accueil</a>
+    <a href="#activites">Activités</a>
+    <a href="#galerie">Galerie</a>
+    <a href="#restaurants">Restaurants</a>
+    <a href="#carte">Carte</a>
+    <a href="#contact">Contact</a>
+    <!-- Lien retour au dashboard : ../ remonte d'un niveau dans les dossiers -->
+    <a href="../index/dashboard.html">Retour au Dashboard</a>
+  </div>
+</footer>
+
+<!-- ── SIDEBAR FLOTTANTE ──────────────────────────────────────
+     3 boutons fixes sur le côté droit de l'écran :
+     - Retour en haut (flèche)
+     - Aller à la carte
+     - Aller au contact
+      -->
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <!-- window.scrollTo({top:0}) = remonte tout en haut de la page -->
+  <button class="s-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Haut">↑</button>
+  <!-- scrollIntoView = fait défiler jusqu'à l'élément ciblé -->
+  <button class="s-btn" onclick="document.getElementById('carte').scrollIntoView({behavior:'smooth'})" title="Carte">🗺</button>
+  <button class="s-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" title="Contact">✉</button>
+</div>
+
+
+<!-- ── MODALE (popup de détails) ─────────────────────────────
+     Fenêtre popup qui s'ouvre quand on clique sur "Savoir plus"
+     Cachée par défaut, affichée par la fonction JavaScript openModal()
+     ──────────────────────────────────────────────────────────── -->
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <!-- onclick sur l'overlay (fond sombre) = ferme la modale
+       event.target===this = vérifie qu'on a cliqué sur le fond et pas sur la modale -->
+  <div class="modal">
+    <!-- Bouton de fermeture X -->
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <!-- Image : src et alt sont mis à jour par JavaScript via openModal() -->
+    <img id="mImg" class="modal-img" src="" alt="">
+    <div class="modal-body">
+      <!-- Catégorie (ex: "Culture · Médina de Marrakech") -->
+      <div id="mCat" class="m-cat"></div>
+      <!-- Titre du lieu -->
+      <h2 id="mTitle"></h2>
+      <!-- Description longue -->
+      <p id="mDesc2" class="m-desc"></p>
+      <!-- Grille des détails (tableau clé-valeur) générée par JavaScript -->
+      <div class="modal-details" id="mDets"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 
+     SCRIPTS JAVASCRIPT
+     Chargés en FIN DE BODY pour ne pas bloquer l'affichage HTML
+     -->
+
+<!-- Leaflet.js : bibliothèque JavaScript pour la carte interactive
+     Doit être chargée AVANT notre script qui l'utilise -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+/* 
+   JAVASCRIPT — Tout le code JS de la page
+   Fonctions : openModal, closeModal, filterAct, filterRH,
+               openLb, closeLb, navLb, carte Leaflet,
+               météo statique, validation formulaire,
+               mise en évidence du lien de nav actif
+   */
+
+/* ══ DONNÉES DES MODALES 
+   Objet JavaScript contenant les informations de chaque lieu
+   Clé = identifiant unique (ex: 'jemaa')
+   Valeur = objet avec : img, cat, title, desc, dets (tableau de détails)
+    */
+/* ══ MODAL DATA ══ */
+const modalData = {
+  /* Chaque entrée = un lieu touristique, restaurant ou hébergement
+     img : chemin relatif de l'image dans le dossier images/
+     cat : catégorie affichée en petit texte doré
+     title : titre principal
+     desc : description longue
+     dets : tableau de paires [label, valeur] pour les détails */
+  jemaa:{
+    img:'images/photo2.jpg',cat:' Culture · Médina de Marrakech',
+    title:'Place Jemaa el-Fna',
+    desc:'Classée par l\'UNESCO au patrimoine immatériel de l\'humanité, la place Jemaa el-Fna est le cœur vivant de Marrakech. Dès le coucher du soleil, elle se transforme en un spectacle grandiose : conteurs halqa, musiciens gnawa, cracheurs de feu, henné, et des dizaines d\'étals fumants proposant escargots, harira, jus d\'orange et brochettes. Un endroit unique au monde.',
+    dets:[['Accès','Entrée libre, toute la journée'],['Meilleur moment','Coucher du soleil, 18h–22h'],['À faire','Manger au marché du soir'],['Unesco','Patrimoine immatériel 2001'],['Situation','Centre de la médina'],['Conseil','Garder ses affaires, affluence le soir']]
+  },
+  majorelle:{
+    img:'images/photo3.jpg',cat:' Nature · Guéliz',
+    title:'Jardin Majorelle',
+    desc:'Créé par le peintre Jacques Majorelle en 1924 et racheté par Yves Saint Laurent en 1980, ce jardin botanique de 2,5 hectares est l\'une des attractions les plus visitées du Maroc. Le bleu cobalt intense des bâtiments (breveté "Bleu Majorelle") tranche magnifiquement avec le vert tropical des bambous, cactus et palmiers. Le Musée Berbère adjacent est également incontournable.',
+    dets:[['Entrée','150 MAD (jardin) + 30 MAD (musée)'],['Horaires','8h–17h30 (été : jusqu\'à 18h)'],['Superficie','2,5 hectares'],['Créé par','Jacques Majorelle (1924)'],['Racheté par','Yves Saint Laurent (1980)'],['Conseil','Arriver dès l\'ouverture pour éviter la foule']]
+  },
+  bahia:{
+    img:'images/photo4.jpg',cat:' Culture · Médina',
+    title:'Palais Bahia',
+    desc:'Construit au XIXe siècle pour le Grand Vizir Si Moussa puis agrandi par son fils Ba Ahmed, le Palais Bahia est un chef-d\'œuvre de l\'artisanat marocain. Ses 8 hectares comprennent une succession de cours intérieures, appartements, jardins et salles d\'apparat ornés de zelliges, de stuc sculpté, de cèdre peint et de moucharabiehs. Le nom "Bahia" signifie "brillance" en arabe.',
+    dets:[['Entrée','70 MAD'],['Horaires','9h–17h (tlj)'],['Superficie','8 hectares'],['Construit','XIXe siècle'],['Style','Arabo-andalou'],['Situation','Quartier Mellah']]
+  },
+  koutoubia:{
+    img:'images/photo7.jpg',cat:' Culture · Médina',
+    title:'Mosquée Koutoubia',
+    desc:'Édifiée au XIIe siècle sous le règne du calife almohade Yacoub El Mansour, la mosquée Koutoubia est le monument emblématique de Marrakech. Son minaret de 69 mètres, couronné de quatre sphères dorées, a servi de modèle à la Giralda de Séville et à la Tour Hassan de Rabat. Entourée de jardins fleuris, elle est particulièrement sublime au coucher du soleil.',
+    dets:[['Hauteur minaret','69 mètres'],['Construite','XIIe siècle'],['Style','Almohade'],['Accès','Extérieur libre (non-musulmans)'],['Jardins','Ouverts au public'],['Meilleur moment','Coucher du soleil']]
+  },
+  tajine:{
+    img:'images/photo5.jpg',cat:' Gastronomie · Marrakech',
+    title:'Gastronomie marocaine',
+    desc:'La cuisine marocaine est l\'une des plus riches et des plus parfumées du monde. À Marrakech, chaque repas est une célébration. Le tajine d\'agneau aux pruneaux et amandes, le couscous du vendredi, la bastilla au pigeon et la harira du Ramadan sont des incontournables. Les épices du souk — cumin, coriandre, ras el hanout, safran — embaument les ruelles de la médina.',
+    dets:[['Plats emblématiques','Tajine, Couscous, Pastilla'],['Budget moyen','80 à 400 MAD / personne'],['Marché','Souk des épices (Rahba Kedima)'],['À essayer','Harira + chebakia'],['Cours de cuisine','Plusieurs riads proposent des ateliers'],['Jus d\'orange','1 MAD la place Jemaa el-Fna !']]
+  },
+  riad:{
+    img:'images/photo6.jpg',cat:' Bien-être · Médina & Palmeraie',
+    title:'Riads & Spas de Marrakech',
+    desc:'Le riad est l\'essence même de l\'hospitalité marrakchie. Ces maisons traditionnelles rénovées, organisées autour d\'un patio avec fontaine et jardin intérieur, offrent un refuge de paix loin de l\'agitation des souks. La plupart proposent hammam et soins à l\'argan, au ghassoul et au savon beldi. La palmeraie de Marrakech regorge également de spas et lodges de luxe.',
+    dets:[['Type','Riad traditionnel / Boutique hotel'],['Expérience','Hammam + gommage au kessa'],['Produits','Savon beldi, Huile d\'argan, Ghassoul'],['Prix riad','500 – 3000 MAD / nuit'],['Prix hammam','80 – 200 MAD'],['Conseil','Réserver à l\'avance en haute saison']]
+  },
+  foundouk:{
+    img:'images/photo8.jpg',cat:' Restaurant · Médina de Marrakech',
+    title:'Le Foundouk',
+    desc:'Niché dans un caravansérail du XVIe siècle au cœur de la médina, Le Foundouk est l\'une des adresses gastronomiques les plus réputées de Marrakech. La cuisine marocaine y est revisitée avec finesse, dans un décor de poutres apparentes, de zelliges et de bougies. La terrasse rooftop offre une vue imprenable sur les toits de la médina et le minaret de la Koutoubia.',
+    dets:[['Prix moyen','200 – 400 MAD / personne'],['Horaires','12h–15h · 19h–23h'],['Réservation','Indispensable'],['Spécialité','Pastilla au pigeon, Tajine d\'agneau'],['Cadre','Riad XVIe siècle'],['Note',' 4.8 / 5']]
+  },
+  alfassia:{
+    img:'images/photo5.jpg',cat:' Restaurant · Guéliz, Marrakech',
+    title:'Al Fassia',
+    desc:'Depuis 1987, Al Fassia est une institution de la gastronomie marrakchie. Géré entièrement par des femmes, ce restaurant perpétue les recettes ancestrales de la cuisine fassia avec une authenticité rare. Le couscous aux sept légumes du vendredi, la bastilla sucrée-salée et les desserts maison comme les cornes de gazelle sont inoubliables.',
+    dets:[['Prix moyen','150 – 300 MAD / personne'],['Horaires','12h–15h · 19h30–22h30'],['Fermé','Mardi'],['Spécialité','Couscous royal, Bastilla'],['Quartier','Guéliz (Ville Nouvelle)'],['Note',' 4.7 / 5']]
+  },
+  mamounia:{
+    img:'images/photo9.jpg',cat:' Palace · Médina, Marrakech',
+    title:'La Mamounia',
+    desc:'Inaugurée en 1923, La Mamounia est l\'un des hôtels les plus célèbres et les plus mythiques du monde. Winston Churchill y a peint, Alfred Hitchcock y a tourné. Dans ses jardins centenaires de 8 hectares, entre oliviers millénaires et rosiers, les pavillons et suites mêlent architecture mauresque et art déco français dans un luxe absolu.',
+    dets:[['Catégorie','Palace 5 étoiles'],['Prix','3000 – 8000+ MAD / nuit'],['Jardins','8 hectares centenaires'],['Spa','Mamounia Spa (primé mondial)'],['Restaurants','7 restaurants & bars'],['Note',' 4.9 / 5']]
+  },
+  riadyma:{
+    img:'images/photo6.jpg',cat:' Riad · Médina, Marrakech',
+    title:'Riad Yima',
+    desc:'Créé par le photographe et artiste marocain Hassan Hajjaj, Riad Yima est une explosion de couleurs et de créativité. Ce petit riad boutique de 4 suites est un véritable musée d\'art contemporain marocain, où chaque détail raconte une histoire. Le rooftop café avec vue sur les toits de la médina est un secret bien gardé.',
+    dets:[['Catégorie','Riad boutique'],['Prix','800 – 1400 MAD / nuit'],['Suites','4 suites thématiques'],['Rooftop','Café-terrasse panoramique'],['Quartier','Médina (Mouassine)'],['Note',' 4.6 / 5']]
+  },
+  dar_zitoun:{
+    img:'images/photo12.jpg',cat:' Restaurant · Médina, Marrakech',
+    title:'Dar Zitoun',
+    desc:'Dar Zitoun (« La Maison de l\'Olivier ») est un restaurant traditionnel installé dans un magnifique riad du XVIIe siècle. Autour d\'une fontaine en marbre et sous un plafond de cèdre sculpté, vous dégusterez les grands classiques de la cuisine marocaine : tajine de poulet aux citrons confits et olives, couscous royal aux sept légumes, et pastilla croustillante. Une expérience culinaire et architecturale inoubliable.',
+    dets:[['Prix moyen','120 – 250 MAD / personne'],['Horaires','12h–15h · 19h–23h'],['Cadre','Riad XVIIe siècle'],['Spécialité','Tajine citrons confits, Couscous royal'],['Ambiance','Traditionnel, musique gnawa le soir'],['Note',' 4.8 / 5']]
+  },
+  saveurs_monde:{
+    img:'images/photo13.jpg',cat:' Restaurant International · Guéliz',
+    title:'Saveurs du Monde',
+    desc:'Au cœur du quartier moderne de Guéliz, Saveurs du Monde propose une expérience gastronomique unique qui traverse les continents. Sushis japonais, tapas espagnoles, bouchées fusion asiatiques et desserts européens se côtoient dans une ambiance chaleureuse et festive. Le chef propose chaque semaine un menu surprise inspiré d\'une région du monde différente.',
+    dets:[['Prix moyen','150 – 350 MAD / personne'],['Horaires','12h–23h30 (tlj)'],['Quartier','Guéliz (Ville Nouvelle)'],['Spécialité','Sushis fusion, Tapas maison'],['Ambiance','Moderne, festive, cosmopolite'],['Note',' 4.5 / 5']]
+  },
+  rooftop_nomad:{
+    img:'images/photo14.jpg',cat:' Café Rooftop · Médina, Marrakech',
+    title:'Nomad Rooftop Café',
+    desc:'Perché sur les toits de la médina, le Nomad Rooftop Café est l\'adresse incontournable pour admirer Marrakech depuis les hauteurs. Vue imprenable sur le minaret de la Koutoubia et les montagnes de l\'Atlas en toile de fond. Salon marocain en plein air avec coussins colorés, bougies et musique douce. Idéal pour un thé à la menthe, un cocktail ou un léger dîner au coucher du soleil.',
+    dets:[['Prix moyen','60 – 180 MAD / personne'],['Horaires','10h – 00h (tlj)'],['Vue','Koutoubia + toits de la médina'],['Spécialité','Thé à la menthe, Cocktails, Mezze'],['Ambiance','Romantique, coucher de soleil'],['Note',' 4.6 / 5']]
+  },
+  daryacout:{
+    img:'images/photo12.jpg',cat:' Restaurant · Médina de Marrakech',
+    title:'Dar Yacout',
+    desc:'Dar Yacout est l\'une des tables les plus mythiques de Marrakech. Installé dans un splendide palais de la médina, ce restaurant propose des soirées gastronomiques à base de la grande cuisine marocaine traditionnelle : pastilla au pigeon, tajines d\'agneau aux pruneaux, couscous royal et cornes de gazelle. Le tout servi dans un décor de zelliges, de stuc et à la lumière des bougies.',
+    dets:[['Prix moyen','300 – 600 MAD / personne'],['Horaires','19h30 – 23h (tlj)'],['Réservation','Obligatoire'],['Spécialité','Pastilla, Tajine d\'agneau, Couscous'],['Cadre','Palais de la médina'],['Note',' 4.8 / 5']]
+  },
+  kosybar:{
+    img:'images/photo13.jpg',cat:' Restaurant & Bar · Kasbah, Marrakech',
+    title:'Kosybar',
+    desc:'Adresse incontournable près de la place des Ferblantiers, Kosybar est un bar-restaurant à l\'atmosphère lounge et cosmopolite. Sa terrasse panoramique offre une vue unique sur les cigognes nichées dans les remparts de la Kasbah. Cuisine fusion mêlant influences marocaines et internationales, accompagnée d\'une belle carte de cocktails artisanaux.',
+    dets:[['Prix moyen','150 – 350 MAD / personne'],['Horaires','12h – minuit (tlj)'],['Spécialité','Cuisine fusion, Cocktails artisanaux'],['Vue','Cigognes de la Kasbah'],['Quartier','Place des Ferblantiers'],['Note',' 4.5 / 5']]
+  },
+  nomad:{
+    img:'images/photo14.jpg',cat:' Café Rooftop · Médina, Marrakech',
+    title:'Nomad Café',
+    desc:'Perché au cœur des souks de la médina, Nomad est le café rooftop par excellence de Marrakech. Sa terrasse offre une vue à 360° sur les toits ocre et les minarets de la ville. La cuisine marocaine revisitée — salade de carottes à la harissa, pastilla végétarienne, cheese-cake à la rose — ravit autant les papilles que le cadre enchante les yeux.',
+    dets:[['Prix moyen','80 – 200 MAD / personne'],['Horaires','9h – 23h (tlj)'],['Spécialité','Cuisine marocaine moderne'],['Vue','Panorama 360° sur les toits'],['Quartier','Souks, Médina'],['Note',' 4.6 / 5']]
+  },
+  darmoha:{
+    img:'images/photo12.jpg',cat:' Restaurant · Médina, Marrakech',
+    title:'Dar Moha',
+    desc:'Dar Moha est l\'une des tables les plus réputées de Marrakech. Installé dans un magnifique riad du XVIIIe siècle avec piscine, le chef Mohamed Fedal y propose une cuisine marocaine réinventée avec élégance. Tajines parfumés, pastilla feuilletée, couscous royal et desserts floraux dans un cadre féérique de zelliges et de roses.',
+    dets:[['Prix moyen','250 – 500 MAD / personne'],['Horaires','12h–15h · 19h–23h'],['Spécialité','Tajine de poulet au citron confit'],['Cadre','Riad XVIIIe siècle avec piscine'],['Réservation','Fortement recommandée'],['Note',' 4.9 / 5']]
+  },
+  comptoir:{
+    img:'images/photo13.jpg',cat:' Restaurant Lounge · Hivernage, Marrakech',
+    title:'Comptoir Darna',
+    desc:'Le Comptoir Darna est une institution de la vie nocturne marrakchie. Ce restaurant lounge mythique mêle gastronomie internationale et ambiance festive : cuisine fusion de qualité, shows de danseuses orientales chaque soir, DJ et cocktails signature. Une expérience sensorielle complète dans un décor orient-moderne somptueux.',
+    dets:[['Prix moyen','200 – 450 MAD / personne'],['Horaires','19h – 02h (mar–dim)'],['Spécialité','Cuisine fusion, plateaux de mezze'],['Shows','Danse orientale chaque soir dès 21h'],['Ambiance','Festive, lounge, mixte'],['Note',' 4.5 / 5']]
+  },
+  kozybar:{
+    img:'images/photo14.jpg',cat:' Café Rooftop · Médina, Marrakech',
+    title:'Kozy Bar — Rooftop Marrakech',
+    desc:'Perché sur les toits de la médina de Marrakech, le Kozy Bar offre l\'une des plus belles terrasses panoramiques de la ville. Coussins colorés, tables basses en cuivre, bougies au coucher du soleil et vue à 360° sur les minarets et les palmeraies. Idéal pour un thé à la menthe, un cocktail ou un repas léger dans une atmosphère chaleureuse et authentique.',
+    dets:[['Prix moyen','60 – 200 MAD / personne'],['Horaires','10h – 01h (tous les jours)'],['Spécialité','Thé à la menthe, Cocktails artisanaux'],['Vue','Panoramique sur la médina et l\'Atlas'],['Ambiance','Cosy, romantique, coucher de soleil'],['Note',' 4.6 / 5']]
+  },
+  savoy:{
+    img:'images/photo11.jpg',cat:' Resort 5 étoiles · Hivernage, Marrakech',
+    title:'Savoy Le Grand Hotel Marrakech',
+    desc:'Le Savoy Le Grand Hotel est l\'un des resorts les plus spectaculaires de Marrakech. Avec ses vastes jardins tropicaux, ses piscines à débordement face aux Atlas, son spa de classe mondiale et ses restaurants gastronomiques, il incarne le luxe contemporain dans la cité ocre. Ses 296 chambres et suites offrent une vue imprenable sur les montagnes ou les jardins.',
+    dets:[['Catégorie','Resort 5 étoiles'],['Prix','2000 – 5000 MAD / nuit'],['Piscines','3 piscines extérieures'],['Spa','Savoy Spa & Wellness'],['Restaurants','5 restaurants & bars'],['Note',' 4.7 / 5']]
+  },
+  sofitel:{
+    img:'images/photo10.jpg',cat:' Hôtel · Hivernage, Marrakech',
+    title:'Sofitel Marrakech Lounge & Spa',
+    desc:'Situé dans le quartier résidentiel d\'Hivernage, le Sofitel Marrakech allie l\'élégance française au raffinement mauresque. Ses 334 chambres et suites, ses 7 ha de jardins luxuriants, sa piscine olympique et son spa So\' Wellness de 2500 m² en font l\'une des adresses hôtelières les plus appréciées de la ville.',
+    dets:[['Catégorie','Hôtel 5 étoiles'],['Prix','1500 – 3500 MAD / nuit'],['Piscine','Olympique + 2 piscines extérieures'],['Spa','So\' Wellness 2500 m²'],['Restaurants','4 restaurants dont gastronomique'],['Note',' 4.7 / 5']]
+  },
+  cafeclock:{
+    img:'images/photo2.jpg',cat:' Café Culturel · Médina',
+    title:'Café Clock Marrakech',
+    desc:'Incontournable de la scène culturelle marrakchie, Café Clock propose une cuisine de street food marocaine créative dans un cadre chaleureux et convivial. Cours de cuisine hebdomadaires, soirées de musique gnawa et andalouse, ateliers de calligraphie… et le légendaire burger de chameau qui a fait le tour du monde.',
+    dets:[['Prix moyen','60 – 150 MAD / personne'],['Horaires','9h – 22h (tous les jours)'],['Spécialité','Burger de chameau'],['Activités','Cours cuisine, concerts'],['Ambiance','Conviviale, mix local-touriste'],['Note',' 4.6 / 5']]
+  }
+};
+
+/* ══ FONCTION openModal(key) 
+   Ouvre la modale et affiche les données du lieu sélectionné
+   key = identifiant du lieu (ex: 'jemaa', 'majorelle', etc.)
+    */
+function openModal(key){
+  const d=modalData[key]; /* Récupère l'objet de données du lieu */
+  if(!d)return;            /* Si la clé n'existe pas, on arrête */
+
+  /* Met à jour l'image : .src change la source de l'image
+     onerror : si l'image ne charge pas → affiche un gradient coloré */
+  document.getElementById('mImg').src=d.img;
+  document.getElementById('mImg').onerror=function(){this.style.cssText='width:100%;height:220px;display:block;background:linear-gradient(135deg,#7b1010,#c9712a)';};
+
+  /* textContent = modifie le texte d'un élément HTML */
+  document.getElementById('mCat').textContent=d.cat;
+  document.getElementById('mTitle').textContent=d.title;
+  document.getElementById('mDesc2').textContent=d.desc;
+
+  /* innerHTML = injecte du HTML généré dynamiquement
+     .map() = transforme chaque élément du tableau dets en HTML
+     Template literals (`...`) = chaîne avec variables ${} intégrées
+     .join('') = concatène tous les éléments en une seule chaîne */
+  document.getElementById('mDets').innerHTML=d.dets.map(([l,v])=>
+    `<div class="modal-detail"><div class="d-label">${l}</div><div class="d-val">${v}</div></div>`).join('');
+
+  /* Affiche la modale en ajoutant la classe CSS "open" */
+  document.getElementById('modalOverlay').classList.add('open');
+  /* Bloque le scroll de la page pendant que la modale est ouverte */
+  document.body.style.overflow='hidden';
+}
+
+/* ══ FONCTION closeModal()
+   Ferme la modale et restaure le scroll
+    */
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open'); /* Retire la classe "open" */
+  document.body.style.overflow=''; /* Restaure le scroll normal */
+}
+
+/* Ferme la modale avec la touche Échap (Escape) du clavier
+   addEventListener('keydown') = écoute chaque touche pressée
+   e.key === 'Escape' = vérifie si c'est la touche Échap */
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+/* ══ FILTRES 
+   filterAct : filtre les cards d'activités (Section 2)
+   filterRH : filtre les cards restaurants/hébergement (Section 4)
+   cat = catégorie à afficher ('all' = tout afficher)
+   btn = bouton cliqué (pour lui ajouter la classe "active")
+   */
+/* ══ FILTERS ══ */
+function filterAct(cat,btn){
+  /* querySelectorAll = sélectionne tous les éléments correspondants
+     forEach = boucle sur chaque card
+     classList.toggle(classe, condition) :
+     - condition true → ajoute la classe
+     - condition false → retire la classe
+     La card est cachée si cat!=='all' ET si sa catégorie ne correspond pas */
+  document.querySelectorAll('#actGrid .act-card').forEach(c=>{
+    c.classList.toggle('hidden', cat!=='all' && c.dataset.cat!==cat);
+    /* c.dataset.cat = lit l'attribut data-cat="..." de la card */
+  });
+  /* Retire "active" de tous les boutons filtre */
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  /* Ajoute "active" au bouton cliqué */
+  btn.classList.add('active');
+}
+
+/* Même logique pour les restaurants/hébergements */
+function filterRH(cat,btn){
+  document.querySelectorAll('#rhGrid .rh-card').forEach(c=>{
+    c.classList.toggle('hidden', cat!=='all' && c.dataset.rh!==cat);
+    /* c.dataset.rh = lit l'attribut data-rh="..." de la card */
+  });
+  document.querySelectorAll('.rh-filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ══ LIGHTBOX 
+   Système de galerie photo en plein écran avec navigation
+   lbSrcs : tableau des images et légendes de la galerie
+   lbIdx : index de la photo actuellement affichée (0 = première)
+   */
+/* ══ LIGHTBOX ══ */
+const lbSrcs=[
+  /* Chaque objet : src = chemin de l'image, cap = légende */
+  {src:'images/photo1.jpg',cap:'Marrakech — Remparts rouges au coucher du soleil'},
+  {src:'images/photo2.jpg',cap:'Place Jemaa el-Fna de nuit'},
+  {src:'images/photo3.jpg',cap:'Jardin Majorelle — Bleu cobalt et jaune'},
+  {src:'images/photo4.jpg',cap:'Palais Bahia — Mosaïques et zelliges'},
+  {src:'images/photo5.jpg',cap:'Gastronomie marocaine — Tajine traditionnel'},
+  {src:'images/photo6.jpg',cap:'Riad — Piscine et patio intérieur'},
+  {src:'images/photo7.jpg',cap:'Mosquée Koutoubia au coucher du soleil'},
+];
+let lbIdx=0; /* Index de la photo affichée, initialisé à 0 */
+
+/* Ouvre le lightbox à l'index i */
+function openLb(i){
+  lbIdx=i; /* Mémorise l'index */
+  document.getElementById('lbImg').src=lbSrcs[i].src;           /* Change l'image */
+  document.getElementById('lbCap').textContent=lbSrcs[i].cap;   /* Change la légende */
+  document.getElementById('lightbox').classList.add('open');     /* Affiche le lightbox */
+  document.body.style.overflow='hidden'; /* Bloque le scroll */
+}
+
+/* Ferme le lightbox */
+function closeLb(){
+  document.getElementById('lightbox').classList.remove('open'); /* Cache le lightbox */
+  document.body.style.overflow=''; /* Restaure le scroll */
+}
+
+/* Navigation entre les photos : dir = +1 (suivant) ou -1 (précédent)
+   L'opération modulo (%) permet de revenir au début après la dernière photo
+   et d'aller à la fin avant la première */
+function navLb(dir){
+  lbIdx=(lbIdx+dir+lbSrcs.length)%lbSrcs.length;
+  /* Exemple : si lbIdx=0 et dir=-1 → (0-1+7)%7 = 6 (dernière photo) */
+  openLb(lbIdx); /* Affiche la nouvelle photo */
+}
+
+/* Ferme le lightbox si on clique sur le fond noir (pas sur l'image)
+   e.target === this : vérifie que c'est bien le fond qui a été cliqué */
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLb();});
+
+/* ══ CARTE LEAFLET ════════════════════════════════════════════
+   Initialise une carte interactive centrée sur Marrakech
+   avec des marqueurs personnalisés pour chaque lieu touristique
+    */
+/* ══ LEAFLET MAP ══ */
+
+/* Tableau des lieux à afficher sur la carte
+   lat, lng = coordonnées GPS (latitude, longitude)
+   type = catégorie pour la couleur du marqueur
+   col = couleur hexadécimale du marqueur
+   desc = texte de l'info-bulle au clic */
+const places=[
+  {name:'Place Jemaa el-Fna',lat:31.6258,lng:-7.9891,type:'culture',col:'#7B1010',desc:'Cœur de la médina, UNESCO'},
+  {name:'Jardin Majorelle',lat:31.6418,lng:-8.0035,type:'nature',col:'#1a5c3a',desc:'Jardin botanique d\'Yves Saint Laurent'},
+  {name:'Palais Bahia',lat:31.6211,lng:-7.9826,type:'culture',col:'#4a3000',desc:'Chef-d\'œuvre arabo-andalou XIXe s.'},
+  {name:'Mosquée Koutoubia',lat:31.6240,lng:-7.9939,type:'culture',col:'#7B1010',desc:'Minaret emblématique, XIIe siècle'},
+  {name:'Souks de la Médina',lat:31.6317,lng:-7.9874,type:'culture',col:'#C0392B',desc:'Labyrinthes de boutiques artisanales'},
+  {name:'La Mamounia',lat:31.6247,lng:-7.9984,type:'hotel',col:'#1a3a5c',desc:'Palace légendaire 5 étoiles'},
+  {name:'Sofitel Hivernage',lat:31.6284,lng:-8.0050,type:'hotel',col:'#1a3a5c',desc:'Hôtel de luxe, quartier Hivernage'},
+];
+
+let leafletMap, leafletMarkers=[]; /* Variables pour stocker la carte et les marqueurs */
+
+/* window.addEventListener('load') = attend que TOUTE la page soit chargée
+   avant d'initialiser la carte (images, scripts, etc.)
+   Obligatoire pour Leaflet car le div #map doit exister dans le DOM */
+window.addEventListener('load',()=>{
+  /* L.map('map') = crée une carte Leaflet dans le div id="map"
+     .setView([lat, lng], zoom) = centre la carte + niveau de zoom (14 = vue de quartier) */
+  leafletMap=L.map('map').setView([31.626,-7.993],14);
+
+  /* L.tileLayer = couche de tuiles (images de carte) depuis OpenStreetMap
+     {s} = sous-domaine | {z} = zoom | {x},{y} = coordonnées de la tuile
+     attribution = texte de crédit obligatoire pour OpenStreetMap */
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© OpenStreetMap'
+  }).addTo(leafletMap); /* .addTo(carte) = ajoute la couche à la carte */
+
+  const listEl=document.getElementById('mapList'); /* Référence au div de la liste */
+  const typeLabel={culture:'Culture',nature:'Nature',hotel:'Hôtel/Riad'};
+  const typeCol={culture:'#7B1010',nature:'#1a5c3a',hotel:'#1a3a5c'};
+
+  /* Pour chaque lieu : crée un marqueur sur la carte + un item dans la liste */
+  places.forEach((p,i)=>{
+    /* L.divIcon = icône personnalisée avec du HTML
+       html : contenu HTML de l'icône (cercle coloré avec numéro)
+       iconSize : taille [largeur, hauteur] en pixels
+       iconAnchor : point d'ancrage de l'icône (centre = [14,14]) */
+    const icon=L.divIcon({
+      className:'',
+      html:`<div style="background:${p.col};width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;">${i+1}</div>`,
+      iconSize:[28,28],iconAnchor:[14,14]
+    });
+
+    /* L.marker([lat, lng], {icon}) = crée un marqueur aux coordonnées GPS
+       .addTo(leafletMap) = ajoute le marqueur à la carte */
+    const m=L.marker([p.lat,p.lng],{icon}).addTo(leafletMap);
+
+    /* bindPopup = lie une info-bulle au marqueur
+       S'ouvre au clic sur le marqueur */
+    m.bindPopup(`<strong>${p.name}</strong><br><small>${p.desc}</small>`);
+    leafletMarkers.push(m); /* Stocke le marqueur dans le tableau */
+
+    /* Crée un élément div pour la liste à droite de la carte */
+    const item=document.createElement('div'); /* createElement = crée un nouvel élément HTML */
+    item.className='map-item';
+
+    /* innerHTML = injecte du HTML dans l'élément
+       Contient un point coloré (type-dot) + le nom + la description */
+    item.innerHTML=`<h4><span class="type-dot" style="background:${typeCol[p.type]}"></span>${i+1}. ${p.name}</h4><p>${p.desc}</p>`;
+
+    /* Au clic sur un item de la liste :
+       - Centre la carte sur ce lieu avec zoom 16
+       - Ouvre le popup du marqueur correspondant
+       - Met en évidence l'item actif (classe active-place) */
+    item.onclick=()=>{
+      leafletMap.setView([p.lat,p.lng],16); /* Zoom sur le lieu */
+      m.openPopup();                         /* Ouvre l'info-bulle */
+      document.querySelectorAll('.map-item').forEach(x=>x.classList.remove('active-place'));
+      item.classList.add('active-place');
+    };
+
+    listEl.appendChild(item); /* appendChild = ajoute l'item dans le div de la liste */
+  });
+});
+
+/* ══ MÉTÉO (données statiques) ════════════════════════════════
+   Affiche des données météo fixes pour Marrakech
+   Dans une version réelle, on utiliserait l'API OpenWeatherMap
+   avec fetch() pour obtenir les données en temps réel
+   ══════════════════════════════════════════════════════════════ */
+/* ══ MÉTÉO ══ */
+function loadMeteo(){
+  /* document.getElementById(id).textContent = change le texte d'un élément
+     Ces éléments ont des id= définis dans le HTML */
+  document.getElementById('mTemp').textContent='32°C';    /* Température */
+  document.getElementById('mDesc').textContent='Ensoleillé, ciel dégagé '; /* Description */
+  document.getElementById('mFeel').textContent='30°C';   /* Ressenti */
+  document.getElementById('mHum').textContent='25%';     /* Humidité */
+  document.getElementById('mWind').textContent='18 km/h'; /* Vitesse du vent */
+  document.getElementById('mCloud').textContent='5%';    /* Couverture nuageuse */
+}
+loadMeteo(); /* Appel immédiat de la fonction au chargement de la page */
+
+/* ══ FORMULAIRE DE CONTACT ════════════════════════════════════
+   Validation JavaScript du formulaire avant "envoi"
+   Vérifie que les champs obligatoires sont remplis
+   et que l'email a un format valide
+   ══════════════════════════════════════════════════════════════ */
+/* ══ FORM ══ */
+function sendForm(){
+  /* .value = lit la valeur saisie dans un input
+     .trim() = supprime les espaces en début et fin de chaîne */
+  const p=document.getElementById('fPrenom').value.trim(); /* Prénom */
+  const e=document.getElementById('fEmail').value.trim();  /* Email */
+  const m=document.getElementById('fMsg').value.trim();    /* Message */
+
+  /* Validation 1 : vérifie que les champs obligatoires ne sont pas vides
+     !p = true si p est vide (chaîne vide = falsy en JavaScript) */
+  if(!p||!e||!m){alert('Veuillez remplir les champs obligatoires (Prénom, Email, Message).');return;}
+
+  /* Validation 2 : vérifie le format de l'email avec une expression régulière
+     /regex/.test(string) = renvoie true si le string correspond au pattern
+     \S+ = un ou plusieurs caractères non-espaces
+     Le pattern vérifie la présence de "@" et "." */
+  if(!/\S+@\S+\.\S+/.test(e)){alert('Adresse email invalide.');return;}
+
+  /* Si tout est valide : affiche le message de succès
+     style.display='block' = rend visible le div caché */
+  document.getElementById('formOk').style.display='block';
+
+  /* Vide tous les champs du formulaire après envoi
+     forEach = boucle sur un tableau d'IDs
+     .value='' = vide la valeur du champ */
+  ['fPrenom','fNom','fEmail','fMsg'].forEach(id=>document.getElementById(id).value='');
+  /* Remet la liste déroulante à sa valeur initiale (index 0) */
+  document.getElementById('fSujet').selectedIndex=0;
+}
+
+/* ══ LIEN DE NAVIGATION ACTIF ═════════════════════════════════
+   Met en évidence le lien de navigation correspondant
+   à la section actuellement visible dans le viewport
+   Utilise l'événement scroll pour mettre à jour en temps réel
+   ══════════════════════════════════════════════════════════════ */
+/* ══ ACTIVE NAV LINK ══ */
+
+/* Tableau des IDs de toutes les sections de la page */
+const sections=['hero','activites','galerie','restaurants','carte','contact'];
+
+/* addEventListener('scroll') = exécute une fonction à chaque défilement
+   { passive:true } = optimisation de performance (ne bloque pas le scroll) */
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY+100; /* Position actuelle du scroll + 100px de marge */
+
+  /* Pour chaque section, vérifie si elle est visible */
+  sections.forEach(id=>{
+    const el=document.getElementById(id); /* Sélectionne la section */
+    if(!el)return; /* Si la section n'existe pas, on passe */
+
+    /* Cherche le lien de navigation correspondant à cette section
+       querySelector(`nav a[href="#${id}"]`) = lien avec href="#hero", "#activites", etc. */
+    const link=document.querySelector(`nav a[href="#${id}"]`);
+    if(!link)return; /* Si le lien n'existe pas dans la nav, on passe */
+
+    /* Vérifie si le scroll est dans la zone de cette section :
+       el.offsetTop = distance du haut de la section depuis le haut de la page
+       el.offsetHeight = hauteur de la section */
+    if(el.offsetTop<=y && el.offsetTop+el.offsetHeight>y){
+      /* Retire "active" de tous les liens */
+      document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+      /* Ajoute "active" au lien de la section visible */
+      link.classList.add('active');
+    }
+  });
+},{ passive:true });
+</script>
+
+
+</body>
+
+</html>
