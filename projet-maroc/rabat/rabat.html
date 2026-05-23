@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<!--  déclare que c'est un document HTML5, le navigateur sait comment l'interpréter -->
+<html lang="fr">
+<!--  la langue de la page est le français -->
+<head>
+<!-- La section head contient les informations de configuration de la page, invisibles par l'utilisateur -->
+<meta charset="UTF-8">
+<!-- utiliser l'encodage UTF-8 pour afficher les accents et caractères spéciaux -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Sur mobile, la page s'adapte à la largeur de l'écran avec un zoom initial de 1  -->
+<title>Rabat – Capitale du Royaume</title>
+<!-- Le titre affiché dans l'onglet du navigateur -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!--  charge deux polices Google Fonts : Playfair Display (titres élégants) et Raleway (texte courant) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<!--  charge le CSS de la bibliothèque Leaflet pour afficher la carte interactive -->
+
+<style>
+/* =====================================================
+   RABAT — Feuille de style principale
+===================================================== */
+
+:root {
+  /* :root cible l'élément racine du document (la balise html),
+     on y déclare des variables CSS réutilisables partout dans la feuille de style */
+  --green:      #1B5E3B;
+  /* Variable : couleur verte principale utilisée pour les boutons, textes importants */
+  --green-mid:  #2E7D52;
+  /* Variable : vert intermédiaire, un peu plus clair que le principal */
+  --green-dark: #0f3d24;
+  /* Variable : vert très foncé utilisé pour le fond du header et footer */
+  --green-acc:  #4CAF78;
+  /* Variable : vert accent, plus lumineux, pour les effets hover */
+  --gold:       #C9A96E;
+  /* Variable : couleur dorée pour les détails décoratifs (dividers, badges) */
+  --sand:       #EEF5F0;
+  /* Variable : couleur sable très claire, fond de certaines sections */
+  --cream:      #F4FAF6;
+  /* Variable : blanc cassé légèrement teinté de vert, fond général de la page */
+  --white:      #FFFFFF;
+  /* Variable : blanc pur */
+  --dark:       #0d1f14;
+  /* Variable : couleur très sombre (quasi-noir verdâtre) pour les textes */
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+/* Le sélecteur * cible tous les éléments de la page.
+   margin:0 et padding:0 supprime les espacements par défaut du navigateur.
+   box-sizing:border-box fait que les bordures et paddings sont inclus dans la largeur totale */
+
+html{scroll-behavior:smooth;}
+/* Quand on clique sur un lien ancre (#section), le défilement est fluide et animé */
+
+body{font-family:'Raleway',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;}
+/* Le corps de la page utilise la police Raleway, fond crème, texte vert foncé.
+   overflow-x:hidden empêche le défilement horizontal indésirable */
+
+/* ══ TOP BAR ══ */
+/* La barre fine tout en haut de la page */
+.top-bar{background:var(--green-dark);color:#fff;text-align:center;padding:7px;font-size:12px;letter-spacing:1.5px;}
+/* Barre supérieure avec fond vert foncé, texte blanc centré, petite taille et espacement entre les lettres */
+
+/* ══ NAVBAR ══ */
+/* Styles pour la barre de navigation principale */
+nav{
+  position:sticky;top:0;z-index:900;
+  /* sticky: la nav reste collée en haut quand on défile. z-index:900 la met au-dessus des autres éléments */
+  background:rgba(255,255,255,0.97);
+  /* Fond blanc presque opaque (97%) pour laisser légèrement transparaître le contenu derrière */
+  backdrop-filter:blur(12px);
+  /* Effet de flou sur ce qu'il y a derrière la navbar (effet verre dépoli) */
+  box-shadow:0 2px 24px rgba(27,94,59,.13);
+  /* Ombre portée légère sous la navbar pour la détacher du contenu */
+  display:flex;align-items:center;justify-content:space-between;
+  /* Flexbox : les enfants s'alignent horizontalement, centrés verticalement, et espacés aux extrémités */
+  padding:0 48px;height:68px;
+  /* Espacement intérieur gauche/droite de 48px, hauteur fixe de 68px */
+}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+/* Le logo (SVG + texte) affiché en ligne avec 10px d'espace entre eux, sans soulignement de lien */
+
+.nav-logo svg{width:38px;height:38px;}
+/* Le SVG du logo fait 38x38 pixels */
+
+.logo-text .city{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--green);letter-spacing:2px;}
+/* Le nom de la ville dans le logo : grande police serif en gras, couleur verte, lettres espacées */
+
+.logo-text .sub{font-size:9.5px;color:#999;letter-spacing:2px;text-transform:uppercase;}
+/* Le sous-titre du logo : très petite taille, gris clair, majuscules, lettres espacées */
+
+.nav-links{display:flex;list-style:none;gap:0;align-items:center;}
+/* La liste des liens de navigation affichée horizontalement, sans puces, éléments alignés */
+
+.nav-links a{
+  display:block;padding:10px 14px;
+  /* Chaque lien s'affiche en bloc pour avoir une zone cliquable plus grande */
+  text-decoration:none;color:#333;
+  /* Pas de soulignement, couleur gris foncé */
+  font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  /* Petite taille, gras, espacement entre lettres, tout en majuscules */
+  transition:color .2s;white-space:nowrap;
+  /* Changement de couleur animé sur 0.2s au survol. nowrap empêche le texte de passer à la ligne */
+}
+.nav-links a:hover{color:var(--green);}
+/* Au survol d'un lien, la couleur passe au vert */
+
+.nav-links a.active{color:var(--green);border-bottom:2px solid var(--green);}
+/* Le lien de la section active est vert et souligné par une bordure verte de 2px */
+
+/* ══ HAMBURGER ══ */
+/* Bouton menu burger pour les écrans mobiles */
+.hamburger{
+  display:none;flex-direction:column;gap:5px;
+  /* Caché par défaut (display:none), ses 3 traits sont empilés verticalement avec 5px d'espace */
+  background:none;border:none;cursor:pointer;padding:6px;
+  /* Pas de fond ni de bordure, curseur pointeur au survol */
+}
+.hamburger span{
+  display:block;width:24px;height:2px;
+  /* Chaque trait du burger : 24px de large, 2px de haut */
+  background:var(--green);border-radius:2px;transition:all 0.3s;
+  /* Couleur verte, bords arrondis, transition animée pour l'ouverture/fermeture */
+}
+
+/* ══ SECTION 1 – HERO ══ */
+/* Section plein écran avec image de fond et titre principal */
+#hero{
+  position:relative;height:100vh;min-height:580px;
+  /* Hauteur égale à 100% de la fenêtre visible, minimum 580px pour les petits écrans */
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  /* Centrage parfait du contenu horizontalement et verticalement, débordement caché */
+  background:#062010;
+  /* Fond vert très foncé affiché si l'image ne charge pas */
+}
+.hero-img{
+  position:absolute;inset:0;
+  /* L'image occupe tout l'espace du parent (inset:0 = top/right/bottom/left = 0) */
+  background:url('images/hero-rabat.jpg') center/cover no-repeat;
+  /* Image centrée, couvre tout l'espace sans se répéter */
+  background-color:#1B5E3B;
+  /* Couleur de fallback si l'image ne charge pas */
+  opacity:.65;transition:opacity 1s;
+  /* L'image est légèrement transparente pour laisser voir les overlays dessous */
+}
+.hero-overlay{
+  position:absolute;inset:0;
+  /* Overlay qui couvre tout le hero */
+  background:linear-gradient(to bottom,rgba(15,61,36,.45) 0%,rgba(3,20,8,.72) 100%);
+  /* Dégradé sombre de haut en bas : plus transparent en haut, plus opaque en bas */
+}
+.hero-pattern{
+  position:absolute;inset:0;opacity:.07;
+  /* Motif décoratif en arrière-plan, très transparent (7%) pour rester subtil */
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpolygon points='40,5 55,20 75,20 62,33 68,52 40,42 12,52 18,33 5,20 25,20' fill='none' stroke='%23fff' stroke-width='1.2'/%3E%3C/svg%3E");
+  /* SVG encodé en base64 inline : une étoile blanche répétée en motif de fond */
+}
+.hero-content{position:relative;z-index:2;text-align:center;color:#fff;padding:0 24px;}
+/* Le contenu du hero (titre, boutons) est au-dessus des overlays (z-index:2), centré, blanc */
+
+.hero-tag{
+  display:inline-block;border:1px solid rgba(201,169,110,.6);
+  /* Badge inline avec bordure dorée semi-transparente */
+  color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  /* Texte doré, petit, espacé et en majuscules */
+  padding:6px 20px;border-radius:2px;margin-bottom:22px;
+  /* Espacement interne, coins légèrement arrondis, marge en bas */
+  animation:fadeDown .9s ease both;
+  /* Animation d'apparition de haut en bas sur 0.9s */
+}
+.hero-title{
+  font-family:'Playfair Display',serif;
+  /* Police élégante avec sérifs pour le grand titre */
+  font-size:clamp(52px,9vw,110px);font-weight:700;
+  /* Taille fluide : minimum 52px, préférence 9% de la fenêtre, maximum 110px */
+  letter-spacing:6px;line-height:1;
+  /* Lettres très espacées, hauteur de ligne égale à la taille de la police */
+  text-shadow:0 4px 40px rgba(0,0,0,.4);
+  /* Ombre portée sous le texte pour le rendre lisible sur l'image */
+  animation:fadeDown .9s .15s ease both;
+  /* Même animation mais avec 0.15s de délai pour décaler l'apparition */
+}
+.hero-title em{font-style:italic;color:var(--gold);}
+/* La partie en italique du titre est dorée */
+
+.hero-sub{
+  font-size:15px;letter-spacing:4px;opacity:.8;text-transform:uppercase;
+  /* Sous-titre : lettres espacées, légèrement transparent, en majuscules */
+  margin:14px 0 38px;animation:fadeDown .9s .3s ease both;
+  /* Marges verticales, animation avec 0.3s de délai */
+}
+.hero-btns{display:flex;gap:14px;justify-content:center;animation:fadeDown .9s .45s ease both;}
+/* Les deux boutons du hero côte à côte, centrés, avec animation retardée de 0.45s */
+
+.btn-primary{
+  background:var(--green);color:#fff;text-decoration:none;
+  /* Bouton vert avec texte blanc */
+  padding:14px 40px;border-radius:40px;font-size:12px;font-weight:700;
+  /* Espacement généreux, forme ovale (border-radius élevé), police petite et grasse */
+  letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:none;
+  /* Lettres espacées, majuscules, curseur pointeur, pas de bordure native */
+  box-shadow:0 4px 24px rgba(27,94,59,.5);transition:all .3s;
+  /* Ombre verte sous le bouton, transitions animées sur 0.3s */
+}
+.btn-primary:hover{background:var(--green-acc);transform:translateY(-2px);}
+/* Au survol : vert plus clair, et le bouton monte légèrement de 2px */
+
+.btn-outline{
+  background:transparent;color:#fff;text-decoration:none;
+  /* Bouton transparent avec texte blanc */
+  padding:14px 40px;border-radius:40px;font-size:12px;font-weight:700;
+  /* Même forme que btn-primary */
+  letter-spacing:2px;text-transform:uppercase;cursor:pointer;
+  /* Lettres espacées, majuscules, curseur pointeur */
+  border:2px solid rgba(255,255,255,.5);transition:all .3s;
+  /* Bordure blanche semi-transparente, transitions animées */
+}
+.btn-outline:hover{border-color:#fff;background:rgba(255,255,255,.1);}
+/* Au survol : bordure blanche pleine, fond blanc très transparent */
+
+.hero-wave{position:absolute;bottom:0;left:0;right:0;line-height:0;}
+/* SVG en forme de vague placé en bas du hero, couvrant toute la largeur */
+
+@keyframes fadeDown{from{opacity:0;transform:translateY(-18px);}to{opacity:1;transform:translateY(0);}}
+/* Animation : l'élément part invisible et décalé de 18px vers le haut,
+   puis arrive à sa position normale et complètement visible */
+
+.scroll-hint{
+  position:absolute;bottom:38px;left:50%;transform:translateX(-50%);
+  /* Indicateur centré en bas du hero, décalé de 50% puis recentré */
+  color:rgba(255,255,255,.5);font-size:11px;letter-spacing:2px;
+  /* Texte blanc semi-transparent */
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  /* Icône et texte empilés verticalement et centrés */
+  animation:bob 2s ease-in-out infinite;
+  /* Animation de rebond en boucle infinie */
+}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(6px);}}
+/* Animation bob : l'élément descend de 6px à mi-chemin puis revient. Le translateX(-50%) est maintenu à chaque étape */
+
+/* ══ EN-TÊTES DE SECTIONS ══ */
+/* Styles communs à tous les titres de sections */
+.sec-head{text-align:center;margin-bottom:52px;}
+/* En-tête centré avec grande marge en bas */
+
+.sec-head .eyebrow{
+  display:inline-block;font-size:10px;font-weight:700;letter-spacing:3px;
+  /* Petit texte au-dessus du titre, affiché en bloc inline */
+  text-transform:uppercase;color:var(--gold);margin-bottom:10px;
+  /* Majuscules, couleur dorée, espace sous lui */
+}
+.sec-head h2{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);color:var(--green);}
+/* Titre principal en Playfair Display, taille fluide, couleur verte */
+
+.sec-head h2 em{font-style:italic;}
+/* Le texte en italique dans le titre h2 */
+
+.sec-head .divider{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;}
+/* Séparateur décoratif : deux traits et une icône, centrés horizontalement */
+
+.sec-head .divider span{width:60px;height:1px;background:var(--gold);opacity:.6;}
+/* Chaque trait du séparateur : 60px de large, 1px de haut, couleur dorée, semi-transparent */
+
+.sec-head .divider i{color:var(--gold);font-size:12px;}
+/* L'icône centrale du séparateur en doré */
+
+.sec-head p{color:#777;font-size:13.5px;margin-top:14px;max-width:520px;margin-inline:auto;line-height:1.7;}
+/* Paragraphe de description sous le titre : gris, centré, largeur max 520px, interligne confortable */
+
+/* ══ SECTION 2 – ACTIVITÉS ══ */
+/* Styles pour la section des cartes d'activités */
+#activites{padding:80px 60px;background:#fff;}
+/* Section blanche avec grands espacements internes (80px haut/bas, 60px gauche/droite) */
+
+.filter-bar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:44px;}
+/* Barre de filtres : boutons côte à côte, centrés, qui passent à la ligne si nécessaire */
+
+.filter-btn{
+  padding:8px 22px;border-radius:30px;border:2px solid var(--green);
+  /* Bouton de filtre ovale avec bordure verte */
+  background:transparent;color:var(--green);font-size:12px;font-weight:700;
+  /* Fond transparent, texte vert, police petite et grasse */
+  letter-spacing:1px;cursor:pointer;transition:all .25s;text-transform:uppercase;
+  /* Lettres légèrement espacées, curseur pointeur, transitions rapides, majuscules */
+}
+.filter-btn:hover,.filter-btn.active{background:var(--green);color:#fff;}
+/* Au survol ou quand actif : fond vert et texte blanc (inversion des couleurs) */
+
+.cards-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+  /* Grille responsive : les colonnes font au moins 290px et se répartissent automatiquement */
+  gap:28px;max-width:1200px;margin:0 auto;
+  /* Espace de 28px entre les cartes, largeur max 1200px, centré */
+}
+.act-card{
+  border-radius:14px;overflow:hidden;background:#fff;
+  /* Carte avec coins arrondis, débordement caché pour l'effet zoom de l'image */
+  box-shadow:0 4px 24px rgba(0,0,0,.09);
+  /* Ombre légère sous la carte */
+  transition:transform .3s,box-shadow .3s;cursor:pointer;
+  /* Transitions animées pour le survol, curseur pointeur */
+}
+.act-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(27,94,59,.18);}
+/* Au survol : la carte monte de 8px et l'ombre devient plus prononcée et verte */
+
+.act-card.hidden{display:none;}
+/* Les cartes filtrées sont complètement cachées */
+
+.card-img-wrap{position:relative;height:210px;overflow:hidden;}
+/* Conteneur de l'image : hauteur fixe 210px, débordement caché pour l'effet zoom */
+
+.card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+/* L'image remplit tout le conteneur sans se déformer (object-fit:cover), transition zoom */
+
+.act-card:hover .card-img-wrap img{transform:scale(1.07);}
+/* Au survol de la carte, l'image zoome légèrement (107% de sa taille) */
+
+.card-badge{
+  position:absolute;top:14px;left:14px;
+  /* Badge flottant en haut à gauche de l'image */
+  padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;
+  /* Forme ovale, texte blanc, petit et gras */
+}
+.badge-culture{background:#1a3a5c;}
+/* Badge bleu marine pour les activités culturelles */
+.badge-sport{background:#1a5c3a;}
+/* Badge vert pour les activités sportives */
+.badge-nature{background:#4a7000;}
+/* Badge vert olive pour les activités nature */
+.badge-detente{background:#2980B9;}
+/* Badge bleu pour les activités de détente */
+
+.card-body{padding:18px 20px 20px;}
+/* Espacement interne du contenu textuel de la carte */
+
+.card-body h3{font-family:'Playfair Display',serif;font-size:19px;margin-bottom:6px;color:var(--dark);}
+/* Titre de la carte en Playfair Display, 19px, foncé */
+
+.card-body p{font-size:12.5px;color:#777;line-height:1.65;margin-bottom:14px;}
+/* Description de la carte : petite, grise, interligne confortable */
+
+.card-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+/* Ligne d'infos (durée, lieu) : éléments côte à côte, passent à la ligne si besoin */
+
+.card-meta span{font-size:11px;background:var(--cream);padding:3px 10px;border-radius:12px;color:var(--green);font-weight:600;}
+/* Chaque info-tag : fond crème, coins arrondis, texte vert */
+
+.btn-sm{
+  background:var(--green);color:#fff;border:none;
+  /* Petit bouton vert avec texte blanc, sans bordure */
+  padding:9px 20px;border-radius:20px;font-size:11px;font-weight:700;
+  /* Forme ovale, police petite et grasse */
+  cursor:pointer;letter-spacing:.8px;transition:background .2s;
+  /* Curseur pointeur, lettres légèrement espacées, transition de couleur */
+}
+.btn-sm:hover{background:var(--green-acc);}
+/* Au survol : vert plus clair */
+
+/* ══ SECTION 3 – GALERIE ══ */
+/* Styles pour la grille photo */
+#galerie{padding:80px 60px;background:var(--cream);}
+/* Section fond crème avec grands espacements */
+
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  /* Grille de 3 colonnes de largeur égale */
+  gap:10px;max-width:1100px;margin:0 auto;
+  /* Petits espaces entre photos, largeur max 1100px, centré */
+}
+.gal-item{overflow:hidden;border-radius:10px;position:relative;cursor:pointer;}
+/* Chaque photo : coins arrondis, débordement caché pour zoom, position relative pour l'overlay */
+
+.gal-item:nth-child(1){grid-column:span 2;height:300px;}
+/* La 1ère photo occupe 2 colonnes sur 3, hauteur 300px */
+.gal-item:nth-child(2){height:300px;}
+/* La 2ème photo : 1 colonne, hauteur 300px */
+.gal-item:nth-child(3){height:240px;}
+/* La 3ème photo : 1 colonne, hauteur 240px */
+.gal-item:nth-child(4){height:240px;}
+/* La 4ème photo : 1 colonne, hauteur 240px */
+.gal-item:nth-child(5){grid-column:span 1;height:240px;}
+/* La 5ème photo : 1 colonne, hauteur 240px */
+.gal-item:nth-child(6){grid-column:span 3;height:260px;}
+/* La 6ème photo occupe toute la largeur (3 colonnes), hauteur 260px */
+.gal-item:nth-child(7){grid-column:span 2;height:260px;}
+/* La 7ème photo occupe 2 colonnes, hauteur 260px */
+
+.gal-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s;}
+/* L'image remplit tout son conteneur, transition de zoom animée */
+
+.gal-item:hover img{transform:scale(1.06);}
+/* Au survol : léger zoom de l'image */
+
+.gal-overlay{
+  position:absolute;inset:0;background:rgba(27,94,59,0);
+  /* Overlay vert transparent par défaut, couvre toute la photo */
+  display:flex;align-items:center;justify-content:center;transition:background .3s;
+  /* L'icône est centrée, la transition est animée */
+}
+.gal-item:hover .gal-overlay{background:rgba(27,94,59,.35);}
+/* Au survol : l'overlay devient vert semi-transparent */
+
+.gal-overlay svg{opacity:0;transition:opacity .3s;width:40px;height:40px;fill:#fff;}
+/* L'icône SVG est invisible par défaut, 40x40px, blanche */
+
+.gal-item:hover .gal-overlay svg{opacity:1;}
+/* Au survol : l'icône devient visible */
+
+/* ══ LIGHTBOX ══ */
+/* Styles pour la visionneuse d'image en plein écran */
+.lightbox{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);
+  /* Cachée par défaut, en position fixe couvrant tout l'écran, fond noir semi-opaque */
+  z-index:3000;align-items:center;justify-content:center;
+  /* Au-dessus de tout (z-index élevé), contenu centré */
+}
+.lightbox.open{display:flex;}
+/* Quand la classe open est ajoutée, la lightbox s'affiche en flexbox */
+
+.lb-inner{position:relative;max-width:88vw;max-height:88vh;}
+/* Conteneur de l'image : max 88% de la largeur et hauteur de la fenêtre */
+
+.lb-inner img{max-width:88vw;max-height:88vh;border-radius:8px;display:block;}
+/* L'image s'adapte à la lightbox, coins légèrement arrondis */
+
+.lb-close{position:absolute;top:-44px;right:0;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;opacity:.8;}
+/* Bouton fermer en haut à droite de l'image, blanc, légèrement transparent */
+
+.lb-close:hover{opacity:1;}
+/* Au survol : le bouton fermer devient complètement opaque */
+
+.lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  /* Boutons précédent/suivant centrés verticalement par rapport à l'image */
+  background:rgba(27,94,59,.7);border:none;color:#fff;
+  /* Fond vert semi-transparent, texte blanc */
+  width:44px;height:44px;border-radius:50%;font-size:20px;cursor:pointer;
+  /* Forme circulaire de 44px, grande flèche */
+  display:flex;align-items:center;justify-content:center;transition:background .2s;
+  /* Contenu centré, transition de couleur */
+}
+.lb-nav:hover{background:var(--green);}
+/* Au survol : fond vert plein */
+
+.lb-prev{left:-56px;}
+/* Bouton précédent positionné à gauche de l'image */
+.lb-next{right:-56px;}
+/* Bouton suivant positionné à droite de l'image */
+
+.lb-caption{
+  position:absolute;bottom:-36px;left:0;right:0;
+  /* Légende positionnée sous l'image */
+  text-align:center;color:rgba(255,255,255,.7);font-size:12px;letter-spacing:1px;
+  /* Texte blanc semi-transparent, petit, lettres espacées */
+}
+
+/* ══ SECTION 4 – RESTAURANTS & HÉBERGEMENT ══ */
+/* Styles pour la section des restaurants et hôtels */
+#restaurants{padding:80px 60px;background:var(--green-mid);}
+/* Section fond vert intermédiaire, espacements généreux */
+
+#restaurants .sec-head h2{color:#fff;}
+/* Dans cette section, le titre est blanc (car fond vert) */
+#restaurants .sec-head .eyebrow{color:var(--gold);}
+/* Le sous-titre reste doré */
+#restaurants .sec-head p{color:rgba(255,255,255,.65);}
+/* Le paragraphe est blanc à 65% d'opacité */
+
+.rh-filter-bar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:44px;}
+/* Barre de filtres identique à celle des activités mais adaptée pour fond vert */
+
+.rh-filter-btn{
+  padding:7px 20px;border-radius:30px;border:2px solid rgba(255,255,255,.4);
+  /* Bouton ovale avec bordure blanche semi-transparente */
+  background:transparent;color:rgba(255,255,255,.85);font-size:11px;font-weight:700;
+  /* Fond transparent, texte blanc légèrement transparent */
+  letter-spacing:1px;cursor:pointer;transition:all .25s;text-transform:uppercase;
+  /* Lettres espacées, transitions rapides, majuscules */
+}
+.rh-filter-btn:hover,.rh-filter-btn.active{background:#fff;color:var(--green);}
+/* Au survol ou actif : fond blanc et texte vert (inversion pour fond vert) */
+
+.rh-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  /* Grille responsive : colonnes d'au moins 300px */
+  gap:26px;max-width:1200px;margin:0 auto;
+  /* Espace de 26px entre cartes, largeur max 1200px, centré */
+}
+.rh-card{
+  background:#fff;border-radius:14px;overflow:hidden;
+  /* Carte blanche avec coins arrondis */
+  box-shadow:0 4px 24px rgba(0,0,0,.18);
+  /* Ombre plus prononcée que les cartes d'activités (fond sombre derrière) */
+  transition:transform .3s,box-shadow .3s;cursor:pointer;
+  /* Transitions pour le survol */
+}
+.rh-card:hover{transform:translateY(-8px);box-shadow:0 18px 52px rgba(0,0,0,.25);}
+/* Au survol : monte de 8px, ombre encore plus prononcée */
+
+.rh-card.hidden{display:none;}
+/* Les cartes filtrées sont cachées */
+
+.rh-card-img{position:relative;height:195px;overflow:hidden;}
+/* Conteneur image de la carte resto/hôtel : 195px de hauteur */
+
+.rh-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+/* Image remplit son conteneur, transition de zoom */
+
+.rh-card:hover .rh-card-img img{transform:scale(1.07);}
+/* Au survol de la carte : zoom léger sur l'image */
+
+.rh-badge{
+  position:absolute;top:12px;left:12px;
+  /* Badge type (restaurant/hôtel/riad) en haut à gauche de l'image */
+  padding:5px 12px;border-radius:16px;font-size:10px;font-weight:700;color:#fff;
+  /* Forme ovale, texte très petit et gras, blanc */
+}
+.badge-resto{background:#C0392B;}
+/* Badge rouge pour les restaurants */
+.badge-hotel{background:#1a3a5c;}
+/* Badge bleu marine pour les hôtels */
+.badge-riad{background:#C9A96E;color:#333;}
+/* Badge doré avec texte sombre pour les riads */
+
+.stars{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.5);color:var(--gold);padding:4px 10px;border-radius:12px;font-size:11px;}
+/* Étoiles de notation en haut à droite : fond noir semi-transparent, étoiles dorées */
+
+.rh-body{padding:18px 20px 20px;}
+/* Espacement interne du contenu textuel */
+
+.rh-body .cat{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:5px;}
+/* Catégorie affichée au-dessus du nom : très petite, dorée, espacée, majuscules */
+
+.rh-body h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--dark);margin-bottom:7px;}
+/* Nom de l'établissement en Playfair Display */
+
+.rh-body p{font-size:12.5px;color:#777;line-height:1.65;margin-bottom:12px;}
+/* Description courte : petite taille, grise, interligne confortable */
+
+.rh-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+/* Tags infos (prix, lieu) côte à côte */
+
+.rh-meta span{font-size:11px;background:var(--cream);padding:3px 10px;border-radius:12px;color:var(--green);font-weight:600;}
+/* Chaque tag : fond crème, coins arrondis, texte vert */
+
+/* ══ SECTION 5 – CARTE ══ */
+/* Styles pour la section avec la carte Leaflet */
+#carte{padding:80px 60px;background:#fff;}
+/* Section blanche avec grands espacements */
+
+.map-layout{display:grid;grid-template-columns:1fr 320px;gap:28px;max-width:1100px;margin:0 auto;}
+/* Mise en page deux colonnes : la carte prend le reste, la liste fait 320px fixe */
+
+#map{height:480px;border-radius:14px;box-shadow:0 4px 30px rgba(0,0,0,.12);z-index:1;}
+/* La carte Leaflet : 480px de haut, coins arrondis, ombre légère, z-index:1 pour Leaflet */
+
+.map-list{overflow-y:auto;max-height:480px;display:flex;flex-direction:column;gap:10px;}
+/* Liste des lieux : défilement vertical si trop long, même hauteur que la carte */
+
+.map-list::-webkit-scrollbar{width:4px;}
+/* Scrollbar personnalisée : très fine (4px) pour webkit (Chrome, Safari) */
+
+.map-list::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
+/* La poignée de la scrollbar est dorée et légèrement arrondie */
+
+.map-item{
+  background:var(--cream);border-radius:10px;padding:14px 16px;cursor:pointer;
+  /* Chaque élément de la liste : fond crème, coins arrondis, curseur pointeur */
+  border-left:4px solid transparent;transition:all .2s;
+  /* Bordure gauche transparente qui sera colorée quand actif */
+}
+.map-item:hover,.map-item.active-place{border-left-color:var(--green);background:#fff;box-shadow:0 2px 12px rgba(27,94,59,.1);}
+/* Au survol ou sélectionné : bordure gauche verte, fond blanc, légère ombre verte */
+
+.map-item h4{font-size:13.5px;font-weight:700;color:var(--dark);margin-bottom:3px;}
+/* Nom du lieu dans la liste */
+
+.map-item p{font-size:11.5px;color:#888;}
+/* Description courte dans la liste */
+
+.map-item .type-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+/* Petit cercle coloré indiquant le type de lieu (culture, nature, hôtel) */
+
+/* ══ SECTION 6 – MÉTÉO & CONTACT ══ */
+/* Styles pour la section finale avec météo et formulaire */
+#contact{padding:80px 60px;background:var(--cream);}
+/* Section fond crème */
+
+.mc-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;max-width:1000px;margin:0 auto;}
+/* Mise en page deux colonnes égales pour la météo et le formulaire */
+
+.meteo-box{
+  background:linear-gradient(135deg,var(--green-dark) 0%,var(--green-mid) 60%,#2E7D52 100%);
+  /* Fond dégradé vert diagonal (coin haut-gauche vers coin bas-droit) */
+  border-radius:18px;padding:32px;color:#fff;
+  /* Coins très arrondis, espacement généreux, texte blanc */
+  box-shadow:0 8px 40px rgba(27,94,59,.35);
+  /* Ombre verte prononcée sous la carte météo */
+}
+.meteo-city{font-size:12px;letter-spacing:3px;text-transform:uppercase;opacity:.7;margin-bottom:4px;}
+/* Nom de la ville en petit, lettres espacées, légèrement transparent */
+
+.meteo-temp{font-family:'Playfair Display',serif;font-size:72px;font-weight:700;line-height:1;}
+/* Température affichée très grande en Playfair Display */
+
+.meteo-desc{font-size:16px;margin:6px 0 24px;opacity:.85;}
+/* Description météo (ex: Ensoleillé) légèrement transparente */
+
+.meteo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+/* Grille 2x2 pour les 4 infos météo (ressenti, humidité, vent, couverture) */
+
+.meteo-item{background:rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;}
+/* Chaque case météo : fond blanc très transparent pour l'effet verre */
+
+.meteo-item .label{font-size:10px;letter-spacing:1.5px;opacity:.65;text-transform:uppercase;margin-bottom:4px;}
+/* Label (ex: HUMIDITÉ) très petit, espaces entre lettres, majuscules, transparent */
+
+.meteo-item .val{font-size:18px;font-weight:700;}
+/* Valeur météo affichée en grand et gras */
+
+.contact-form{background:#fff;border-radius:18px;padding:36px;box-shadow:0 4px 30px rgba(0,0,0,.08);}
+/* Formulaire de contact : fond blanc, coins arrondis, espacement généreux, ombre légère */
+
+.contact-form h3{font-family:'Playfair Display',serif;font-size:24px;color:var(--green);margin-bottom:6px;}
+/* Titre du formulaire en vert */
+
+.contact-form .sub{font-size:13px;color:#888;margin-bottom:24px;}
+/* Sous-titre du formulaire en gris */
+
+.form-group{margin-bottom:16px;}
+/* Chaque champ du formulaire a une marge en bas de 16px */
+
+.form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;margin-bottom:6px;}
+/* Label au-dessus de chaque champ : affiché en bloc, petit, gras, majuscules */
+
+.form-group input,.form-group textarea,.form-group select{
+  width:100%;padding:11px 14px;border:1.5px solid #d0e0d5;border-radius:8px;
+  /* Champs de formulaire : largeur pleine, espacement interne, bordure verte claire arrondie */
+  font-family:'Raleway',sans-serif;font-size:13px;color:var(--dark);
+  /* Police cohérente avec le reste de la page */
+  background:#f4faf6;transition:border-color .2s;outline:none;
+  /* Fond légèrement teinté vert, transition pour le focus, pas de contour natif */
+}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--green);}
+/* Quand un champ est sélectionné (focus), sa bordure devient verte */
+
+.form-group textarea{resize:vertical;min-height:110px;}
+/* Le textarea peut être redimensionné uniquement verticalement, hauteur minimum 110px */
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+/* Ligne avec deux champs côte à côte (prénom/nom) */
+
+.form-success{
+  display:none;background:#f0fdf4;border:1px solid #86efac;
+  /* Message de succès caché par défaut, fond vert très clair, bordure verte */
+  color:#166534;padding:14px;border-radius:8px;font-size:13px;margin-top:14px;
+  /* Texte vert foncé, espacement, coins arrondis */
+}
+
+/* ══ FOOTER ══ */
+/* Styles du pied de page */
+footer{
+  background:var(--green-dark);color:rgba(255,255,255,.75);
+  /* Fond vert très foncé, texte blanc à 75% d'opacité */
+  padding:50px 60px 30px;text-align:center;
+  /* Grands espacements, centré */
+}
+.foot-logo{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;letter-spacing:5px;color:#fff;margin-bottom:4px;}
+/* Le nom RABAT dans le footer en grand et espacé */
+
+.foot-sub{font-size:10px;letter-spacing:3px;opacity:.5;margin-bottom:28px;}
+/* Le sous-titre en footer, très petit et semi-transparent */
+
+.foot-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
+/* Les liens du footer côte à côte, centrés, passent à la ligne si nécessaire */
+
+.foot-links a{color:rgba(255,255,255,.6);text-decoration:none;font-size:11px;letter-spacing:.5px;transition:color .2s;}
+/* Liens footer : blanc semi-transparent, pas de soulignement, transition de couleur */
+
+.foot-links a:hover{color:#fff;}
+/* Au survol : liens blancs complets */
+
+/* ══ MODAL ══ */
+/* Styles pour la fenêtre modale (popup de détail) */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);
+  /* Fond semi-noir couvrant tout l'écran, caché par défaut */
+  z-index:2000;align-items:center;justify-content:center;padding:20px;
+  /* Au-dessus de tout sauf lightbox, contenu centré, marge pour petits écrans */
+}
+.modal-overlay.open{display:flex;}
+/* Quand la classe open est ajoutée, la modale s'affiche en flexbox */
+
+.modal{
+  background:#fff;border-radius:18px;max-width:780px;width:100%;
+  /* La modale blanche : largeur max 780px, prend toute la largeur disponible */
+  max-height:90vh;overflow-y:auto;position:relative;
+  /* Hauteur max 90% de la fenêtre, défilement interne si le contenu est trop long */
+  animation:modalIn .3s ease;
+  /* Animation d'apparition de bas en haut sur 0.3s */
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+/* L'animation modalIn : la modale part invisible et décalée de 24px vers le bas, puis remonte */
+
+.modal-close{
+  position:absolute;top:14px;right:14px;background:rgba(0,0,0,.45);
+  /* Bouton fermer en haut à droite de la modale, fond noir semi-transparent */
+  color:#fff;border:none;border-radius:50%;width:34px;height:34px;
+  /* Texte blanc, forme circulaire de 34px */
+  font-size:17px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;
+  /* Icône centrée dans le cercle, au-dessus de l'image */
+  transition:background .2s;
+  /* Transition pour le survol */
+}
+.modal-close:hover{background:var(--green);}
+/* Au survol : fond vert */
+
+.modal-img{width:100%;height:300px;object-fit:cover;display:block;}
+/* Image en tête de modale : pleine largeur, hauteur fixe 300px, sans se déformer */
+
+.modal-body{padding:28px 30px 32px;}
+/* Zone de texte de la modale avec grands espacements */
+
+.modal-body .m-cat{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+/* Catégorie affichée en doré au-dessus du titre */
+
+.modal-body h2{font-family:'Playfair Display',serif;font-size:28px;color:var(--dark);margin-bottom:14px;}
+/* Titre de la modale en grand */
+
+.modal-body .m-desc{font-size:13.5px;color:#555;line-height:1.78;margin-bottom:22px;}
+/* Description détaillée : taille lisible, gris moyen, grand interligne */
+
+.modal-details{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  /* Grille 2 colonnes pour les informations pratiques */
+  background:var(--cream);padding:20px;border-radius:12px;margin-bottom:20px;
+  /* Fond crème, espacement interne, coins arrondis */
+}
+.modal-detail .d-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:3px;}
+/* Label d'information (ex: HORAIRES) très petit et gris */
+
+.modal-detail .d-val{font-size:13.5px;font-weight:600;color:var(--dark);}
+/* Valeur de l'information en gras et foncé */
+
+/* ══ SIDEBAR ══ */
+/* Boutons flottants sur le côté droit de la page */
+.sidebar{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:800;display:flex;flex-direction:column;gap:4px;}
+/* La sidebar reste visible au scroll, centrée verticalement, au-dessus du contenu */
+
+.s-btn{
+  background:var(--green);color:#fff;width:42px;height:42px;
+  /* Bouton carré de 42px, fond vert, icône blanche */
+  display:flex;align-items:center;justify-content:center;
+  /* Contenu centré */
+  font-size:17px;border-radius:4px 0 0 4px;cursor:pointer;
+  /* Coins arrondis seulement à gauche (collé au bord droit de l'écran) */
+  transition:background .2s;border:none;
+  /* Transition de couleur */
+}
+.s-btn:hover{background:var(--green-acc);}
+/* Au survol : vert plus clair */
+
+/* ══ RESPONSIVE TABLETTE (max 900px) ══ */
+/* Ces styles s'appliquent uniquement quand la fenêtre fait 900px ou moins */
+@media(max-width:900px){
+  nav{padding:0 16px;}
+  /* Réduction du padding de la navbar sur tablette */
+  .nav-links{display:none;}
+  /* Les liens de navigation sont cachés (remplacés par le hamburger) */
+  .hamburger{display:flex;}
+  /* Le bouton hamburger s'affiche */
+  #activites,#galerie,#restaurants,#carte,#contact{padding:52px 18px;}
+  /* Réduction des espacements des sections */
+  .map-layout,.mc-layout{grid-template-columns:1fr;}
+  /* La carte et la météo passent en une seule colonne */
+  #map{height:320px;}
+  /* La carte est moins haute sur tablette */
+  .gallery-grid{grid-template-columns:1fr 1fr;}
+  /* La galerie passe de 3 à 2 colonnes */
+  .gal-item:nth-child(1),.gal-item:nth-child(6),.gal-item:nth-child(7){grid-column:span 1;height:200px;}
+  /* Les photos qui s'étiraient sont ramenées à 1 colonne */
+  .modal-details{grid-template-columns:1fr;}
+  /* Les détails de la modale passent en une seule colonne */
+  .lb-prev{left:-8px;}
+  /* Les boutons lightbox sont plus près de l'image sur tablette */
+  .lb-next{right:-8px;}
+  /* Idem pour le bouton suivant */
+  .form-row{grid-template-columns:1fr;}
+  /* Prénom et nom passent en colonnes empilées sur tablette */
+}
+
+/* ══ RESPONSIVE MOBILE (max 480px) ══ */
+/* Styles spécifiques aux petits écrans de smartphones */
+@media(max-width:480px){
+  .hamburger{display:flex;}
+  /* Le hamburger est affiché */
+  .nav-links{display:none;}
+  /* Les liens de nav sont cachés */
+  nav{padding:0 14px;height:56px;position:relative;}
+  /* Navbar plus basse (56px) sur mobile */
+  .logo-text .city{font-size:14px;}
+  /* Le nom de la ville dans le logo est réduit */
+
+  .nav-links.open{
+    display:flex !important;
+    /* Quand le menu est ouvert, il s'affiche (force avec !important) */
+    flex-direction:column;
+    /* Les liens sont empilés verticalement */
+    position:absolute;
+    /* Le menu se positionne sous la navbar */
+    top:56px;left:0;right:0;
+    /* Le menu commence juste sous la navbar et prend toute la largeur */
+    background:#fff;
+    /* Fond blanc */
+    box-shadow:0 8px 24px rgba(0,0,0,.12);
+    /* Ombre sous le menu déroulant */
+    padding:10px 0;
+    /* Espacement interne */
+    z-index:999;
+    /* Au-dessus du contenu de la page */
+  }
+  .nav-links.open li a{
+    padding:12px 24px;
+    /* Chaque lien mobile a plus d'espace pour être facile à taper */
+    font-size:13px;
+    /* Un peu plus grand que la nav desktop */
+    border-bottom:1px solid #edf5f0;
+    /* Séparateur léger entre les liens */
+    display:block;
+    /* Prend toute la largeur disponible */
+  }
+
+  .hero-title{font-size:36px;letter-spacing:2px;}
+  /* Titre réduit sur mobile */
+  .hero-sub{font-size:11px;margin-bottom:20px;}
+  /* Sous-titre réduit */
+  .hero-btns{flex-direction:column;align-items:center;gap:10px;}
+  /* Les boutons s'empilent verticalement sur mobile */
+  .btn-primary,.btn-outline{padding:12px 28px;font-size:11px;width:200px;text-align:center;}
+  /* Boutons plus petits, largeur fixe, centrés */
+  .hero-tag{font-size:9px;padding:5px 14px;}
+  /* Le badge du hero est réduit */
+
+  #activites,#galerie,#restaurants,#carte,#contact{padding:40px 14px;}
+  /* Très peu de marges horizontales sur mobile */
+  .sec-head h2{font-size:22px;}
+  /* Titres de sections réduits */
+  .sec-head p{font-size:12px;}
+  /* Textes réduits */
+
+  .filter-bar,.rh-filter-bar{gap:6px;}
+  /* Moins d'espace entre les boutons de filtre */
+  .filter-btn,.rh-filter-btn{padding:6px 12px;font-size:10px;}
+  /* Boutons de filtre réduits */
+
+  .cards-grid{grid-template-columns:1fr;gap:16px;}
+  /* Une seule carte par ligne sur mobile */
+  .rh-grid{grid-template-columns:1fr;gap:16px;}
+  /* Idem pour restaurants/hôtels */
+
+  .gallery-grid{grid-template-columns:1fr 1fr;gap:6px;}
+  /* Galerie : 2 colonnes sur mobile */
+  .gal-item:nth-child(n){grid-column:span 1 !important;height:140px !important;}
+  /* Toutes les photos font 1 colonne, 140px de hauteur (reset des règles précédentes) */
+  .gal-item:nth-child(6){grid-column:span 2 !important;}
+  /* Sauf la 6ème qui prend toute la largeur */
+
+  .lb-prev{left:4px;}
+  /* Boutons lightbox ramenés très près des bords */
+  .lb-next{right:4px;}
+  /* Idem */
+  .lb-inner img{max-width:96vw;max-height:70vh;}
+  /* Image lightbox prend presque toute la largeur de l'écran */
+
+  .map-layout{grid-template-columns:1fr;gap:14px;}
+  /* La carte et la liste passent en colonne unique */
+  #map{height:260px;}
+  /* Carte encore moins haute sur mobile */
+  .map-list{max-height:200px;}
+  /* Liste des lieux limitée à 200px avec scroll */
+
+  .mc-layout{grid-template-columns:1fr;gap:20px;}
+  /* Météo et formulaire empilés sur mobile */
+  .meteo-temp{font-size:54px;}
+  /* Température légèrement réduite */
+  .meteo-grid{grid-template-columns:1fr 1fr;}
+  /* Les 4 cases météo restent en 2 colonnes */
+  .contact-form{padding:20px 14px;}
+  /* Formulaire moins espacé */
+  .form-row{grid-template-columns:1fr;}
+  /* Prénom et nom en colonne unique */
+
+  .modal-img{height:180px;}
+  /* Image de la modale réduite */
+  .modal-body{padding:16px 14px 20px;}
+  /* Corps de la modale moins espacé */
+  .modal-body h2{font-size:20px;}
+  /* Titre de la modale réduit */
+  .modal-details{grid-template-columns:1fr;padding:12px;}
+  /* Détails en colonne unique */
+
+  /* Sidebar visible sur mobile  */
+  .sidebar{display:flex;}
+  /* La sidebar reste visible sur mobile */
+  .s-btn{width:34px;height:34px;font-size:14px;}
+  /* Boutons sidebar légèrement réduits */
+
+  footer{padding:30px 14px 20px;}
+  /* Footer moins espacé */
+  .foot-links{gap:10px;}
+  /* Moins d'espace entre les liens du footer */
+}
+</style>
+</head>
+
+
+<body>
+<!-- On ouvre le corps de la page, tout le contenu visible est ici -->
+
+
+<!-- NAVBAR -->
+<!-- Barre de navigation principale qui reste visible en haut de la page -->
+<nav>
+  <!-- La balise nav est sémantique : elle indique que c'est une zone de navigation -->
+  <a class="nav-logo" href="#">
+    <!-- Lien logo qui ramène au début de la page (href="#") -->
+    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <!-- SVG : dessin vectoriel du logo étoile marocaine -->
+      <polygon points="30,4 36,22 56,22 40,33 46,52 30,40 14,52 20,33 4,22 24,22" fill="none" stroke="#1B5E3B" stroke-width="2.2"/>
+      <!-- Polygone formant l'étoile à 10 branches du logo, contour vert sans remplissage -->
+      <circle cx="30" cy="30" r="5" fill="#C9A96E" opacity=".6"/>
+      <!-- Petit cercle doré semi-transparent au centre de l'étoile -->
+    </svg>
+    <div class="logo-text">
+      <!-- Conteneur du texte à côté du SVG -->
+      <div class="city">RABAT</div>
+      <!-- Nom de la ville en grand -->
+      <div class="sub">Capitale du Royaume</div>
+      <!-- Slogan en petit dessous -->
+    </div>
+  </a>
+  <ul class="nav-links">
+    <!-- Liste non ordonnée des liens de navigation -->
+    <li><a href="#hero" class="active">Accueil</a></li>
+    <!-- Lien vers la section hero, avec classe active car c'est la page d'accueil -->
+    <li><a href="#activites">Activités</a></li>
+    <!-- Lien ancre vers la section activités (le # renvoie à l'id de la section) -->
+    <li><a href="#galerie">Galerie</a></li>
+    <!-- Lien vers la galerie photos -->
+    <li><a href="#restaurants">Restaurants & Hôtels</a></li>
+    <!-- Lien vers la section restaurants et hébergement -->
+    <li><a href="#carte">Carte</a></li>
+    <!-- Lien vers la carte interactive -->
+    <li><a href="#contact">Météo & Contact</a></li>
+    <!-- Lien vers la section météo et formulaire de contact -->
+    <li><a href="../index/dashboard.html">Dashboard</a></li>
+    <!-- Lien vers le tableau de bord du projet -->
+  </ul>
+  <button class="hamburger" id="menuBtn" onclick="toggleMenu()">
+    <!-- Bouton burger visible sur mobile, appelle la fonction toggleMenu() au clic -->
+    <span></span>
+    <!-- Premier trait horizontal du burger -->
+    <span></span>
+    <!-- Deuxième trait horizontal du burger -->
+    <span></span>
+    <!-- Troisième trait horizontal du burger -->
+  </button>
+</nav>
+
+<!-- ══ SECTION 1 – HERO ══ -->
+<!-- Section principale plein écran avec image de fond et titre -->
+<section id="hero">
+  <!-- Section avec l'id "hero" pour les liens ancres et le scroll spy -->
+  <div class="hero-img"></div>
+  <!-- Div qui affiche l'image de fond en CSS (background-image) -->
+  <div class="hero-overlay"></div>
+  <!-- Div transparent qui assombrit l'image pour améliorer la lisibilité du texte -->
+  <div class="hero-pattern"></div>
+  <!-- Div avec le motif étoile en répétition très transparent -->
+  <svg class="hero-wave" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <!-- SVG en forme de vague à la transition entre le hero et la section suivante -->
+    <path d="M0,120 L0,70 L180,20 L360,80 L540,30 L720,85 L900,18 L1080,72 L1260,28 L1440,60 L1440,120Z" fill="rgba(8,26,15,0.55)"/>
+    <!-- Première vague : chemin SVG formant une courbe irrégulière, couleur sombre -->
+    <path d="M0,120 L0,95 L240,65 L480,100 L720,55 L960,90 L1200,50 L1440,78 L1440,120Z" fill="rgba(8,26,15,0.7)"/>
+    <!-- Deuxième vague par-dessus la première, plus opaque -->
+  </svg>
+  <div class="hero-content">
+    <!-- Conteneur du contenu texte centré par-dessus l'image -->
+    <div class="hero-tag">Patrimoine UNESCO · Ville Royale</div>
+    <!-- Petit badge avec les labels de Rabat -->
+    <h1 class="hero-title">RA<em>BAT</em></h1>
+    <!-- Titre principal : "RA" normal, "BAT" en italique doré grâce à la balise em -->
+    <p class="hero-sub">La Capitale Verte — Perle de l'Atlantique</p>
+    <!-- Sous-titre poétique de la ville -->
+    <div class="hero-btns">
+      <!-- Conteneur des deux boutons d'action -->
+      <button class="btn-primary" onclick="document.getElementById('activites').scrollIntoView({behavior:'smooth'})">Découvrir</button>
+      <!-- Bouton principal : au clic, défilement fluide vers la section activités -->
+      <button class="btn-outline" onclick="document.getElementById('galerie').scrollIntoView({behavior:'smooth'})">Voir la galerie</button>
+      <!-- Bouton secondaire : au clic, défilement fluide vers la galerie -->
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <!-- Indicateur visuel qui invite l'utilisateur à défiler vers le bas -->
+    <span style="font-size:10px;letter-spacing:2px;">DÉFILER</span>
+    <!-- Texte "DÉFILER" en petit -->
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    <!-- Flèche vers le bas en SVG -->
+  </div>
+</section>
+
+<!-- ══ SECTION 2 – ACTIVITÉS ══ -->
+<!-- Section avec les cartes des activités touristiques filtrables -->
+<section id="activites">
+  <!-- Section activités avec son id pour les ancres -->
+  <div class="sec-head">
+    <!-- En-tête centré avec eyebrow, titre, séparateur et description -->
+    <div class="eyebrow">À découvrir</div>
+    <!-- Petit texte au-dessus du titre principal -->
+    <h2>Activités <em>touristiques</em></h2>
+    <!-- Titre avec "touristiques" en italique -->
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <!-- Séparateur décoratif : deux traits dorés avec un losange au milieu -->
+    <p>De la Tour Hassan aux Oudayas, Rabat regorge de trésors historiques et naturels.</p>
+    <!-- Paragraphe de description de la section -->
+  </div>
+  <div class="filter-bar">
+    <!-- Barre avec les boutons de filtrage des activités -->
+    <button class="filter-btn active" onclick="filterAct('all',this)">Tout</button>
+    <!-- Bouton actif par défaut : affiche toutes les activités -->
+    <button class="filter-btn" onclick="filterAct('culture',this)">Culture</button>
+    <!-- Filtre pour n'afficher que les activités culturelles -->
+    <button class="filter-btn" onclick="filterAct('nature',this)">Nature</button>
+    <!-- Filtre nature -->
+    <button class="filter-btn" onclick="filterAct('sport',this)">Sport</button>
+    <!-- Filtre sport -->
+    <button class="filter-btn" onclick="filterAct('detente',this)">Détente</button>
+    <!-- Filtre détente -->
+  </div>
+  <div class="cards-grid" id="actGrid">
+    <!-- Grille des cartes d'activités, id="actGrid" pour le ciblage JS -->
+
+    <div class="act-card" data-cat="culture" onclick="openModal('tourhassane')">
+      <!-- Carte activité avec data-cat pour le filtrage et onclick pour la modale -->
+      <div class="card-img-wrap">
+        <!-- Conteneur de l'image avec hauteur fixe pour le zoom -->
+        <img src="images/tour-hassan.jpg" alt="Tour Hassan"
+             onerror="this.style.background='linear-gradient(135deg,#1B5E3B,#4CAF78)';this.style.height='210px'">
+        <!-- Image avec texte alternatif + fallback en dégradé si l'image ne charge pas -->
+        <span class="card-badge badge-culture">Culture</span>
+        <!-- Badge de catégorie flottant sur l'image -->
+      </div>
+      <div class="card-body">
+        <!-- Corps textuel de la carte -->
+        <h3>Tour Hassan</h3>
+        <!-- Titre de l'activité -->
+        <p>Minaret inachevé du XIIe siècle et symbole de Rabat. Ce chef-d'œuvre almohade domine la rive gauche du Bouregreg face au Mausolée Mohammed V.</p>
+        <!-- Description courte -->
+        <div class="card-meta"><span> 1–2h</span><span> Avenue Tour Hassan</span></div>
+        <!-- Tags avec durée et localisation -->
+        <button class="btn-sm">Savoir plus →</button>
+        <!-- Bouton d'action (le clic est géré par le onclick de la carte parente) -->
+      </div>
+    </div>
+
+    <div class="act-card" data-cat="culture" onclick="openModal('oudayas')">
+      <!-- Carte Kasbah des Oudayas -->
+      <div class="card-img-wrap">
+        <img src="images/oudayas.jpg" alt="Kasbah des Oudayas"
+             onerror="this.style.background='linear-gradient(135deg,#1a3a5c,#1B5E3B)';this.style.height='210px'">
+        <span class="card-badge badge-culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <h3>Kasbah des Oudayas</h3>
+        <p>Forteresse almoravide aux ruelles blanches et bleues avec vue panoramique sur l'Atlantique et l'embouchure du Bouregreg.</p>
+        <div class="card-meta"><span> 2–3h</span><span> Bab Oudayas</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <div class="act-card" data-cat="culture" onclick="openModal('mausolee')">
+      <!-- Carte Mausolée Mohammed V -->
+      <div class="card-img-wrap">
+        <img src="images/mausolee.jpg" alt="Mausolée Mohammed V"
+             onerror="this.style.background='linear-gradient(135deg,#0f3d24,#1B5E3B)';this.style.height='210px'">
+        <span class="card-badge badge-culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <h3>Mausolée Mohammed V</h3>
+        <p>Joyau de l'architecture marocaine contemporaine abritant les tombeaux des rois Mohammed V et Hassan II. Ouvert aux non-musulmans.</p>
+        <div class="card-meta"><span> 1h</span><span> Tour Hassan</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <div class="act-card" data-cat="culture" onclick="openModal('chellah')">
+      <!-- Carte Chellah : data-cat="culture" mais le badge affiche "Nature & Culture" -->
+      <div class="card-img-wrap">
+        <img src="images/chellah.png" alt="Chellah"
+             onerror="this.style.background='linear-gradient(135deg,#4a7000,#1B5E3B)';this.style.height='210px'">
+        <span class="card-badge badge-nature">Nature & Culture</span>
+        <!-- Badge nature pour ce site qui mêle ruines et jardins -->
+      </div>
+      <div class="card-body">
+        <h3>Chellah</h3>
+        <p>Nécropole mérinide sur les ruines romaines de Sala Colonia. Cigognes, bassins aux anguilles sacrées et jardins fleuris dans un site archéologique exceptionnel.</p>
+        <div class="card-meta"><span> 1–2h</span><span> Av. Yacoub El Mansour</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <div class="act-card" data-cat="detente" onclick="openModal('corniche')">
+      <!-- Carte Corniche et Plage, catégorie détente -->
+      <div class="card-img-wrap">
+        <img src="images/plage.jpg" alt="Corniche de Rabat"
+             onerror="this.style.background='linear-gradient(135deg,#2980B9,#1B5E3B)';this.style.height='210px'">
+        <span class="card-badge badge-detente">Détente</span>
+      </div>
+      <div class="card-body">
+        <h3>Corniche & Plage de Rabat</h3>
+        <p>Promenade côtière face à l'Atlantique avec cafés-terrasses, pistes cyclables et longue plage de sable. Idéale pour profiter des couchers de soleil.</p>
+        <div class="card-meta"><span> Demi-journée</span><span> Corniche</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <div class="act-card" data-cat="culture" onclick="openModal('medina')">
+      <!-- Carte Médina de Rabat -->
+      <div class="card-img-wrap">
+        <img src="images/medina.png" alt="Médina de Rabat"
+             onerror="this.style.background='linear-gradient(135deg,#C0392B,#1B5E3B)';this.style.height='210px'">
+        <span class="card-badge badge-culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <h3>Médina de Rabat</h3>
+        <p>Médina authentique classée UNESCO, connue pour ses souks traditionnels, son artisanat (cuivre, cuir, tissage) et ses ruelles historiques préservées.</p>
+        <div class="card-meta"><span> 2–3h</span><span> Médina, Centre-ville</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card Sport 1 : Vélo Corniche -->
+<div class="act-card" data-cat="sport" onclick="openModal('velo')">
+  <!-- Carte activité vélo, catégorie sport -->
+  <div class="card-img-wrap">
+    <img src="images/velo.jpg" alt="Vélo Corniche"
+         onerror="this.style.background='linear-gradient(135deg,#1a5c3a,#2980B9)';this.style.height='210px'">
+    <span class="card-badge badge-sport">Sport</span>
+  </div>
+  <div class="card-body">
+    <h3>Vélo & Corniche</h3>
+    <p>12 km de piste cyclable longeant l'Atlantique de la Kasbah des Oudayas jusqu'à Témara. Location de vélos disponible sur place.</p>
+    <div class="card-meta"><span> 2–3h</span><span> Corniche de Rabat</span></div>
+    <button class="btn-sm">Savoir plus →</button>
+  </div>
+</div>
+
+<!-- Card Sport 2 : Golf Royal -->
+<div class="act-card" data-cat="sport" onclick="openModal('golf')">
+  <!-- Carte golf royal, catégorie sport -->
+  <div class="card-img-wrap">
+    <img src="images/golf.png" alt="Golf Royal de Rabat"
+         onerror="this.style.background='linear-gradient(135deg,#1B5E3B,#4a7000)';this.style.height='210px'">
+    <span class="card-badge badge-sport">Sport</span>
+  </div>
+  <div class="card-body">
+    <h3>Golf Royal de Rabat</h3>
+    <p>L'un des plus beaux golfs du Maroc avec deux parcours 18 trous dans un cadre verdoyant au cœur de la capitale.</p>
+    <div class="card-meta"><span> Demi-journée</span><span> Souissi, Rabat</span></div>
+    <button class="btn-sm">Savoir plus →</button>
+  </div>
+</div>
+
+<!-- Card Nature 1 : Jardin d'Essais -->
+<div class="act-card" data-cat="nature" onclick="openModal('jardin')">
+  <!-- Carte jardin botanique, catégorie nature -->
+  <div class="card-img-wrap">
+    <img src="images/jardin.jpg" alt="Jardin d'Essais"
+         onerror="this.style.background='linear-gradient(135deg,#4a7000,#1B5E3B)';this.style.height='210px'">
+    <span class="card-badge badge-nature">Nature</span>
+  </div>
+  <div class="card-body">
+    <h3>Jardin d'Essais Botaniques</h3>
+    <p>Magnifique jardin botanique colonial créé en 1914. Arbres centenaires, plantes exotiques et allées ombragées au cœur de Rabat.</p>
+    <div class="card-meta"><span> 1–2h</span><span> Avenue de la Victoire</span></div>
+    <button class="btn-sm">Savoir plus →</button>
+  </div>
+</div>
+
+<!-- Card Nature 2 : Bouregreg -->
+<div class="act-card" data-cat="nature" onclick="openModal('bouregreg')">
+  <!-- Carte fleuve Bouregreg, catégorie nature -->
+  <div class="card-img-wrap">
+    <img src="images/b.png" alt="Vallée du Bouregreg"
+         onerror="this.style.background='linear-gradient(135deg,#2980B9,#1B5E3B)';this.style.height='210px'">
+    <span class="card-badge badge-nature">Nature</span>
+  </div>
+  <div class="card-body">
+    <h3>Vallée du Bouregreg</h3>
+    <p>Balade en bateau sur le fleuve Bouregreg entre Rabat et Salé. Vue unique sur la Kasbah, la Médina et les cigognes de la Chellah.</p>
+    <div class="card-meta"><span> 1–2h</span><span> Marina Bouregreg</span></div>
+    <button class="btn-sm">Savoir plus →</button>
+  </div>
+</div>
+
+  </div>
+  <!-- Fin de la grille cards-grid -->
+</section>
+<!-- Fin de la section activités -->
+
+<!-- ══ SECTION 3 – GALERIE ══ -->
+<!-- Section photos avec grille masonry-like et lightbox -->
+<section id="galerie">
+  <div class="sec-head">
+    <div class="eyebrow">En images</div>
+    <!-- Label au-dessus du titre -->
+    <h2><em>Galerie</em> photos</h2>
+    <!-- "Galerie" en italique -->
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <!-- Séparateur décoratif -->
+    <p>Cliquez sur une photo pour l'agrandir.</p>
+    <!-- Instruction pour l'utilisateur -->
+  </div>
+  <div class="gallery-grid">
+    <!-- Grille CSS avec disposition asymétrique des photos -->
+    <div class="gal-item" onclick="openLb(0)"> <!-- openLb(index) ouvre la lightbox en utilisant l'index de l'image dans le tableau JavaScript -->
+      <!-- Clic sur la photo : ouvre la lightbox à l'index 0  -->
+      <img src="images/g1.jpg" alt="Tour Hassan Rabat"
+           onerror="this.style.background='linear-gradient(135deg,#1B5E3B,#4CAF78)'">
+      <!-- Image avec fallback dégradé -->
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+      <!-- Overlay vert avec icône "agrandir" en SVG, visible au survol -->
+    </div>
+    <div class="gal-item" onclick="openLb(1)">
+      <!-- Photo 2 : Kasbah des Oudayas -->
+      <img src="images/g2.jpg" alt="Kasbah des Oudayas"
+           onerror="this.style.background='linear-gradient(135deg,#1a1100,#1B5E3B)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(2)">
+      <!-- Photo 3 : Mausolée -->
+      <img src="images/g3.jpg" alt="Mausolée Mohammed V"
+           onerror="this.style.background='linear-gradient(135deg,#0f3d24,#1B5E3B)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(3)">
+      <!-- Photo 4 : Médina -->
+      <img src="images/g4.jpg" alt="medina"
+           onerror="this.style.background='linear-gradient(135deg,#4a7000,#1B5E3B)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(4)">
+      <!-- Photo 5 : Médina de Rabat -->
+      <img src="images/g5.jpg" alt="Médina de Rabat"
+           onerror="this.style.background='linear-gradient(135deg,#C0392B,#1B5E3B)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(5)">
+      <!-- Photo 6 : Corniche (span 3 = pleine largeur) -->
+      <img src="images/g6.jpg" alt="Corniche de Rabat"
+           onerror="this.style.background='linear-gradient(135deg,#2980B9,#1B5E3B)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(6)">
+      <!-- Photo 7 : Bouregreg vue panoramique  -->
+      <img src="images/g7.jpg" alt="Bouregreg vue panoramique"
+           onerror="this.style.background='linear-gradient(135deg,#0f3d24,#C9A96E)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+  </div>
+</section>
+<!-- Fin de la section galerie -->
+
+<!-- LIGHTBOX -->
+<!-- Visionneuse plein écran pour les photos de la galerie -->
+<div class="lightbox" id="lightbox">
+  <!-- Div cachée par défaut, devient visible quand on clique sur une photo -->
+  <div class="lb-inner">
+    <!-- Conteneur interne qui limite la taille de l'image -->
+    <button class="lb-close" onclick="closeLb()">✕</button>
+    <!-- Bouton fermer en haut à droite -->
+    <button class="lb-nav lb-prev" onclick="navLb(-1)">‹</button>
+    <!-- Bouton flèche gauche : navigue vers la photo précédente (index -1) -->
+    <img id="lbImg" src="" alt="">
+    <!-- L'image affichée dans la lightbox, src changé par JavaScript -->
+    <button class="lb-nav lb-next" onclick="navLb(1)">›</button>
+    <!-- Bouton flèche droite : navigue vers la photo suivante (index +1) -->
+    <div class="lb-caption" id="lbCap"></div>
+    <!-- Légende de la photo affichée sous l'image, texte injecté par JS -->
+  </div>
+</div>
+
+<!-- ══ SECTION 4 – RESTAURANTS & HÉBERGEMENT ══ -->
+<!-- Section avec les cartes restaurants, riads et hôtels -->
+<section id="restaurants">
+  <div class="sec-head">
+    <div class="eyebrow">Où manger & dormir</div>
+    <h2>Restaurants & <em>Hébergement</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <p style="color:rgba(255,255,255,.65)">Les meilleures adresses de la capitale royale.</p>
+    <!-- Style inline pour adapter la couleur au fond vert de cette section -->
+  </div>
+  <div class="rh-filter-bar">
+    <!-- Barre de filtres restaurants/hôtels/riads -->
+    <button class="rh-filter-btn active" onclick="filterRH('all',this)">Tout</button>
+    <!-- Affiche tout par défaut -->
+    <button class="rh-filter-btn" onclick="filterRH('restaurant',this)">Restaurants</button>
+    <!-- Filtre uniquement les restaurants (data-rh="restaurant") -->
+    <button class="rh-filter-btn" onclick="filterRH('hotel',this)">Hôtels</button>
+    <!-- Filtre les hôtels -->
+    <button class="rh-filter-btn" onclick="filterRH('riad',this)">Riads</button>
+    <!-- Filtre les riads -->
+  </div>
+  <div class="rh-grid" id="rhGrid">
+    <!-- Grille des cartes restaurants et hébergements, id pour le ciblage JS -->
+
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('dhow')">
+      <!-- Carte Le Dhow, catégorie restaurant -->
+      <div class="rh-card-img">
+        <img src="images/rest1.jpg" alt="Le Dhow"
+             onerror="this.style.background='linear-gradient(135deg,#1B5E3B,#4CAF78)'">
+        <span class="rh-badge badge-resto">Restaurant</span>
+        <!-- Badge rouge restaurant -->
+        <span class="stars">★★★★★</span>
+        <!-- 5 étoiles affichées en haut à droite de l'image -->
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Gastronomique · Marina</div>
+        <!-- Catégorie et localisation en petit texte doré -->
+        <h3>Restaurant Le Dhow</h3>
+        <p>Restaurant flottant sur le Bouregreg, cuisine marocaine gastronomique avec vue panoramique sur la Tour Hassan et la Kasbah des Oudayas.</p>
+        <div class="rh-meta"><span> 200–400 MAD</span><span> Marina Bouregreg</span></div>
+        <!-- Tags prix et localisation -->
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('dinarjat')">
+      <!-- Carte Dinarjat, restaurant marocain -->
+      <div class="rh-card-img">
+        <img src="images/rest2.jpg" alt="Dinarjat"
+             onerror="this.style.background='linear-gradient(135deg,#4a3000,#C9A96E)'">
+        <span class="rh-badge badge-resto">Restaurant</span>
+        <span class="stars">★★★★☆</span>
+        <!-- 4 étoiles sur 5 -->
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Cuisine Marocaine</div>
+        <h3>Dinarjat</h3>
+        <p>Maison arabo-andalouse raffinée au cœur de la médina transformée en restaurant gastronomique. Tajines, pastilla et musique live inoubliable.</p>
+        <div class="rh-meta"><span> 150–350 MAD</span><span> Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('cosmopolitan')">
+      <!-- Carte Cosmopolitan Café, restaurant moderne -->
+      <div class="rh-card-img">
+        <img src="images/rest3.jpg" alt="Cosmopolitan Café"
+             onerror="this.style.background='linear-gradient(135deg,#1a3a5c,#1B5E3B)'">
+        <span class="rh-badge badge-resto">Café & Restaurant</span>
+        <span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Fusion · Agdal</div>
+        <h3>Cosmopolitan Café</h3>
+        <p>Café branché de l'Agdal, cuisine fusion marocaine-méditerranéenne. Brunch du week-end très couru et terrasse ombragée agréable en toutes saisons.</p>
+        <div class="rh-meta"><span> 80–200 MAD</span><span> Agdal</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+
+    <div class="rh-card" data-rh="riad" onclick="openModal('riadkalaa')">
+      <!-- Carte Riad Kalaa, catégorie riad -->
+      <div class="rh-card-img">
+        <img src="images/riad1.jpg" alt="Riad Kalaa"
+             onerror="this.style.background='linear-gradient(135deg,#C9A96E,#1B5E3B)'">
+        <span class="rh-badge badge-riad">Riad</span>
+        <!-- Badge doré pour les riads -->
+        <span class="stars">★★★★★</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Riad de Charme</div>
+        <h3>Riad Kalaa</h3>
+        <p>Riad de charme en médina avec patio central fleuri, terrasse sur les toits et petits-déjeuners marocains copieux. Adresse confidentielle et raffinée.</p>
+        <div class="rh-meta"><span> 600–1000 MAD/nuit</span><span> Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <div class="rh-card" data-rh="riad" onclick="openModal('riadoudaya')">
+      <!-- Carte Riad Oudaya, proche de la Kasbah -->
+      <div class="rh-card-img">
+        <img src="images/riad2.png" alt="Riad Oudaya"
+             onerror="this.style.background='linear-gradient(135deg,#C9A96E,#2980B9)'">
+        <span class="rh-badge badge-riad">Riad</span>
+        <span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Riad Authentique</div>
+        <h3>Riad Oudaya</h3>
+        <p>Riad authentique aux portes de la Kasbah des Oudayas, décoré de zellige et de stuc. Vue sur l'Atlantique depuis la terrasse panoramique.</p>
+        <div class="rh-meta"><span> 450–800 MAD/nuit</span><span> Kasbah Oudayas</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <div class="rh-card" data-rh="hotel" onclick="openModal('tourhasanpalace')">
+      <!-- Carte Tour Hassan Palace, hôtel 5 étoiles -->
+      <div class="rh-card-img">
+        <img src="images/hotel1.jpg" alt="Tour Hassan Palace"
+             onerror="this.style.background='linear-gradient(135deg,#1a3a5c,#1B5E3B)'">
+        <span class="rh-badge badge-hotel">Hôtel</span>
+        <!-- Badge bleu marine pour les hôtels -->
+        <span class="stars">★★★★★</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Palace 5 étoiles</div>
+        <h3>Tour Hassan Palace</h3>
+        <p>Palace 5 étoiles au cœur de Rabat, face à la Tour Hassan. Chambres somptueuses, piscine extérieure, spa et restaurants gastronomiques.</p>
+        <div class="rh-meta"><span> 1500–3000 MAD/nuit</span><span> Ave Tour Hassan</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <div class="rh-card" data-rh="hotel" onclick="openModal('sofitelrabat')">
+      <!-- Carte Sofitel Rabat, hôtel 5 étoiles dans un jardin -->
+      <div class="rh-card-img">
+        <img src="images/sofitel.png" alt="Sofitel Rabat"
+             onerror="this.style.background='linear-gradient(135deg,#1a5c3a,#1a3a5c)'">
+        <span class="rh-badge badge-hotel">Hôtel</span>
+        <span class="stars">★★★★★</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Hôtel 5 étoiles</div>
+        <h3>Sofitel Rabat Jardin des Roses</h3>
+        <p>Niché dans un jardin de 6 hectares, ce palace allie luxe français et raffinement marocain. Piscine extérieure, spa So' Wellness et restaurant gastronomique.</p>
+        <div class="rh-meta"><span> 1200–2800 MAD/nuit</span><span> Souissi</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+  </div>
+  <!-- Fin de la grille rh-grid -->
+</section>
+<!-- Fin de la section restaurants et hébergement -->
+
+<!-- ══ SECTION 5 – CARTE ══ -->
+<!-- Section avec la carte Leaflet interactive -->
+<section id="carte">
+  <div class="sec-head">
+    <div class="eyebrow">Se repérer</div>
+    <h2>Carte <em>interactive</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <p>Cliquez sur un lieu pour voir les infos. Cliquez dans la liste pour centrer la carte.</p>
+    <!-- Instructions pour l'utilisateur -->
+  </div>
+  <div class="map-layout">
+    <!-- Mise en page deux colonnes : carte + liste des lieux -->
+    <div id="map"></div>
+    <!-- Div vide où Leaflet va injecter la carte. L'id "map" est requis par le JS Leaflet -->
+    <div class="map-list" id="mapList"></div>
+    <!-- Div vide où le JS va injecter dynamiquement les éléments de la liste des lieux -->
+  </div>
+</section>
+<!-- Fin section carte -->
+
+<!-- ══ SECTION 6 – MÉTÉO & CONTACT ══ -->
+<!-- Section avec les infos météo et le formulaire de contact -->
+<section id="contact">
+  <div class="sec-head">
+    <div class="eyebrow">Infos pratiques</div>
+    <h2>Météo & <em>Contact</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+  </div>
+  <div class="mc-layout">
+    <!-- Grille deux colonnes : météo à gauche, formulaire à droite -->
+    <div class="meteo-box" id="meteoBox">
+      <!-- Carte météo avec fond dégradé vert. L'id permet au JS de la cibler si besoin -->
+      <div class="meteo-city"> Rabat, Maroc</div>
+      <!-- Nom de la ville avec emoji épingle -->
+      <div class="meteo-temp" id="mTemp">--°</div>
+      <!-- Température, valeur "--" par défaut avant chargement JS -->
+      <div class="meteo-desc" id="mDesc">Chargement…</div>
+      <!-- Description météo, "Chargement…" par défaut -->
+      <div class="meteo-grid">
+        <!-- Grille 2x2 des 4 informations météo secondaires -->
+        <div class="meteo-item"><div class="label">Ressenti</div><div class="val" id="mFeel">--</div></div>
+        <!-- Température ressentie -->
+        <div class="meteo-item"><div class="label">Humidité</div><div class="val" id="mHum">--</div></div>
+        <!-- Taux d'humidité -->
+        <div class="meteo-item"><div class="label">Vent</div><div class="val" id="mWind">--</div></div>
+        <!-- Vitesse du vent -->
+        <div class="meteo-item"><div class="label">Couverture</div><div class="val" id="mCloud">--</div></div>
+        <!-- Couverture nuageuse -->
+      </div>
+    </div>
+    <div class="contact-form">
+      <!-- Formulaire de contact -->
+      <h3>Nous contacter</h3>
+      <!-- Titre du formulaire -->
+      <p class="sub">Une question sur Rabat ? Écrivez-nous !</p>
+      <!-- Sous-titre incitatif -->
+      <div class="form-row">
+        <!-- Ligne avec deux champs côte à côte -->
+        <div class="form-group">
+          <label>Prénom</label>
+          <input type="text" id="fPrenom" placeholder="Votre prénom">
+          <!-- Champ prénom, id pour le récupérer en JS, placeholder comme indication -->
+        </div>
+        <div class="form-group">
+          <label>Nom</label>
+          <input type="text" id="fNom" placeholder="Votre nom">
+          <!-- Champ nom -->
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="fEmail" placeholder="email@exemple.com">
+        <!-- Champ email avec type="email" pour la validation native du navigateur -->
+      </div>
+      <div class="form-group">
+        <label>Sujet</label>
+        <select id="fSujet">
+          <!-- Liste déroulante pour choisir le sujet du message -->
+          <option value="">Choisir un sujet…</option>
+          <!-- Option par défaut non sélectionnable -->
+          <option>Activités touristiques</option>
+          <option>Restaurants & Hébergement</option>
+          <option>Infos pratiques</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea id="fMsg" placeholder="Votre message…"></textarea>
+        <!-- Zone de texte multi-lignes pour le message -->
+      </div>
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="sendForm()">Envoyer le message</button>
+      <!-- Bouton d'envoi pleine largeur, appelle sendForm() au clic -->
+      <div class="form-success" id="formOk">✅ Message envoyé ! Merci, nous vous répondrons rapidement.</div>
+      <!-- Message de confirmation caché par défaut (display:none), affiché après envoi -->
+    </div>
+  </div>
+</section>
+<!-- Fin de la section météo et contact -->
+
+<!-- FOOTER -->
+<!-- Pied de page de la page -->
+<footer>
+  <div class="foot-logo">RABAT</div>
+  <!-- Nom de la ville en grand dans le footer -->
+  <div class="foot-sub">Capitale Royale · Patrimoine UNESCO</div>
+  <!-- Sous-titre du footer -->
+  <div class="foot-links">
+    <!-- Liens de navigation répétés dans le footer pour faciliter la navigation -->
+    <a href="#hero">Accueil</a>
+    <a href="#activites">Activités</a>
+    <a href="#galerie">Galerie</a>
+    <a href="#restaurants">Restaurants</a>
+    <a href="#carte">Carte</a>
+    <a href="#contact">Contact</a>
+    <a href="../index/dashboard.html">Dashboard</a>
+  </div>
+  <div style="font-size:10px;opacity:.35;margin-top:10px;">© 2026 Rabat — Portail Touristique | Projet GI1-2026</div>
+  <!-- Mention de copyright très petite et quasi-transparente -->
+</footer>
+<!-- Fin du footer -->
+
+<!-- SIDEBAR -->
+<!-- Boutons flottants collés au bord droit de la page -->
+<div class="sidebar">
+  <button class="s-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Haut">↑</button>
+  <!-- Bouton retour en haut : scrollTo avec behavior smooth pour l'animation -->
+  <button class="s-btn" onclick="document.getElementById('carte').scrollIntoView({behavior:'smooth'})" title="Carte">🗺</button>
+  <!-- Bouton raccourci vers la section carte -->
+  <button class="s-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" title="Contact">✉</button>
+  <!-- Bouton raccourci vers le formulaire de contact -->
+</div>
+
+<!-- MODAL -->
+<!-- Fenêtre popup de détail pour les activités et restaurants -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <!-- L'overlay : cliquer en dehors de la modale (sur l'overlay lui-même) la ferme -->
+  <div class="modal">
+    <!-- Le conteneur blanc de la modale -->
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <!-- Bouton fermer en haut à droite -->
+    <img id="mImg" class="modal-img" src="" alt="">
+    <!-- Image en tête de modale, src rempli dynamiquement par JS selon la carte cliquée -->
+    <div class="modal-body">
+      <!-- Corps de la modale avec les informations détaillées -->
+      <div id="mCat" class="m-cat"></div>
+      <!-- Catégorie (ex: Culture · Rabat), texte injecté par JS -->
+      <h2 id="mTitle"></h2>
+      <!-- Titre de l'élément, injecté par JS -->
+      <p id="mDesc2" class="m-desc"></p>
+      <!-- Description longue, injectée par JS -->
+      <div class="modal-details" id="mDets"></div>
+      <!-- Grille des détails pratiques (horaires, prix, etc.), générée dynamiquement par JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Leaflet.js -->
+<!-- Chargement de la librairie JavaScript Leaflet pour la carte interactive -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+/* ══ MODAL DATA ══ */
+/* Objet JavaScript contenant toutes les données pour les modales Clé = identifiant unique 
+   Valeur = objet avec : img, cat, title, desc, dets (tableau de détails).
+   Chaque clé correspond à un data-attribut des cartes HTML */
+   
+
+const modalData = {
+  tourhassane:{
+    /* Données de la modale Tour Hassan */
+    img:'images/tour-hassan.jpg', cat:' Culture · Rabat',
+    /* Chemin de l'image et catégorie/lieu */
+    title:'Tour Hassan',
+    /* Titre affiché dans la modale */
+    desc:'La Tour Hassan est le minaret inachevé de la mosquée Hassan, commencée en 1195 sous le règne du calife almohade Yacoub El Mansour. Avec ses 44 mètres, elle devait atteindre 86 mètres et devenir la plus grande mosquée du monde islamique. Elle a servi de modèle à la Giralda de Séville et à la Koutoubia de Marrakech. Face à elle s\'élève le Mausolée Mohammed V, chef-d\'œuvre de l\'architecture marocaine moderne.',
+    /* Description longue, les \' sont des apostrophes échappées dans la chaîne JS */
+    dets:[['Accès','Entrée libre, toute la journée'],['Construit','XIIe siècle (1195)'],['Style','Almohade'],['Hauteur','44 mètres'],['Site','Avenue Tour Hassan, Rabat'],['Conseil','Meilleur coucher de soleil de Rabat']]
+    /* Tableau de tableaux [label, valeur] pour les détails pratiques */
+  },
+  oudayas:{
+    /* Données de la modale Kasbah des Oudayas */
+    img:'images/oudayas.jpg', cat:' Culture · Rabat',
+    title:'Kasbah des Oudayas',
+    desc:'Forteresse almoravide du XIIe siècle bâtie à l\'embouchure du Bouregreg, la Kasbah des Oudayas est l\'un des monuments les plus emblématiques de Rabat. Ses ruelles blanches et bleues, ses jardins andalous et sa vue imprenable sur l\'Atlantique en font un lieu incontournable. Elle est inscrite au patrimoine mondial de l\'UNESCO depuis 2012.',
+    dets:[['Accès','Entrée libre (Jardins Andalous : 10 MAD)'],['Époque','XIIe siècle almoravide'],['Vue','Océan Atlantique et Salé'],['Jardin','Andalou (XVIIe siècle)'],['Situation','Bab Oudayas, Rabat'],['Conseil','Y aller tôt le matin']]
+  },
+  mausolee:{
+    /* Données de la modale Mausolée Mohammed V */
+    img:'images/mausolee.jpg', cat:' Culture · Rabat',
+    title:'Mausolée Mohammed V',
+    desc:'Construit entre 1962 et 1971, le Mausolée Mohammed V abrite les tombeaux du roi Mohammed V et de son fils le roi Hassan II. Chef-d\'œuvre de l\'architecture marocaine contemporaine, il associe marbre blanc, stuc sculpté, zelliges et cèdre ciselé. Gardé en permanence par des soldats en tenue d\'apparat à cheval, il est l\'un des rares sites religieux ouverts aux non-musulmans.',
+    dets:[['Accès','Entrée libre, tous les jours'],['Construit','1962–1971'],['Architecte','Vo Toan (Vietnam)'],['Style','Architecture marocaine classique'],['Gardiens','Soldats royaux à cheval'],['Note',' 4.9 / 5']]
+  },
+  chellah:{
+    /* Données de la modale Chellah */
+    img:'images/chellah.png', cat:' Culture & Nature · Rabat',
+    title:'Chellah',
+    desc:'La Chellah est une nécropole mérinide édifiée sur les ruines de l\'ancienne cité romaine de Sala Colonia. Entourée de remparts almohades du XIVe siècle, elle abrite minarets, tombeaux royaux, bassins aux anguilles sacrées et jardins luxuriants. Ce site archéologique exceptionnel est habité par des cigognes qui nichent au sommet des ruines.',
+    dets:[['Entrée','20 MAD'],['Horaires','8h30–17h30 (tlj)'],['Époque','Romaine puis Mérinide (XIVe s.)'],['À voir','Anguilles sacrées, Cigognes'],['Situation','Avenue Yacoub El Mansour'],['Conseil','Visiter le matin, lumière magnifique']]
+  },
+  medina:{
+    /* Données de la modale Médina de Rabat */
+    img:'images/medina.png', cat:' Culture · Rabat',
+    title:'Médina de Rabat',
+    desc:'Classée au patrimoine mondial de l\'UNESCO en 2012, la médina de Rabat est l\'une des plus authentiques du Maroc. Elle est connue pour ses souks traditionnels, notamment Souk Es-Sebat et Rue des Consuls, où l\'on trouve artisanat, cuir, cuivre et textiles.',
+    dets:[['Accès','Entrée libre, toute la journée'],['Unesco','Patrimoine Mondial 2012'],['À voir','Souk Es-Sebat, Rue des Consuls'],['Artisanat','Cuivre, Cuir, Tissage'],['Situation','Centre-ville Rabat'],['Meilleur moment','Matin (9h–12h)']]
+  },
+  corniche:{
+    /* Données de la modale Corniche */
+    img:'images/plage.jpg', cat:' Détente · Rabat',
+    title:'Plage & Corniche de Rabat',
+    desc:'Rabat possède l\'une des plus belles promenades côtières du Maroc. La corniche longe l\'océan Atlantique sur plusieurs kilomètres depuis la Kasbah des Oudayas jusqu\'à Témara. Des cafés, restaurants et pistes cyclables bordent ce front de mer où Rbatis et touristes se retrouvent au coucher du soleil.',
+    dets:[['Accès','Gratuit, toute la journée'],['Piste cyclable','Rabat → Témara (12 km)'],['Plage','Surf et baignade (mai–sept)'],['Restaurants','Nombreux cafés-terrasses'],['Meilleur moment','Coucher de soleil'],['Conseil','Louer un vélo à la corniche']]
+  },
+  dhow:{
+    /* Données de la modale Restaurant Le Dhow */
+    img:'images/rest1.jpg', cat:' Restaurant Gastronomique · Marina Bouregreg',
+    title:'Restaurant Le Dhow',
+    desc:'Le Dhow est l\'une des adresses les plus originales de Rabat. Installé sur un bateau traditionnel amarré à la Marina Bouregreg, ce restaurant gastronomique offre une vue panoramique imprenable sur la Tour Hassan, le Mausolée Mohammed V et la Kasbah des Oudayas. La cuisine marocaine raffinée y est servie dans un cadre élégant et romantique, au fil de l\'eau.',
+    dets:[['Prix moyen','200 – 400 MAD / personne'],
+        ['Horaires','12h–15h · 19h–4h (tlj)'],
+        ['Réservation','Fortement recommandée'],
+        ['Spécialité','Cuisine internationale & marocaine'],
+        ['Vue','Kasbah des Oudayas & Bouregreg'],
+        ['Note',' 3.8 / 5']]
+  },
+  dinarjat:{
+    /* Données de la modale Dinarjat */
+    img:'images/rest2.jpg', cat:' Restaurant · Médina de Rabat',
+    title:'Dinarjat',
+    desc:'Dinarjat est l\'une des tables les plus emblématiques de Rabat. Installé dans une magnifique maison arabo-andalouse du XVIIe siècle au cœur de la médina, ce restaurant propose les grands classiques de la gastronomie marocaine : tajines parfumés, pastilla au pigeon, couscous royal et msemen maison. Le tout servi dans un décor de zelliges, de stuc sculpté et à la lumière des bougies, avec musique gnawa en live.',
+    dets:[['Prix moyen','150 – 350 MAD / personne'],
+        ['Horaires','12h30-23h (tlj)'],
+        ['Adresse','6 Rue Belgnaoui, Médina, Rabat'],
+        ['Spécialité','Pastilla, Tajines, Couscous'],
+        ['Ambiance','Andalouse, musique live'],
+        ['Note',' 3.9 / 5']]
+  },
+  cosmopolitan:{
+    /* Données de la modale Cosmopolitan Café */
+    img:'images/rest3.jpg', cat:' Café & Restaurant · Agdal, Rabat',
+    title:'Cosmopolitan Café',
+    desc:'Café branché et incontournable du quartier Agdal, le Cosmopolitan propose une cuisine fusion marocaine-méditerranéenne dans une atmosphère décontractée et moderne. Son brunch dominical est l\'un des plus courus de Rabat. La terrasse ombragée est très agréable en toutes saisons.',
+    dets:[['Prix moyen','80 – 200 MAD / personne'],
+        ['Horaires','8h – 23h (tlj)'],
+        ['Adresse','Avenue Ibn Toumart, Agdal, Rabat'],
+        ['Spécialité','Brunch, Cuisine internationale'],
+        ['Ambiance','Décontractée, branchée'],
+        ['Note',' 4.5 / 5']]
+  },
+  riadkalaa:{
+    /* Données de la modale Riad Kalaa */
+    img:'images/riad1.jpg', cat:' Riad de Charme · Médina de Rabat',
+    title:'Riad Kalaa',
+    desc:'Niché au cœur de la médina de Rabat, le Riad Kalaa est une adresse confidentielle et raffinée. Son patio central fleuri, ses chambres décorées de zelliges et de tissus berbères, et sa terrasse panoramique sur les toits de la médina en font l\'un des plus beaux riads de la capitale.',
+    dets:[['Prix','1000 – 1300 MAD / nuit'],
+        ['Adresse','3,5 Rue Zebdi, Médina, Rabat'],
+        ['Patio','Fleuri, fontaine centrale'],
+        ['Petit-déjeuner','Marocain inclus'],
+        ['Situation','Médina de Rabat'],
+        ['Note',' 4 / 5']]
+  },
+  riadoudaya:{
+    /* Données de la modale Riad Oudaya */
+    img:'images/riad2.png', cat:' Riad Authentique · Kasbah des Oudayas',
+    title:'Riad Oudaya',
+    desc:'Situé aux portes de la Kasbah des Oudayas, le Riad Oudaya est un joyau de l\'architecture traditionnelle marocaine. Ses murs blancs et bleus rappellent les ruelles de la Kasbah. La terrasse panoramique offre une vue spectaculaire sur l\'océan Atlantique et l\'embouchure du Bouregreg.',
+   dets:[['Prix','450 – 800 MAD / nuit'],
+        ['Vue','Océan Atlantique & Bouregreg'],
+        ['Style','Arabo-andalou, blanc et bleu'],
+        ['Services','Wi-Fi gratuit, bar, buanderie'],
+        ['Situation','Médina, près Kasbah Oudayas'],
+        ['Note',' 4 / 5']]
+  },
+  tourhasanpalace:{
+    /* Données de la modale Tour Hassan Palace */
+    img:'images/hotel1.jpg', cat:' Palace 5 étoiles · Centre de Rabat',
+    title:'Tour Hassan Palace',
+    desc:'Le Tour Hassan Palace est l\'hôtel le plus emblématique de Rabat. Situé face à la Tour Hassan, ce palace 5 étoiles allie le luxe international au raffinement de l\'architecture marocaine. Ses chambres et suites somptueuses, sa piscine extérieure chauffée, son spa et ses restaurants gastronomiques en font l\'adresse de prestige de la capitale royale.',
+    dets:[['Catégorie','Palace 5 étoiles'],
+        ['Prix','1500 – 3000 MAD / nuit'],
+        ['Piscine','Extérieure + piscine couverte'],
+        ['Spa','Hammam & soins marocains'],
+        ['Restaurants','3 restaurants dont gastronomique'],
+        ['Note',' 4.8 / 5']]
+  },
+  sofitelrabat:{
+    /* Données de la modale Sofitel Rabat */
+     img:'images/sofitel.png', 
+    cat:'Hôtel 5 étoiles · Souissi, Rabat',
+    title:'Sofitel Rabat Jardin des Roses',
+    desc:'Véritable havre de paix niché dans un jardin de 9 hectares au quartier résidentiel de Souissi, le Sofitel Rabat Jardin des Roses allie l\'élégance française au raffinement marocain. Ses 229 chambres et suites, sa piscine extérieure entourée de roses, son spa So\' Wellness et ses restaurants gastronomiques en font l\'une des adresses les plus prisées de Rabat.',
+    dets:[
+        ['Catégorie','Hôtel 5 étoiles'],
+        ['Prix','1200 – 2800 MAD / nuit'],
+        ['Jardin','9 hectares de roses'], 
+        ['Spa','So\' Wellness Centre'],
+        ['Piscine','Extérieure + piscine couverte'],
+        ['Note',' 4.7 / 5']
+    ]
+},
+velo:{
+  /* Données de la modale Vélo & Corniche */
+  img:'images/velo.jpg', cat:' Sport · Corniche de Rabat',
+  title:'Vélo & Corniche de Rabat',
+  desc:'La piste cyclable de Rabat longe l\'océan Atlantique sur 12 kilomètres, de la Kasbah des Oudayas jusqu\'à Témara. C\'est l\'une des plus belles balades à vélo du Maroc, avec vue sur l\'océan, les vagues et les couchers de soleil spectaculaires. Des stations de location de vélos sont disponibles tout le long de la corniche.',
+  dets:[['Distance','12 km (Oudayas → Témara)'],['Difficulté','Facile, tout plat'],['Location vélo','50–80 MAD / 2h'],['Accès','Gratuit, toute la journée'],['Meilleur moment','Coucher de soleil'],['Conseil','Y aller tôt le matin ou en fin d\'après-midi']]
+},
+golf:{
+  /* Données de la modale Golf Royal */
+  img:'images/golf.png', cat:' Sport · Souissi, Rabat',
+  title:'Golf Royal de Rabat',
+  desc:'Fondé en 1971 sous le patronage royal, le Golf Royal de Rabat est l\'un des plus prestigieux du Maroc. Il dispose de deux parcours 18 trous — le Red Course et le Blue Course — dans un cadre naturel exceptionnel de 180 hectares au quartier Souissi. Accueille régulièrement des tournois internationaux.',
+  dets:[['Parcours','2 x 18 trous (Red & Blue)'],['Superficie','180 hectares'],['Green fee','400 – 700 MAD'],['Horaires','7h – 18h (tlj)'],['Situation','Souissi, Rabat'],['Note',' 4.7 / 5']]
+},
+jardin:{
+  /* Données de la modale Jardin d'Essais Botaniques */
+  img:'images/jardin.jpg', cat:' Nature · Centre de Rabat',
+  title:'Jardin d\'Essais Botaniques',
+  desc:'Créé en 1914 par les autorités du Protectorat français, le Jardin d\'Essais Botaniques de Rabat est un havre de verdure au cœur de la capitale. Ses allées ombragées par des arbres centenaires, ses collections de plantes exotiques venues du monde entier et ses bassins en font un lieu de promenade idéal pour toute la famille.',
+  dets:[['Entrée','Gratuite'],['Horaires','8h – 18h (tlj)'],['Superficie','3 hectares'],['Créé en','1914'],['Situation','Avenue de la Victoire, Rabat'],['Conseil','Idéal pour un pique-nique en famille']]
+},
+bouregreg:{
+  /* Données de la modale Vallée du Bouregreg */
+  img:'images/b.png', cat:' Nature · Marina Bouregreg',
+  title:'Vallée du Bouregreg',
+  desc:'Le fleuve Bouregreg sépare Rabat de Salé et constitue l\'un des plus beaux paysages naturels de la région. Une balade en barque traditionnelle ou en bateau permet d\'admirer simultanément la Kasbah des Oudayas, la Médina de Rabat, les remparts historiques et les cigognes de la Chellah. La Marina Bouregreg propose également des restaurants et cafés avec vue sur le fleuve.',
+  dets:[['Bateau','20 – 50 MAD / trajet'],['Durée','30 min – 2h selon circuit'],['Marina','Cafés, restaurants, promenade'],['À voir','Kasbah, Médina, Cigognes'],['Situation','Marina Bouregreg, Rabat'],['Meilleur moment','Coucher de soleil']]
+}
+};
+/* Fin de l'objet modalData qui contient toutes les données des popups */
+
+
+/* ══ MODAL ══ */
+/* Fonction qui ouvre la modale en injectant les données correspondant à la clé donnée */
+function openModal(key){
+  const d=modalData[key]; if(!d)return;
+  /* On récupère les données par clé. Si la clé n'existe pas, on sort de la fonction */
+  document.getElementById('mImg').src=d.img;
+  /* On change le src de l'image de la modale */
+  document.getElementById('mImg').onerror=function(){
+    this.style.cssText='width:100%;height:220px;display:block;background:linear-gradient(135deg,#1B5E3B,#4CAF78)';
+  };
+  /* Si l'image ne charge pas, on affiche un dégradé vert à la place */
+  document.getElementById('mCat').textContent=d.cat;
+  /* On remplit la catégorie */
+  document.getElementById('mTitle').textContent=d.title;
+  /* On remplit le titre */
+  document.getElementById('mDesc2').textContent=d.desc;
+  /* On remplit la description longue */
+  document.getElementById('mDets').innerHTML=d.dets.map(([l,v])=>
+    `<div class="modal-detail"><div class="d-label">${l}</div><div class="d-val">${v}</div></div>`).join('');
+  /* On génère dynamiquement le HTML des détails en parcourant le tableau dets avec map().
+     Chaque [label, valeur] devient une div modal-detail avec d-label et d-val */
+  document.getElementById('modalOverlay').classList.add('open');
+  /* On ajoute la classe 'open' à l'overlay pour l'afficher (display:flex) */
+  document.body.style.overflow='hidden';
+  /* On empêche le défilement du fond pendant que la modale est ouverte */
+}
+function closeModal(){
+  /* Fonction de fermeture de la modale */
+  document.getElementById('modalOverlay').classList.remove('open');
+  /* On retire la classe 'open' pour cacher la modale */
+  document.body.style.overflow='';
+  /* On rétablit le défilement normal */
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeLb();}});
+/* Ferme la modale ET la lightbox quand l'utilisateur appuie sur la touche Échap */
+
+/* ══ FILTERS ══ */
+/* Fonctions de filtrage des cartes par catégorie */
+function filterAct(cat,btn){
+  /* Filtre les cartes d'activités. cat = catégorie choisie, btn = bouton cliqué */
+  document.querySelectorAll('#actGrid .act-card').forEach(c=>{
+    /* On parcourt toutes les cartes de la grille d'activités */
+    c.classList.toggle('hidden', cat!=='all' && c.dataset.cat!==cat);
+    /* On cache la carte si : on n'est PAS sur "tout" ET la catégorie ne correspond pas */
+  });
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  /* On retire la classe active de tous les boutons de filtre */
+  btn.classList.add('active');
+  /* On ajoute la classe active uniquement au bouton cliqué */
+}
+function filterRH(cat,btn){
+  /* Même logique pour filtrer les cartes restaurants/hôtels */
+  document.querySelectorAll('#rhGrid .rh-card').forEach(c=>{
+    c.classList.toggle('hidden', cat!=='all' && c.dataset.rh!==cat);
+    /* On utilise data-rh au lieu de data-cat pour ces cartes */
+  });
+  document.querySelectorAll('.rh-filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ══ LIGHTBOX ══ */
+/* Données et fonctions de la visionneuse de photos */
+const lbSrcs=[
+  /* Tableau des sources d'images et légendes pour la lightbox */
+  {src:'images/g1.jpg', cap:'Tour Hassan — Minaret almohade du XIIe siècle'},
+  {src:'images/g2.jpg', cap:'Kasbah des Oudayas — Ruelles blanches et bleues'},
+  {src:'images/g3.jpg', cap:'Mausolée Mohammed V — Chef-d\'œuvre architectural'},
+  {src:'images/g4.jpg', cap:'Chellah — Nécropole romaine et mérinide'},
+  {src:'images/g5.jpg', cap:'Médina de Rabat — Patrimoine UNESCO'},
+  {src:'images/g6.jpg', cap:'Corniche de Rabat — Face à l\'Atlantique'},
+  {src:'images/g7.jpg', cap:'Bouregreg — La rivière de Rabat et Salé'},
+];
+let lbIdx=0;
+/* Variable pour suivre l'index de la photo actuellement affichée dans la lightbox */
+
+function openLb(i){
+  /* Ouvre la lightbox à l'index i */
+  lbIdx=i;
+  /* On mémorise l'index courant pour la navigation */
+  document.getElementById('lbImg').src=lbSrcs[i].src;
+  /* On change l'image affichée */
+  document.getElementById('lbCap').textContent=lbSrcs[i].cap;
+  /* On change la légende */
+  document.getElementById('lightbox').classList.add('open');
+  /* On affiche la lightbox */
+  document.body.style.overflow='hidden';
+  /* On bloque le défilement du fond */
+}
+function closeLb(){
+  /* Ferme la lightbox */
+  document.getElementById('lightbox').classList.remove('open');
+  /* On cache la lightbox */
+  document.body.style.overflow='';
+  /* On rétablit le défilement */
+}
+function navLb(dir){
+  /* Navigation dans la lightbox : dir = +1 (suivant) ou -1 (précédent) */
+  lbIdx=(lbIdx+dir+lbSrcs.length)%lbSrcs.length;
+  /* Calcul cyclique : quand on dépasse la dernière photo, on revient à la première.
+     + lbSrcs.length évite les nombres négatifs avec le modulo % */
+  openLb(lbIdx);
+  /* On réouvre la lightbox avec le nouvel index */
+}
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLb();});
+/* Ferme la lightbox si on clique directement sur le fond noir (pas sur l'image) */
+
+/* ══ LEAFLET MAP ══ */
+/* Données et initialisation de la carte interactive */
+const places=[
+  /* Tableau des lieux à afficher sur la carte avec leurs coordonnées GPS */
+  {name:'Tour Hassan',         lat:34.0237,lng:-6.8220, type:'culture', col:'#1B5E3B', desc:'Minaret almohade du XIIe siècle'},
+  /* Chaque lieu a : nom, latitude, longitude, type, couleur du marqueur, description */
+  {name:'Kasbah des Oudayas',  lat:34.0330,lng:-6.8340, type:'culture', col:'#1a3a5c', desc:'Forteresse almoravide, vue sur l\'Atlantique'},
+  {name:'Mausolée Mohammed V', lat:34.0240,lng:-6.8215, type:'culture', col:'#1B5E3B', desc:'Tombeau des rois Hassan II et Mohammed V'},
+  {name:'Chellah',             lat:33.9970,lng:-6.8370, type:'culture', col:'#4a7000', desc:'Nécropole romaine et mérinide'},
+  {name:'Médina de Rabat',     lat:34.0200,lng:-6.8330, type:'culture', col:'#C0392B', desc:'Patrimoine UNESCO, souks et artisanat'},
+  {name:'Tour Hassan Palace',  lat:34.0230,lng:-6.8205, type:'hotel',   col:'#1a3a5c', desc:'Palace 5 étoiles, Rabat'},
+  {name:'Corniche de Rabat',   lat:34.0350,lng:-6.8490, type:'nature',  col:'#2980B9', desc:'Promenade côtière face à l\'Atlantique'},
+];
+window.addEventListener('load',()=>{
+  /* On attend que la page soit complètement chargée avant d'initialiser la carte */
+  const leafletMap=L.map('map').setView([34.020,-6.830],14);
+  /* On crée la carte Leaflet dans la div#map, centrée sur Rabat (lat:34.020, lng:-6.830), zoom 14 */
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© OpenStreetMap'
+    /* Tuiles OpenStreetMap, mention de la source obligatoire */
+  }).addTo(leafletMap);
+  /* On charge les tuiles de la carte (les images de fond du plan) */
+  const listEl=document.getElementById('mapList');
+  /* On récupère le conteneur de la liste des lieux */
+  const typeCol={culture:'#1B5E3B',nature:'#2980B9',hotel:'#1a3a5c'};
+  /* Couleurs des points dans la liste selon le type de lieu */
+  places.forEach((p,i)=>{
+    /* On parcourt chaque lieu du tableau places avec son index i */
+    const icon=L.divIcon({
+      /* On crée une icône personnalisée (div HTML) pour chaque marqueur */
+      className:'',
+      /* Pas de classe CSS par défaut pour éviter le style Leaflet par défaut */
+      html:`<div style="background:${p.col};width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;">${i+1}</div>`,
+      /* Cercle coloré avec le numéro du lieu dedans */
+      iconSize:[28,28],iconAnchor:[14,14]
+      /* Taille 28x28, ancré en son centre pour pointer au bon endroit sur la carte */
+    });
+    const m=L.marker([p.lat,p.lng],{icon}).addTo(leafletMap);
+    /* On crée un marqueur aux coordonnées GPS du lieu et on l'ajoute à la carte */
+    m.bindPopup(`<strong>${p.name}</strong><br><small>${p.desc}</small>`);
+    /* On lie une popup au marqueur : nom en gras et description en petit */
+    const item=document.createElement('div');
+    /* On crée un élément div pour la liste des lieux */
+    item.className='map-item';
+    /* On lui donne la classe CSS appropriée */
+    item.innerHTML=`<h4><span class="type-dot" style="background:${typeCol[p.type]||p.col}"></span>${i+1}. ${p.name}</h4><p>${p.desc}</p>`;
+    /* On remplit le HTML de l'élément : point coloré + numéro + nom + description */
+    item.onclick=()=>{
+      /* Quand on clique sur un élément de la liste... */
+      leafletMap.setView([p.lat,p.lng],16);
+      /* La carte se centre sur ce lieu avec un zoom plus élevé (16) */
+      m.openPopup();
+      /* La popup du marqueur s'ouvre automatiquement */
+      document.querySelectorAll('.map-item').forEach(x=>x.classList.remove('active-place'));
+      /* On retire la classe active de tous les éléments de la liste */
+      item.classList.add('active-place');
+      /* On ajoute la classe active à l'élément cliqué */
+    };
+    listEl.appendChild(item);
+    /* On ajoute l'élément créé à la liste dans le DOM */
+  });
+});
+
+/* ══ MÉTÉO ══ */
+/* Fonction qui charge les données météo dans l'interface */
+function loadMeteo(){
+  /* Cette fonction injecte des valeurs météo statiques (simulées) dans les éléments HTML */
+  document.getElementById('mTemp').textContent='22°C';
+  /* Température actuelle */
+  document.getElementById('mDesc').textContent='Ensoleillé, brume côtière légère ';
+  /* Description de la météo */
+  document.getElementById('mFeel').textContent='21°C';
+  /* Température ressentie */
+  document.getElementById('mHum').textContent='58%';
+  /* Taux d'humidité */
+  document.getElementById('mWind').textContent='22 km/h';
+  /* Vitesse du vent */
+  document.getElementById('mCloud').textContent='15%';
+  /* Couverture nuageuse */
+}
+loadMeteo();
+/* On appelle immédiatement la fonction au chargement de la page */
+
+/* ══ FORMULAIRE ══ */
+/* Fonction de validation et envoi du formulaire de contact */
+function sendForm(){
+  const p=document.getElementById('fPrenom').value.trim();
+  /* On récupère la valeur du champ prénom et on supprime les espaces inutiles */
+  const e=document.getElementById('fEmail').value.trim();
+  /* On récupère l'email saisi */
+  const m=document.getElementById('fMsg').value.trim();
+  /* On récupère le message saisi */
+  if(!p||!e||!m){alert('Veuillez remplir les champs obligatoires (Prénom, Email, Message).');return;}
+  /* Si un des champs obligatoires est vide, on affiche une alerte et on arrête la fonction */
+  if(!/\S+@\S+\.\S+/.test(e)){alert('Adresse email invalide.');return;}
+  /* Expression régulière basique pour vérifier le format de l'email (quelque chose@quelque chose.quelque chose) */
+  document.getElementById('formOk').style.display='block';
+  /* On affiche le message de succès vert en changeant son display */
+  ['fPrenom','fNom','fEmail','fMsg'].forEach(id=>document.getElementById(id).value='');
+  /* On vide tous les champs texte du formulaire en les parcourant avec forEach */
+  document.getElementById('fSujet').selectedIndex=0;
+  /* On remet le select "Sujet" sur l'option par défaut (index 0) */
+}
+
+/* ══ LIEN DE NAV ACTIF AU SCROLL ══ */
+/* Met automatiquement le lien de navigation en actif selon la section visible */
+const sections=['hero','activites','galerie','restaurants','carte','contact'];
+/* Tableau des ids des sections dans l'ordre d'apparition dans la page */
+window.addEventListener('scroll',()=>{
+  /* À chaque événement de défilement... */
+  const y=window.scrollY+100;
+  /* Position de défilement actuelle + 100px de décalage pour anticiper la section */
+  sections.forEach(id=>{
+    /* On vérifie chaque section */
+    const el=document.getElementById(id);
+    if(!el)return;
+    /* Si la section n'existe pas, on passe à la suivante */
+    const link=document.querySelector(`nav a[href="#${id}"]`);
+    if(!link)return;
+    /* Si le lien correspondant n'existe pas dans la nav, on passe */
+    if(el.offsetTop<=y && el.offsetTop+el.offsetHeight>y){
+      /* Si le scroll est dans la zone de cette section (entre le début et la fin) */
+      document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+      /* On retire 'active' de tous les liens */
+      link.classList.add('active');
+      /* On ajoute 'active' uniquement au lien de la section visible */
+    }
+  });
+},{passive:true});
+/* passive:true améliore les performances : on dit au navigateur qu'on ne bloquera pas le scroll */
+
+/* ══ MENU HAMBURGER ══ */
+/* Gestion de l'ouverture/fermeture du menu mobile */
+function toggleMenu(){
+  /* Bascule l'état ouvert/fermé du menu de navigation */
+  document.querySelector('.nav-links').classList.toggle('open');
+  /* toggle ajoute la classe si elle n'est pas là, la retire si elle y est */
+}
+document.querySelectorAll('.nav-links a').forEach(link=>{
+  link.addEventListener('click',()=>{
+    /* Quand on clique sur un lien du menu mobile... */
+    document.querySelector('.nav-links').classList.remove('open');
+    /* On ferme le menu (important sur mobile pour qu'il disparaisse après la navigation) */
+  });
+});
+document.addEventListener('click',function(e){
+  /* Écoute tous les clics sur la page entière */
+  const nav=document.querySelector('.nav-links');
+  const btn=document.getElementById('menuBtn');
+  if(!nav.contains(e.target)&&!btn.contains(e.target)){
+    /* Si le clic n'est pas dans le menu NI sur le bouton hamburger... */
+    nav.classList.remove('open');
+    /* On ferme le menu (clic en dehors = fermeture) */
+  }
+});
+</script>
+
+</body>
+<!-- Fin du corps de la page -->
+</html>
+<!-- Fin du document HTML -->
