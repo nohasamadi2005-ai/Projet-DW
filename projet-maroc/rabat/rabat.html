@@ -767,10 +767,10 @@ footer{
 /* ══ RESPONSIVE TABLETTE (max 900px) ══ */
 /* Ces styles s'appliquent uniquement quand la fenêtre fait 900px ou moins */
 @media(max-width:900px){
-  nav{padding:0 16px;}
-  /* Réduction du padding de la navbar sur tablette */
+  nav{padding:0 16px;position:relative;}
   .nav-links{display:none;}
-  /* Les liens de navigation sont cachés (remplacés par le hamburger) */
+  .nav-links.open{display:flex!important;flex-direction:column;position:absolute;top:68px;left:0;right:0;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:10px 0;z-index:999;}
+  .nav-links.open li a{padding:12px 24px;font-size:13px;border-bottom:1px solid #edf5f0;display:block;}
   .hamburger{display:flex;}
   /* Le bouton hamburger s'affiche */
   #activites,#galerie,#restaurants,#carte,#contact{padding:52px 18px;}

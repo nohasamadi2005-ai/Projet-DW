@@ -736,9 +736,16 @@ footer{
    @media = règle CSS qui s'applique seulement si la condition est vraie
    max-width:900px = s'applique quand l'écran fait moins de 900px de large
     */
+/* Bouton hamburger - caché par défaut sur desktop */
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:none;border:none;}
+.nav-hamburger span{display:block;width:24px;height:2px;background:var(--red);border-radius:2px;transition:all .3s;}
+
 @media(max-width:900px){
   nav{padding:0 16px;}          /* Moins de padding sur mobile */
-  .nav-links{display:none;}     /* Cache les liens de nav (pas de hamburger ici) */
+  .nav-links{display:none;flex-direction:column;position:absolute;top:68px;left:0;right:0;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.1);padding:16px 0;z-index:999;}
+  .nav-links.open{display:flex;}
+  .nav-links a{padding:12px 24px;border-bottom:1px solid #f0e0d0;}
+  .nav-hamburger{display:flex;} /* Affiche le hamburger sur mobile */
   /* Moins de padding pour toutes les sections */
   #activites,#galerie,#restaurants,#carte,#contact{padding:52px 18px;}
   /* Passe en 1 colonne pour la carte et le formulaire */
@@ -755,6 +762,8 @@ footer{
   .lb-next{right:-8px;}
   /* Formulaire : les champs prénom+nom passent en 1 colonne */
   .form-row{grid-template-columns:1fr;}
+  /* Sidebar cachée sur mobile */
+  .sidebar{display:none;}
 }
 </style>
 </head>
@@ -808,6 +817,12 @@ footer{
     <!-- Lien vers le dashboard principal (remonte d'un dossier avec ../) -->
     <li><a href="../index/dashboard.html">Portail touristique</a></li>
   </ul>
+  <!-- Bouton hamburger mobile -->
+  <button class="nav-hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
 </nav>
 
 <!-- 
@@ -1912,6 +1927,22 @@ window.addEventListener('scroll',()=>{
     }
   });
 },{ passive:true });
+/* ══ MENU HAMBURGER MOBILE ══ */
+function toggleNav(){
+  document.querySelector('.nav-links').classList.toggle('open');
+}
+document.querySelectorAll('.nav-links a').forEach(link=>{
+  link.addEventListener('click',()=>{
+    document.querySelector('.nav-links').classList.remove('open');
+  });
+});
+document.addEventListener('click',function(e){
+  const nav=document.querySelector('.nav-links');
+  const btn=document.getElementById('hamburger');
+  if(nav.classList.contains('open')&&!nav.contains(e.target)&&!btn.contains(e.target)){
+    nav.classList.remove('open');
+  }
+});
 </script>
 
 

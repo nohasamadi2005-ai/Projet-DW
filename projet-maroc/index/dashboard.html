@@ -50,6 +50,7 @@
     /* Thème sombre — appliqué quand data-theme="dark" sur <html>
        Ces variables écrasent celles de :root pour adapter toutes les couleurs */
     [data-theme="dark"] {
+      --rouge:        #FF6B6B;                    /* Rouge plus clair et lisible en mode sombre */
       --bg:           #080f1e;                    /* Fond très sombre presque noir */
       --bg-nav:       rgba(8,15,30,0.97);         /* Fond nav semi-transparent sombre */
       --bg-section:   #0D1B3E;                    /* Fond des sections principales */
@@ -817,6 +818,12 @@
     .form-groupe input:focus, .form-groupe select:focus, .form-groupe textarea:focus {
       border-color:var(--rouge);
       box-shadow:0 0 0 3px var(--input-focus);
+    }
+    
+    /* Correction du menu déroulant (sujet) pour qu'il soit lisible (fond sombre, texte clair) */
+    .form-groupe select option {
+      background-color: var(--bg-form);
+      color: var(--txt);
     }
 
     /* La textarea peut être redimensionnée uniquement verticalement

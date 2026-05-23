@@ -146,6 +146,10 @@
       border-bottom: 2px solid var(--gold);
     }
 
+    /* Bouton hamburger - caché par défaut sur desktop */
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; background: none; border: none; }
+    .nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--gold-dark); border-radius: 2px; transition: all .3s; }
+
     /* ============================================================
        SECTION HERO (première section plein écran)
        ============================================================ */
@@ -1149,8 +1153,11 @@
       /* Navigation : espacement réduit */
       nav { padding: 0 16px; }
 
-      /* Liens de navigation masqués (pas de menu hamburger dans ce projet) */
-      .nav-links { display: none; }
+      /* Liens de navigation : menu déroulant sur mobile */
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 68px; left: 0; right: 0; background: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.1); padding: 16px 0; z-index: 999; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 12px 24px; border-bottom: 1px solid #f0e8d8; }
+      .nav-hamburger { display: flex; } /* Bouton hamburger visible sur mobile */
 
       /* Padding réduit pour toutes les sections */
       #activites, #galerie, #restaurants, #carte, #contact { padding: 52px 18px; }
@@ -1218,6 +1225,12 @@
       <!-- Lien vers la page d'accueil du portail touristique commun -->
       <li><a href="../index/dashboard.html">Portail touristique</a></li>
     </ul>
+    <!-- Bouton hamburger mobile -->
+    <button class="nav-hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </nav>
 
   <!-- Section Hero : image plein écran avec titre et boutons -->
@@ -2200,6 +2213,22 @@
       });
     }, { passive: true }); /* passive:true améliore les performances du scroll */
 
+    /* ══ MENU HAMBURGER MOBILE ══ */
+    function toggleNav(){
+      document.querySelector('.nav-links').classList.toggle('open');
+    }
+    document.querySelectorAll('.nav-links a').forEach(link=>{
+      link.addEventListener('click',()=>{
+        document.querySelector('.nav-links').classList.remove('open');
+      });
+    });
+    document.addEventListener('click',function(e){
+      const nav=document.querySelector('.nav-links');
+      const btn=document.getElementById('hamburger');
+      if(nav&&nav.classList.contains('open')&&!nav.contains(e.target)&&!btn.contains(e.target)){
+        nav.classList.remove('open');
+      }
+    });
   </script>
 </body>
 
