@@ -16,13 +16,17 @@
 <!--  charge le CSS de la bibliothèque Leaflet pour afficher la carte interactive -->
 
 <style>
+
+  /* ═══════════════════════════════════════════
+     DÉBUT DU CSS
+═══════════════════════════════════════════ */
 /* =====================================================
    RABAT — Feuille de style principale
 ===================================================== */
 
 :root {
   /* :root cible l'élément racine du document (la balise html),
-     on y déclare des variables CSS réutilisables partout dans la feuille de style */
+      déclare des variables CSS réutilisables partout dans la feuille de style */
   --green:      #1B5E3B;
   /* Variable : couleur verte principale utilisée pour les boutons, textes importants */
   --green-mid:  #2E7D52;
@@ -911,12 +915,21 @@ footer{
   /* Moins d'espace entre les liens du footer */
 }
 </style>
+<!-- ═══════════════════════════════════════════
+     FIN DU CSS 
+═══════════════════════════════════════════ -->
+
 </head>
 
 
-<body>
-<!-- On ouvre le corps de la page, tout le contenu visible est ici -->
+<!-- ═══════════════════════════════════════════
+     DÉBUT DU HTML
+═══════════════════════════════════════════ -->
 
+<body>
+<!-- body : corps de la page, tout ce que l'utilisateur voit -->
+<!-- TOP BAR -->
+<div class="top-bar"> Rabat — Capitale Royale du Maroc · Patrimoine Mondial UNESCO</div>
 
 <!-- NAVBAR -->
 <!-- Barre de navigation principale qui reste visible en haut de la page -->
@@ -1607,6 +1620,9 @@ footer{
 <!-- Chargement de la librairie JavaScript Leaflet pour la carte interactive -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<!-- ═══════════════════════════════════════════
+     FIN DU HTML — DÉBUT DU JAVASCRIPT
+═══════════════════════════════════════════ -->
 <script>
 /* ══ MODAL DATA ══ */
 /* Objet JavaScript contenant toutes les données pour les modales Clé = identifiant unique 
@@ -2042,6 +2058,10 @@ document.addEventListener('click',function(e){
   }
 });
 </script>
+
+<!-- ═══════════════════════════════════════════
+     FIN DU JAVASCRIPT 
+═══════════════════════════════════════════ -->
 
 </body>
 <!-- Fin du corps de la page -->

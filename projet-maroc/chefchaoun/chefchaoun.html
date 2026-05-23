@@ -18,6 +18,9 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <style>
+  /* ═══════════════════════════════════════════
+     DÉBUT DU CSS
+═══════════════════════════════════════════ */
 /* =====================================================
    CHEFCHAOUEN - Feuille de style principale
 ===================================================== */
@@ -804,9 +807,22 @@ footer{
 }
 </style>
 
+<!-- ═══════════════════════════════════════════
+     FIN DU CSS 
+═══════════════════════════════════════════ -->
+
 </head>
+
+<!-- ═══════════════════════════════════════════
+     DÉBUT DU HTML
+═══════════════════════════════════════════ -->
+
 <body>
-<!-- On ouvre le corps de la page, tout le contenu visible est ici -->
+  <!-- body : corps de la page, tout ce que l'utilisateur voit -->
+
+<!-- ══ TOP BAR ══ -->
+<!-- Barre d'information en haut de la page -->
+<div class="top-bar">Chefchaouen — La Perle Bleue · Région Tanger-Tétouan-Al Hoceima</div>
 
 
 <!-- ══ NAVBAR ══ -->
@@ -1476,6 +1492,9 @@ footer{
 <!-- Leaflet.js : bibliothèque cartographique chargée avant notre JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<!-- ═══════════════════════════════════════════
+     FIN DU HTML — DÉBUT DU JAVASCRIPT
+═══════════════════════════════════════════ -->
 <script>
 /* ══ MODAL DATA ══ */
 /* Objet JavaScript contenant toutes les données pour les modales.
@@ -1895,7 +1914,7 @@ document.querySelectorAll('.nav-links a').forEach(link => {
   link.addEventListener('click', () => {
     /* Quand on clique sur un lien du menu mobile... */
     document.querySelector('.nav-links').classList.remove('open');
-    /* On ferme le menu (important sur mobile pour qu'il disparaisse après la navigation) */
+    /*  ferme le menu (important sur mobile pour qu'il disparaisse après la navigation) */
   });
 });
 
@@ -1907,10 +1926,14 @@ document.addEventListener('click', function(e){
   if(!nav.contains(e.target) && !btn.contains(e.target)){
     /* Si le clic n'est pas dans le menu NI sur le bouton hamburger... */
     nav.classList.remove('open');
-    /* On ferme le menu (clic en dehors = fermeture) */
+    /*  ferme le menu (clic en dehors = fermeture) */
   }
 });
 </script>
+
+<!-- ═══════════════════════════════════════════
+     FIN DU JAVASCRIPT 
+═══════════════════════════════════════════ -->
 
 </body>
 <!-- Fin du corps de la page -->
