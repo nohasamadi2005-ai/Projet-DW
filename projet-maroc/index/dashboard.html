@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+
+<html lang="fr" data-theme="dark">
+<!-- lang="fr" : la langue de la page est le français
+     data-theme="dark" : attribut personnalisé lu par CSS pour appliquer le thème sombre au démarrage
+     JavaScript peut le changer en "light" quand on clique sur le bouton de thème -->
+
+<head>
+  <!-- head = zone invisible pour l'utilisateur, contient les infos techniques de la page -->
+
+  <meta charset="UTF-8">
+  <!-- charset=UTF-8 : encodage qui supporte les caractères spéciaux comme é, è, â, ç -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- viewport : rend la page responsive (adaptée aux mobiles)
+       width=device-width = la largeur de la page = largeur de l'écran de l'appareil
+       initial-scale=1.0 = pas de zoom au départ -->
+
+  <meta name="description" content="Portail officiel du tourisme au Maroc — Découvrez les plus belles villes et la culture du Royaume">
+  <!-- description : texte affiché sous le titre dans les résultats Google (SEO) -->
+
+  <title>Maroc — Royaume de Lumière | Portail Touristique</title>
+  <!-- title : texte affiché dans l'onglet du navigateur -->
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Raleway:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Importation des polices depuis Google Fonts (serveurs externes de Google)
+       Playfair Display : police élégante avec empattements, utilisée pour les titres
+       Raleway : police moderne sans empattements, utilisée pour le texte courant
+       display=swap : affiche d'abord une police système, puis remplace quand Google Fonts est chargé -->
+
+  <style>
+    /* Tout ce qui suit est du CSS pur écrit à la main, sans Bootstrap ni framework */
+
+    /* Variables CSS globales — définies sur :root (= l'élément html)
+       :root permet de stocker des valeurs réutilisables partout dans le CSS
+       On les appelle avec var(--nom-variable)
+       Avantage : changer une couleur ici la change partout dans la page */
+    :root {
+      --rouge:        #8B1A1A;  /* Rouge principal — couleur identitaire du Maroc */
+      --rouge-vif:    #C0392B;  /* Rouge plus vif — utilisé pour les survols */
+      --rouge-sombre: #5C1010;  /* Rouge très foncé — fonds sombres */
+      --or:           #C9A84C;  /* Or chaud — couleur des ornements marocains */
+      --or-fonce:     #A8873A;  /* Or plus sombre — labels, sous-titres */
+      --or-pale:      #F0D98A;  /* Or pâle/crème — textes sur fonds sombres */
+      --bleu-nuit:    #0D1B3E;  /* Bleu nuit profond — fond de la section chiffres */
+      --bleu-moyen:   #1A2F5E;  /* Bleu moyen — éléments secondaires */
+      --transition:   0.4s cubic-bezier(0.4,0,0.2,1); /* Courbe d'animation fluide réutilisable */
+    }
+
+    /* Thème sombre — appliqué quand data-theme="dark" sur <html>
+       Ces variables écrasent celles de :root pour adapter toutes les couleurs */
+    [data-theme="dark"] {
+      --rouge:        #FF6B6B;                    /* Rouge plus clair et lisible en mode sombre */
+      --bg:           #080f1e;                    /* Fond très sombre presque noir */
+      --bg-nav:       rgba(8,15,30,0.97);         /* Fond nav semi-transparent sombre */
+      --bg-section:   #0D1B3E;                    /* Fond des sections principales */
+      --bg-culture:   #080f1e;                    /* Fond section culture */
+      --bg-carte:     #1a2f5e;                    /* Fond des pastilles/cards */
+      --bg-info:      #111d38;                    /* Fond zone info carrousel */
+      --bg-contact:   #0D1B3E;                    /* Fond section contact */
+      --bg-form:      #111d38;                    /* Fond du formulaire */
+      --txt:          #FFFFFF;                    /* Texte blanc */
+      --txt-body:     rgba(255,255,255,0.72);     /* Texte légèrement transparent */
+      --txt-muted:    rgba(255,255,255,0.42);     /* Texte encore plus discret */
+      --bordure:      rgba(201,168,76,0.22);      /* Bordures dorées semi-transparentes */
+      --bordure-form: rgba(255,255,255,0.12);     /* Bordures formulaire */
+      --input-bg:     rgba(255,255,255,0.06);     /* Fond des champs input */
+      --input-focus:  rgba(201,168,76,0.3);       /* Glow doré au focus des inputs */
+      --chiffre-bg:   rgba(255,255,255,0.06);     /* Fond des blocs de chiffres */
+      --overlay:      rgba(13,27,62,0.72);        /* Overlay sombre sur les images */
+    }
+
+    /* Thème clair — appliqué quand data-theme="light" sur <html>
+       JavaScript bascule entre "dark" et "light" au clic du bouton thème */
+    [data-theme="light"] {
+      --bg:           #FAF6EF;                    /* Fond crème chaud */
+      --bg-nav:       rgba(255,255,255,0.97);     /* Nav blanche semi-transparente */
+      --bg-section:   #FAF6EF;                    /* Fond sections */
+      --bg-culture:   #F2EBD9;                    /* Fond section culture (beige) */
+      --bg-carte:     #FFFFFF;                    /* Fond cards blanc */
+      --bg-info:      #FAF6EF;                    /* Fond zone info */
+      --bg-contact:   #FAF6EF;                    /* Fond contact */
+      --bg-form:      #FFFFFF;                    /* Fond formulaire blanc */
+      --txt:          #1A0F05;                    /* Texte presque noir chaud */
+      --txt-body:     #5A4A3A;                    /* Texte corps brun */
+      --txt-muted:    #8A7A6A;                    /* Texte discret brun clair */
+      --bordure:      rgba(139,26,26,0.18);       /* Bordures rouge discrètes */
+      --bordure-form: rgba(139,26,26,0.2);        /* Bordures formulaire */
+      --input-bg:     #FAF6EF;                    /* Fond inputs crème */
+      --input-focus:  rgba(139,26,26,0.08);       /* Glow rouge au focus */
+      --chiffre-bg:   rgba(255,255,255,0.6);      /* Fond chiffres blanc semi-transparent */
+      --overlay:      rgba(13,27,62,0.38);        /* Overlay plus léger en mode clair */
+    }
+
+    /* Reset CSS universel
+       * = sélecteur qui cible TOUS les éléments HTML
+       On supprime les marges/paddings que le navigateur applique par défaut
+       box-sizing:border-box = les bordures et paddings sont inclus dans la taille déclarée */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    /* scroll-behavior:smooth = défilement animé quand on clique sur un lien ancre (href="#section") */
+    html { scroll-behavior:smooth; font-size:16px; }
+
+    /* Styles de base du corps de la page
+       font-family : police par défaut Raleway (importée depuis Google Fonts)
+       overflow-x:hidden : empêche le défilement horizontal non voulu
+       transition : animation douce quand le thème change */
+    body {
+      font-family:'Raleway',sans-serif;
+      background: var(--bg);
+      color: var(--txt);
+      overflow-x:hidden;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    /* max-width:100% empêche les images de déborder de leur conteneur
+       display:block supprime l'espace vide sous les images (comportement inline par défaut) */
+    img { max-width:100%; display:block; }
+
+    /* Bandeau d'annonce rouge en haut de page
+       text-transform:uppercase = majuscules automatiques
+       letter-spacing = espacement entre les lettres */
+    .top-bar {
+      background: var(--rouge);
+      color: var(--or-pale);
+      text-align:center;
+      padding:9px 20px;
+      font-size:0.72rem;
+      font-weight:600;
+      letter-spacing:0.2em;
+      text-transform:uppercase;
+      position:relative;
+      z-index:100; /* Au-dessus des éléments normaux mais sous la nav (z-index:999) */
+    }
+
+    /* Barre de navigation principale
+       position:fixed = reste collée en haut même quand on défile
+       top:0 left:0 right:0 = couvre toute la largeur en haut
+       z-index:999 = au-dessus de presque tout le reste
+       backdrop-filter:blur = effet "verre dépoli" sur le fond
+       display:flex justify-content:space-between = logo à gauche, liens à droite */
+    nav {
+      position:fixed; top:0; left:0; right:0;
+      z-index:999;
+      background: var(--bg-nav);
+      backdrop-filter:blur(14px);
+      border-bottom:2px solid rgba(201,168,76,0.28);
+      padding:0 48px;
+      height:72px;
+      display:flex; align-items:center; justify-content:space-between;
+      box-shadow:0 2px 20px rgba(0,0,0,0.15);
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    /* Conteneur du logo : display:flex pour aligner l'icône SVG et le texte côte à côte
+       gap:13px = espace de 13px entre les deux éléments
+       text-decoration:none = supprime le soulignement (c'est un lien <a>) */
+    .nav-logo { display:flex; align-items:center; gap:13px; text-decoration:none; }
+
+    /* Taille de l'étoile chérifienne SVG dans le logo */
+    .nav-etoile { width:36px; height:36px; }
+
+    /* "MAROC" en gras rouge avec espacement des lettres */
+    .nav-logo-texte strong {
+      font-family:'Playfair Display',serif;
+      font-size:1.1rem; font-weight:900;
+      color:var(--rouge);
+      letter-spacing:0.12em; text-transform:uppercase; display:block;
+    }
+
+    /* "Portail du Tourisme" en très petit sous le nom */
+    .nav-logo-texte span {
+      font-size:0.6rem; color:var(--or-fonce);
+      letter-spacing:0.22em; text-transform:uppercase;
+    }
+
+    /* Liste des liens de navigation — alignés horizontalement grâce à flex */
+    .nav-liens { display:flex; list-style:none; gap:28px; align-items:center; }
+
+    /* Style de chaque lien de navigation
+       border-bottom:1px solid transparent = espace pour la ligne de survol, invisible par défaut
+       transition : animation douce au survol */
+    .nav-liens a {
+      color:var(--txt-body); text-decoration:none;
+      font-size:0.73rem; font-weight:700;
+      letter-spacing:0.12em; text-transform:uppercase;
+      padding-bottom:3px;
+      border-bottom:1px solid transparent;
+      transition:color 0.3s, border-color 0.3s;
+    }
+
+    /* Au survol : texte rouge + ligne dorée en dessous */
+    .nav-liens a:hover { color:var(--rouge); border-bottom-color:var(--or); }
+
+    /* Bouton de bascule du thème clair/sombre
+       border-radius:50px = bouton en forme de pilule (pill)
+       flex-shrink:0 = ne se rétrécit pas quand la nav manque de place */
+    .btn-theme {
+      display:flex; align-items:center; gap:7px;
+      background:transparent;
+      border:1.5px solid var(--bordure);
+      border-radius:50px;
+      padding:6px 14px;
+      cursor:pointer;
+      font-family:'Raleway',sans-serif;
+      font-size:0.68rem; font-weight:700;
+      letter-spacing:0.1em; text-transform:uppercase;
+      color:var(--or);
+      transition:border-color 0.3s, background 0.3s, transform 0.2s;
+      white-space:nowrap;
+      flex-shrink:0;
+    }
+
+    /* Au survol du bouton thème */
+    .btn-theme:hover { border-color:var(--or); background:rgba(201,168,76,0.1); transform:translateY(-1px); }
+
+    /* Bouton hamburger mobile (3 traits) — caché sur desktop, affiché sur mobile via @media */
+    .hamburger {
+      display:none; flex-direction:column; gap:5px;
+      cursor:pointer; background:none; border:none; padding:4px;
+    }
+    /* Chaque trait du hamburger */
+    .hamburger span { width:24px; height:2px; background:var(--rouge); border-radius:2px; transition:var(--transition); }
+
+    /* Section Hero — grande image plein écran
+       height:100vh = hauteur = 100% de la fenêtre visible
+       min-height:700px = minimum même sur petit écran
+       display:flex + align-items:center + justify-content:center = centrage du contenu */
+    #hero {
+      position:relative; height:100vh; min-height:700px;
+      overflow:hidden; display:flex; align-items:center; justify-content:center;
+    }
+
+    /* Conteneur de toutes les slides du hero
+       position:absolute inset:0 = couvre toute la section hero */
+    .hero-slides { position:absolute; inset:0; z-index:0; }
+
+    /* Chaque slide individuelle
+       opacity:0 = invisible par défaut
+       transition:opacity 1.5s = fondu progressif sur 1.5 secondes */
+    .hero-slide { position:absolute; inset:0; opacity:0; transition:opacity 1.5s ease; }
+
+    /* La slide active est visible */
+    .hero-slide.actif { opacity:1; }
+
+    /* Image de chaque slide
+       object-fit:cover = couvre tout l'espace sans se déformer
+       transform:scale(1.05) = légèrement zoomée au départ
+       transition:transform 8s = dézoom lent pendant 8 secondes (effet Ken Burns) */
+    .hero-slide img {
+      width:100%; height:100%; object-fit:cover;
+      transform:scale(1.05); transition:transform 8s ease;
+    }
+
+    /* Quand la slide devient active : l'image revient à taille normale (effet de dézoom animé) */
+    .hero-slide.actif img { transform:scale(1); }
+
+    /* Overlay sombre dégradé sur les images
+       linear-gradient du haut vers le bas : plus sombre en bas pour que le texte soit lisible
+       z-index:1 = au-dessus des images mais sous le contenu */
+    .hero-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(180deg,
+        rgba(13,27,62,0.25) 0%, rgba(13,27,62,0.10) 30%,
+        rgba(13,27,62,0.55) 70%, rgba(13,27,62,0.88) 100%);
+      z-index:1;
+    }
+
+    /* Contenu textuel du hero : centré, au-dessus de tout grâce à z-index:3 */
+    .hero-contenu {
+      position:relative; z-index:3;
+      text-align:center; padding:0 24px; max-width:900px;
+    }
+
+    /* Badge "Portail Officiel" au-dessus du titre principal
+       display:inline-flex = se rétrécit autour du texte, aligne icône et texte
+       animation:apparitre = apparaît avec un fondu depuis le bas (définie plus bas) */
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:10px;
+      background:rgba(255,255,255,0.13);
+      border:1px solid rgba(201,168,76,0.55);
+      color:var(--or-pale);
+      font-size:0.7rem; font-weight:600; letter-spacing:0.25em;
+      text-transform:uppercase; padding:8px 22px; border-radius:50px;
+      margin-bottom:26px; animation:apparitre 1s 0.2s ease both;
+    }
+
+    /* Grand titre "Bienvenue au / Royaume de Lumière"
+       clamp(min, préféré, max) = taille fluide adaptée à la largeur de l'écran
+       letter-spacing:-0.02em = lettres légèrement resserrées pour un effet typographique */
+    .hero-slogan {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(3rem,8vw,7rem); font-weight:900;
+      line-height:1.0; margin-bottom:10px;
+      animation:apparitre 1s 0.4s ease both; letter-spacing:-0.02em;
+    }
+
+    /* Première ligne du titre (blanche) */
+    .hero-slogan .ligne1 { color:#fff; display:block; }
+
+    /* Deuxième ligne (dorée et italique) */
+    .hero-slogan .ligne2 { color:var(--or); font-style:italic; display:block; }
+
+    /* Sous-titre "Mille ans d'histoire..." */
+    .hero-sous-titre {
+      font-size:clamp(0.82rem,2vw,0.98rem); letter-spacing:0.3em;
+      text-transform:uppercase; color:rgba(255,255,255,0.72);
+      font-weight:300; margin-bottom:48px;
+      animation:apparitre 1s 0.6s ease both;
+    }
+
+    /* Bouton principal "Explorer les destinations"
+       display:inline-block = se rétrécit autour du texte
+       border:2px solid var(--rouge) = contour pour l'effet hover
+       overflow:hidden = nécessaire pour les effets de pseudoéléments futurs */
+    .hero-cta {
+      display:inline-block; background:var(--rouge); color:#fff;
+      text-decoration:none; padding:18px 48px;
+      font-size:0.8rem; font-weight:700; letter-spacing:0.18em;
+      text-transform:uppercase; border-radius:3px;
+      transition:var(--transition); animation:apparitre 1s 0.8s ease both;
+      border:2px solid var(--rouge); position:relative; overflow:hidden;
+    }
+
+    /* Au survol : fond doré, texte bleu nuit, remonte légèrement */
+    .hero-cta:hover { background:var(--or); border-color:var(--or); color:var(--bleu-nuit); transform:translateY(-3px); box-shadow:0 12px 35px rgba(201,168,76,0.4); }
+
+    /* Points indicateurs en bas du hero (navigation entre slides)
+       position:absolute bottom:34px = collés en bas au centre */
+    .hero-indicateurs { position:absolute; bottom:34px; left:50%; transform:translateX(-50%); z-index:4; display:flex; gap:10px; }
+
+    /* Chaque point indicateur : petit cercle cliquable */
+    .hero-indicateur { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.38); cursor:pointer; transition:var(--transition); border:none; padding:0; }
+
+    /* Point actif : s'étire en capsule dorée */
+    .hero-indicateur.actif { background:var(--or); width:28px; border-radius:4px; }
+
+    /* Séparateur décoratif entre le hero et la section villes
+       border-top : ligne dorée discrète en haut */
+    .separateur {
+      text-align:center; padding:48px 24px 34px;
+      background:var(--bg-section);
+      border-top:1px solid var(--bordure);
+      transition:background 0.4s;
+    }
+    .separateur p { color:var(--txt-muted); font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; margin-top:12px; }
+
+    /* Section des 10 destinations
+       padding:20px 48px 100px = espace intérieur (haut, côtés, bas) */
+    #villes {
+      background:var(--bg-section);
+      padding:20px 48px 100px;
+      transition:background 0.4s;
+    }
+
+    /* Titre de section — Police Playfair Display, grande taille fluide avec clamp */
+    .section-titre {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2rem,4vw,3.5rem); font-weight:900;
+      text-align:center; margin-bottom:14px;
+      color:var(--txt);
+    }
+
+    /* .accent = le mot en rouge italique dans le titre */
+    .section-titre .accent { color:var(--rouge); font-style:italic; }
+
+    /* Sous-titre de section : plus petit, espacé, discret */
+    .section-sous-titre {
+      text-align:center; color:var(--txt-muted);
+      font-size:0.86rem; letter-spacing:0.15em;
+      text-transform:uppercase; margin-bottom:56px; font-weight:300;
+    }
+
+    /* Grille CSS des 10 cartes de villes
+       grid-template-columns:repeat(3,1fr) = 3 colonnes de largeur égale
+       gap:20px = espacement entre les cartes */
+    .villes-grille {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:20px; max-width:1300px; margin:0 auto;
+    }
+
+    /* Chaque carte de ville
+       position:relative = nécessaire pour positionner les enfants en absolu
+       overflow:hidden = les coins arrondis s'appliquent à l'image
+       text-decoration:none display:block = la carte entière est un lien cliquable */
+    .ville-card {
+      position:relative; overflow:hidden; border-radius:6px;
+      cursor:pointer; text-decoration:none; display:block;
+      box-shadow:0 4px 20px rgba(0,0,0,0.22);
+      transition:box-shadow 0.4s ease, transform 0.4s ease;
+    }
+
+    /* Au survol : la carte remonte légèrement et l'ombre s'intensifie */
+    .ville-card:hover { box-shadow:0 16px 48px rgba(139,26,26,0.3); transform:translateY(-4px); }
+
+    /* Hauteurs différentes pour créer l'effet mosaïque (grille non uniforme)
+       nth-child(n) cible le nième enfant de la grille */
+    .ville-card:nth-child(1)  { height:520px; }
+    .ville-card:nth-child(2)  { height:340px; }
+    .ville-card:nth-child(3)  { height:340px; }
+    .ville-card:nth-child(4)  { height:340px; }
+    .ville-card:nth-child(5)  { height:340px; }
+    .ville-card:nth-child(6)  { height:520px; }
+    .ville-card:nth-child(7)  { height:400px; grid-column:span 2; } /* Occupe 2 colonnes */
+    .ville-card:nth-child(8)  { height:400px; }
+    .ville-card:nth-child(9)  { height:400px; }
+    .ville-card:nth-child(10) { height:400px; grid-column:span 2; } /* Occupe 2 colonnes */
+
+    /* Image de la carte : couvre tout l'espace
+       filter:brightness(0.82) = légèrement assombrie par défaut
+       transition : zoom et luminosité s'animent au survol */
+    .ville-card-img {
+      width:100%; height:100%; object-fit:cover;
+      transition:transform 0.8s ease, filter 0.5s ease;
+      filter:brightness(0.82);
+    }
+
+    /* Au survol : zoom de l'image + assombrissement */
+    .ville-card:hover .ville-card-img { transform:scale(1.08); filter:brightness(0.6); }
+
+    /* Overlay dégradé permanent sur chaque carte
+       linear-gradient(to top) = du bas (sombre) vers le haut (transparent)
+       Permet de lire le texte en bas même sans survol */
+    .ville-card-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to top, rgba(13,27,62,0.92) 0%, rgba(13,27,62,0.3) 45%, transparent 100%);
+      transition:background 0.5s;
+    }
+
+    /* Au survol : l'overlay devient rouge au lieu de bleu */
+    .ville-card:hover .ville-card-overlay {
+      background:linear-gradient(to top, rgba(92,16,16,0.88) 0%, rgba(139,26,26,0.45) 50%, rgba(13,27,62,0.08) 100%);
+    }
+
+    /* Contenu texte en bas de la carte : numéro + nom + slogan + bouton
+       position:absolute bottom:0 = collé en bas de la carte
+       z-index:2 = au-dessus de l'overlay */
+    .ville-card-contenu { position:absolute; bottom:0; left:0; right:0; padding:26px 26px 30px; z-index:2; }
+
+    /* "01 — Marrakech" en petit texte doré au-dessus du nom */
+    .ville-numero { font-size:0.66rem; color:var(--or); letter-spacing:0.2em; text-transform:uppercase; font-weight:600; margin-bottom:5px; }
+
+    /* Grand nom de la ville */
+    .ville-nom { font-family:'Playfair Display',serif; font-size:clamp(1.4rem,3vw,2.3rem); font-weight:900; color:#fff; line-height:1.1; margin-bottom:7px; }
+
+    /* Au survol : le nom devient doré pâle */
+    .ville-card:hover .ville-nom { color:var(--or-pale); }
+
+    /* Slogan de la ville (ex: "La Ville Rouge · Perle du Sud") */
+    .ville-slogan { font-size:0.78rem; color:rgba(255,255,255,0.68); font-weight:300; margin-bottom:14px; }
+
+    /* Bouton "Découvrir →" — invisible par défaut, apparaît au survol
+       opacity:0 + transform:translateY(10px) = invisible et décalé vers le bas
+       transition : animation vers opacity:1 + translateY(0) au survol */
+    .ville-btn {
+      display:inline-flex; align-items:center; gap:9px;
+      background:rgba(201,168,76,0.18); border:1px solid var(--or);
+      color:var(--or-pale); font-size:0.7rem; font-weight:700;
+      letter-spacing:0.18em; text-transform:uppercase;
+      padding:7px 16px; border-radius:2px;
+      opacity:0; transform:translateY(10px);
+      transition:opacity 0.4s, transform 0.4s, background 0.3s;
+    }
+
+    /* Au survol de la carte : le bouton devient visible et remonte */
+    .ville-card:hover .ville-btn { opacity:1; transform:translateY(0); }
+
+    /* Petit tag en haut à droite (ex: "Ville Impériale")
+       Même principe : invisible par défaut, visible au survol */
+    .ville-tag {
+      position:absolute; top:16px; right:16px; z-index:3;
+      background:rgba(139,26,26,0.88); color:var(--or-pale);
+      font-size:0.63rem; font-weight:700; letter-spacing:0.15em;
+      text-transform:uppercase; padding:5px 12px; border-radius:2px;
+      opacity:0; transform:translateY(-8px);
+      transition:opacity 0.4s, transform 0.4s;
+    }
+
+    /* Au survol : le tag apparaît et descend */
+    .ville-card:hover .ville-tag { opacity:1; transform:translateY(0); }
+
+    /* Section "Le Maroc en Chiffres"
+       background-image:url() = image de fond
+       background-attachment:fixed = effet parallaxe (l'image reste fixe pendant le scroll)
+       background-size:cover = couvre toute la section sans se déformer */
+    #chiffres {
+      position:relative; padding:100px 48px; overflow:hidden;
+      background-image:url('images/pce.jpg');
+      background-size:cover; background-position:center 40%;
+      background-attachment:fixed;
+    }
+
+    /* ::before = pseudoélément qui crée un overlay sombre sur l'image de fond
+       content:'' obligatoire pour que le pseudoélément existe
+       inset:0 = couvre tout l'espace du parent
+       z-index:0 = sous le contenu mais au-dessus de l'image */
+    #chiffres::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg, rgba(13,27,62,0.82) 0%, rgba(13,27,62,0.70) 50%, rgba(92,16,16,0.55) 100%);
+      z-index:0;
+    }
+
+    /* ::after = petit trait doré décoratif en haut de la section */
+    #chiffres::after { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:80px; height:3px; background:var(--or); z-index:1; }
+
+    /* Grille des 4 chiffres : 4 colonnes égales */
+    .chiffres-grille { display:grid; grid-template-columns:repeat(4,1fr); gap:40px; max-width:1000px; margin:0 auto; position:relative; z-index:1; }
+
+    /* Chaque bloc chiffre
+       border-left = séparateur vertical gauche doré
+       backdrop-filter:blur = effet verre dépoli sur le fond de la section */
+    .chiffre-item {
+      text-align:center; padding:38px 20px;
+      border-left:1px solid rgba(201,168,76,0.3);
+      background:rgba(255,255,255,0.06);
+      border-radius:4px; backdrop-filter:blur(6px);
+      transition:background 0.3s, transform 0.3s;
+    }
+    .chiffre-item:hover { background:rgba(255,255,255,0.12); transform:translateY(-4px); }
+    .chiffre-item:first-child { border-left:none; } /* Le premier n'a pas de séparateur gauche */
+
+    /* Grand chiffre animé (ex: 14M)
+       JavaScript anime ce nombre de 0 jusqu'à la valeur cible */
+    .chiffre-nombre { font-family:'Playfair Display',serif; font-size:clamp(2.5rem,5vw,4.5rem); font-weight:900; color:var(--or); line-height:1; margin-bottom:12px; }
+    .chiffre-desc { font-size:0.76rem; color:rgba(255,255,255,0.78); letter-spacing:0.12em; text-transform:uppercase; font-weight:400; line-height:1.5; }
+
+    /* Section Culture Marocaine
+       position:relative overflow:hidden = nécessaire pour le motif de fond et les pseudoéléments */
+    #culture {
+      background:var(--bg-culture);
+      padding:100px 48px;
+      position:relative; overflow:hidden;
+      transition:background 0.4s;
+    }
+
+    /* Motif géométrique en filigrane en arrière-plan de la section culture
+       repeating-linear-gradient crée un motif de lignes diagonales très discret
+       pointer-events:none = le motif n'interfère pas avec les clics */
+    #culture::before {
+      content:''; position:absolute; inset:0;
+      background-image:
+        repeating-linear-gradient(45deg,  rgba(201,168,76,0.03) 0, rgba(201,168,76,0.03) 1px, transparent 1px, transparent 44px),
+        repeating-linear-gradient(-45deg, rgba(201,168,76,0.03) 0, rgba(201,168,76,0.03) 1px, transparent 1px, transparent 44px);
+      pointer-events:none;
+    }
+
+    /* Trait doré décoratif en haut de la section culture */
+    #culture::after { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:80px; height:3px; background:var(--or); }
+
+    /* En-tête centré de la section culture */
+    .culture-header { text-align:center; margin-bottom:68px; position:relative; z-index:2; }
+
+    /* Petit texte "✦ Patrimoine Vivant" au-dessus du titre */
+    .culture-header .eti { font-size:0.67rem; font-weight:700; letter-spacing:0.32em; text-transform:uppercase; color:var(--or); margin-bottom:12px; display:block; }
+
+    /* Titre h2 de la section culture */
+    .culture-header h2 { font-family:'Playfair Display',serif; font-size:clamp(2.2rem,4.5vw,3.8rem); font-weight:900; color:var(--txt); line-height:1.05; margin-bottom:16px; transition:color 0.4s; }
+
+    /* Le mot en italique doré dans le h2 */
+    .culture-header h2 em { color:var(--or); font-style:italic; }
+
+    /* Séparateur décoratif : lignes horizontales + étoile SVG au centre
+       ::before et ::after créent les lignes avec gradient (transparente vers dorée) */
+    .culture-header .trait { display:flex; align-items:center; justify-content:center; gap:14px; margin:14px auto 18px; max-width:260px; }
+    .culture-header .trait::before, .culture-header .trait::after { content:''; flex:1; height:1px; background:linear-gradient(90deg, transparent, rgba(201,168,76,0.55)); }
+    .culture-header .trait::after { background:linear-gradient(90deg, rgba(201,168,76,0.55), transparent); }
+
+    /* Paragraphe descriptif de la section culture */
+    .culture-header p { font-size:0.88rem; color:var(--txt-body); letter-spacing:0.06em; font-weight:300; max-width:540px; margin:0 auto; line-height:1.85; transition:color 0.4s; }
+
+    /* Contenu du carrousel : centré avec largeur max */
+    .culture-carrousel { position:relative; z-index:2; max-width:1200px; margin:0 auto; }
+
+    /* La scène principale du carrousel : image à gauche + infos à droite
+       grid-template-columns:1.15fr 1fr = l'image est légèrement plus large que les infos
+       overflow:hidden = les coins arrondis s'appliquent aux deux zones */
+    .carrousel-scene {
+      display:grid; grid-template-columns:1.15fr 1fr;
+      border-radius:14px; overflow:hidden;
+      box-shadow:0 40px 90px rgba(0,0,0,0.45);
+      min-height:560px;
+    }
+
+    /* Zone image gauche du carrousel */
+    .c-img-zone { position:relative; overflow:hidden; cursor:pointer; }
+
+    /* Chaque diapositive individuelle
+       position:absolute inset:0 = empilées les unes sur les autres
+       opacity:0 = invisible par défaut */
+    .c-diapo { position:absolute; inset:0; opacity:0; transition:opacity 1s ease; }
+
+    /* La diapositive active est visible */
+    .c-diapo.actif { opacity:1; }
+
+    /* Image de chaque diapositive — même effet Ken Burns que le hero */
+    .c-diapo img { width:100%; height:100%; object-fit:cover; transform:scale(1.05); transition:transform 9s ease; }
+    .c-diapo.actif img { transform:scale(1); }
+
+    /* Overlay dégradé sur l'image du carrousel
+       Fondu vers la droite pour une transition douce vers la zone info */
+    .c-img-zone .img-ov {
+      position:absolute; inset:0;
+      background:linear-gradient(90deg, transparent 55%, rgba(13,27,62,0.38) 100%);
+      z-index:1; pointer-events:none;
+      transition:background 0.4s;
+    }
+
+    /* Badge catégorie sur l'image (ex: "Salat — Prière collective")
+       Apparaît avec animation quand la diapo devient active */
+    .c-badge {
+      position:absolute; top:20px; left:20px; z-index:3;
+      background:var(--rouge); color:var(--or-pale);
+      font-size:0.62rem; font-weight:700; letter-spacing:0.2em;
+      text-transform:uppercase; padding:6px 15px; border-radius:3px;
+      opacity:0; transform:translateY(-8px);
+      transition:opacity 0.5s 0.25s, transform 0.5s 0.25s; /* délai de 0.25s avant apparition */
+    }
+    .c-diapo.actif .c-badge { opacity:1; transform:translateY(0); }
+
+    /* Compteur de diapos "01 / 12" en bas gauche de l'image
+       display:flex align-items:flex-end = aligne les éléments par le bas */
+    .img-cpt {
+      position:absolute; bottom:20px; left:24px; z-index:3;
+      display:flex; align-items:flex-end; gap:4px;
+    }
+    .img-cpt .n1 { font-family:'Playfair Display',serif; font-size:3rem; font-weight:900; color:var(--or); line-height:1; }
+    .img-cpt .ns { font-size:1rem; color:rgba(255,255,255,0.38); margin-bottom:7px; }
+    .img-cpt .n2 { font-size:0.92rem; color:rgba(255,255,255,0.38); margin-bottom:8px; }
+
+    /* Icône ⏸/▶ de pause — apparaît quand le carrousel est en pause
+       opacity:0 par défaut, visible quand imgZone a la classe "pause" */
+    .img-pause {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      z-index:4; background:rgba(0,0,0,0.5);
+      border-radius:50%; width:60px; height:60px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.4rem; color:#fff;
+      opacity:0; transition:opacity 0.3s;
+      pointer-events:none;
+    }
+    .c-img-zone.pause .img-pause { opacity:1; }
+
+    /* Zone info droite du carrousel
+       display:flex flex-direction:column justify-content:center = contenu centré verticalement
+       ::before = ligne verticale dorée décorative sur le bord gauche */
+    .c-info-zone {
+      background:var(--bg-info);
+      padding:50px 44px;
+      display:flex; flex-direction:column; justify-content:center;
+      position:relative; transition:background 0.4s;
+    }
+    .c-info-zone::before {
+      content:''; position:absolute;
+      left:0; top:12%; height:76%; width:2px;
+      background:linear-gradient(180deg, transparent, var(--or), transparent);
+    }
+
+    /* Éléments de la zone info — animation d'entrée
+       opacity:0 transform:translateY(18px) = invisible et décalé vers le bas par défaut */
+    .i-categ, .i-titre, .i-desc, .i-details {
+      opacity:0; transform:translateY(18px);
+      transition:opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    /* Quand la zone info a la classe "iv" (info visible) — ajoutée par JavaScript
+       Chaque élément apparaît avec un délai croissant pour un effet en cascade */
+    .iv .i-categ  { opacity:1; transform:translateY(0); transition-delay:0.07s; }
+    .iv .i-titre  { opacity:1; transform:translateY(0); transition-delay:0.16s; }
+    .iv .i-desc   { opacity:1; transform:translateY(0); transition-delay:0.26s; }
+    .iv .i-details{ opacity:1; transform:translateY(0); transition-delay:0.36s; }
+
+    /* Ligne de catégorie "Spiritualité & Prière"
+       ::before = petit trait doré avant le texte */
+    .i-categ {
+      font-size:0.63rem; font-weight:700; letter-spacing:0.28em;
+      text-transform:uppercase; color:var(--or);
+      margin-bottom:11px; display:flex; align-items:center; gap:12px;
+    }
+    .i-categ::before { content:''; width:28px; height:1px; background:var(--or); flex-shrink:0; }
+
+    /* Titre principal de la diapo */
+    .i-titre { font-family:'Playfair Display',serif; font-size:clamp(1.55rem,2.5vw,2.4rem); font-weight:900; color:var(--txt); line-height:1.1; margin-bottom:18px; transition:color 0.4s; }
+    .i-titre em { color:var(--or); font-style:italic; }
+
+    /* Texte de description de la diapo */
+    .i-desc { font-size:0.875rem; color:var(--txt-body); line-height:1.9; font-weight:300; margin-bottom:24px; transition:color 0.4s; }
+
+    /* Grille des 4 pastilles de détails (Type, Moment, Tenue, Signification) */
+    .i-details { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px; }
+
+    /* Chaque pastille de détail
+       :hover remonte légèrement et la bordure devient dorée */
+    .d-item {
+      background:var(--bg-carte); border:1px solid var(--bordure);
+      border-radius:7px; padding:11px 13px;
+      transition:border-color 0.3s, transform 0.3s, background 0.4s;
+    }
+    .d-item:hover { border-color:var(--or); transform:translateY(-2px); }
+    .d-lbl { font-size:0.58rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--or); margin-bottom:4px; }
+    .d-val { font-size:0.81rem; color:var(--txt); font-weight:500; transition:color 0.4s; }
+
+    /* Contrôles du carrousel : boutons précédent/suivant + barre de progression + points */
+    .c-ctrls { display:flex; align-items:center; gap:14px; margin-top:26px; flex-wrap:wrap; }
+
+    /* Boutons navigation carrousel (flèches)
+       border-radius:50% = boutons ronds */
+    .c-btn {
+      width:50px; height:50px; border-radius:50%;
+      background:var(--bg-carte); border:1.5px solid var(--bordure);
+      color:var(--or); font-size:1.1rem; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:background 0.3s, border-color 0.3s, transform 0.2s;
+      flex-shrink:0;
+    }
+    .c-btn:hover { background:var(--rouge); border-color:var(--rouge); color:#fff; transform:scale(1.1); }
+    .c-btn:active { transform:scale(0.96); }
+
+    /* Barre de progression temporelle (se remplit sur 5 secondes entre chaque diapo)
+       JavaScript anime la largeur de .c-barre-fill via transition CSS */
+    .c-barre { flex:1; max-width:200px; height:2px; background:var(--bordure); border-radius:2px; overflow:hidden; }
+    .c-barre-fill { height:100%; background:var(--or); border-radius:2px; width:0%; }
+
+    /* Points de navigation (un point par diapo)
+       JavaScript ajoute la classe "actif" au point correspondant */
+    .c-dots { display:flex; gap:7px; align-items:center; flex-wrap:wrap; }
+    .c-dot { width:8px; height:8px; border-radius:50%; background:var(--txt-muted); border:none; cursor:pointer; padding:0; transition:all 0.3s; }
+    .c-dot.actif { background:var(--or); width:26px; border-radius:4px; }
+
+    /* Bande de miniatures sous le carrousel
+       overflow-x:auto = défilement horizontal si trop de miniatures
+       scrollbar-width:thin = barre de défilement fine (Firefox)
+       scrollbar-color : couleur de la barre (WebKit via ::webkit-scrollbar) */
+    .c-minis { display:flex; gap:9px; margin-top:18px; overflow-x:auto; padding-bottom:6px; scrollbar-width:thin; scrollbar-color:rgba(201,168,76,0.3) transparent; }
+    .c-minis::-webkit-scrollbar { height:3px; }
+    .c-minis::-webkit-scrollbar-thumb { background:rgba(201,168,76,0.3); border-radius:2px; }
+
+    /* Chaque miniature
+       border:2px solid transparent = espace pour la bordure active, invisible par défaut
+       opacity:0.42 = discrète par défaut */
+    .c-mini {
+      flex-shrink:0; width:88px; height:60px;
+      border-radius:7px; overflow:hidden; cursor:pointer;
+      border:2px solid transparent; opacity:0.42;
+      transition:opacity 0.3s, border-color 0.3s, transform 0.3s;
+      position:relative;
+    }
+
+    /* Miniature active : bordure dorée + pleine opacité + légèrement remontée */
+    .c-mini.actif { border-color:var(--or); opacity:1; transform:translateY(-4px); }
+    .c-mini:hover:not(.actif) { opacity:0.72; }
+    .c-mini img { width:100%; height:100%; object-fit:cover; }
+
+    /* Tooltip (info-bulle) au survol d'une miniature
+       content:attr(data-nom) = lit l'attribut data-nom de l'élément
+       position:absolute bottom:-26px = apparaît sous la miniature
+       pointer-events:none = le tooltip n'interfère pas avec les clics */
+    .c-mini::after {
+      content:attr(data-nom); position:absolute; bottom:-26px; left:50%;
+      transform:translateX(-50%);
+      background:var(--bleu-nuit); color:var(--or-pale);
+      font-size:0.58rem; letter-spacing:0.1em;
+      padding:2px 7px; border-radius:3px;
+      white-space:nowrap; opacity:0; transition:opacity 0.25s;
+      pointer-events:none; z-index:10;
+    }
+    .c-mini:hover::after { opacity:1; }
+
+    /* Section Contact
+       ::before = trait doré décoratif en haut de la section */
+    #contact {
+      background:var(--bg-contact);
+      padding:90px 48px 100px; position:relative;
+      transition:background 0.4s;
+    }
+    #contact::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:60px; height:3px; background:var(--or); }
+
+    /* Grille contact : formulaire (plus large) à gauche + infos à droite
+       grid-template-columns:1.4fr 1fr = le formulaire prend 1.4x l'espace des infos */
+    .contact-grille { display:grid; grid-template-columns:1.4fr 1fr; gap:60px; max-width:1100px; margin:0 auto; }
+
+    /* Boîte blanche du formulaire
+       border-top:3px solid var(--or) = accent doré en haut du formulaire */
+    .contact-form-box {
+      background:var(--bg-form);
+      border-radius:8px; padding:44px 40px;
+      box-shadow:0 8px 40px rgba(0,0,0,0.18);
+      border-top:3px solid var(--or);
+      transition:background 0.4s;
+    }
+
+    /* Titre du formulaire */
+    .contact-form-box h3 { font-family:'Playfair Display',serif; font-size:1.65rem; font-weight:700; color:var(--txt); margin-bottom:5px; }
+    .contact-form-box h3 em { color:var(--rouge); font-style:italic; }
+    .form-sous { font-size:0.84rem; color:var(--txt-muted); margin-bottom:28px; }
+
+    /* Ligne de deux champs côte à côte (Prénom + Nom)
+       grid-template-columns:1fr 1fr = deux colonnes égales */
+    .form-ligne { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+    .form-groupe { margin-bottom:16px; }
+
+    /* Label de chaque champ : display:block = sur sa propre ligne au-dessus du champ */
+    .form-groupe label { display:block; font-size:0.7rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--txt-body); margin-bottom:6px; }
+
+    /* Style commun pour tous les champs de saisie
+       outline:none = supprime le contour bleu natif du navigateur au focus
+       transition : animation de la bordure et de l'ombre au focus */
+    .form-groupe input, .form-groupe select, .form-groupe textarea {
+      width:100%; padding:12px 16px;
+      border:1.5px solid var(--bordure-form);
+      border-radius:4px;
+      font-family:'Raleway',sans-serif; font-size:0.87rem;
+      color:var(--txt); background:var(--input-bg); outline:none;
+      transition:border-color 0.2s, box-shadow 0.2s, background 0.4s;
+    }
+
+    /* Quand l'utilisateur clique sur un champ (focus) : bordure rouge + ombre colorée */
+    .form-groupe input:focus, .form-groupe select:focus, .form-groupe textarea:focus {
+      border-color:var(--rouge);
+      box-shadow:0 0 0 3px var(--input-focus);
+    }
+    
+    /* Correction du menu déroulant (sujet) pour qu'il soit lisible (fond sombre, texte clair) */
+    .form-groupe select option {
+      background-color: var(--bg-form);
+      color: var(--txt);
+    }
+
+    /* La textarea peut être redimensionnée uniquement verticalement
+       min-height:118px = hauteur minimum */
+    .form-groupe textarea { resize:vertical; min-height:118px; }
+
+    /* Bouton d'envoi du formulaire
+       width:100% = prend toute la largeur du formulaire */
+    .btn-contact {
+      width:100%; background:var(--rouge); color:#fff;
+      border:2px solid var(--rouge); padding:15px 32px;
+      font-family:'Raleway',sans-serif; font-size:0.8rem;
+      font-weight:700; letter-spacing:0.18em; text-transform:uppercase;
+      border-radius:3px; cursor:pointer; transition:var(--transition);
+      margin-top:6px;
+    }
+    .btn-contact:hover { background:var(--or-fonce); border-color:var(--or-fonce); transform:translateY(-2px); box-shadow:0 8px 24px rgba(201,168,76,0.3); }
+
+    /* Message de succès après envoi du formulaire
+       display:none = caché par défaut
+       JavaScript le met en display:block après validation et envoi réussi */
+    .form-success { display:none; background:#f0fdf4; border:1px solid #86efac; color:#166534; padding:13px 16px; border-radius:4px; font-size:0.86rem; margin-top:14px; text-align:center; }
+
+    /* Colonne droite avec les infos de contact (email, téléphone, adresse) */
+    .contact-info-box { display:flex; flex-direction:column; gap:26px; padding-top:8px; }
+    .contact-info-box h3 { font-family:'Playfair Display',serif; font-size:1.55rem; font-weight:700; color:var(--txt); line-height:1.2; transition:color 0.4s; }
+    .contact-info-box h3 em { color:var(--rouge); font-style:italic; }
+    .info-intro { font-size:0.87rem; color:var(--txt-body); line-height:1.8; transition:color 0.4s; }
+
+    /* Chaque item d'info (email, téléphone, adresse...)
+       border-left:3px solid var(--or) = accent doré à gauche
+       :hover décale légèrement vers la droite (translateX(4px)) */
+    .contact-info-item {
+      display:flex; align-items:flex-start; gap:15px;
+      padding:17px 18px;
+      background:var(--bg-form);
+      border-radius:6px;
+      box-shadow:0 2px 12px rgba(0,0,0,0.1);
+      border-left:3px solid var(--or);
+      transition:box-shadow 0.3s, transform 0.3s, background 0.4s;
+    }
+    .contact-info-item:hover { box-shadow:0 6px 20px rgba(0,0,0,0.18); transform:translateX(4px); }
+    .cii-icone { font-size:1.3rem; flex-shrink:0; margin-top:2px; }
+    .cii-lbl { font-size:0.66rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--or-fonce); margin-bottom:3px; }
+    .cii-val { font-size:0.88rem; color:var(--txt); font-weight:500; transition:color 0.4s; }
+    .cii-val a { color:var(--rouge); text-decoration:none; transition:color 0.2s; }
+    .cii-val a:hover { color:var(--or-fonce); }
+
+    /* Footer
+       position:relative pour que les pseudoéléments (::before, ::after) fonctionnent
+       ::before = image de fond floutée (blur:8px)
+       ::after = overlay sombre par-dessus l'image floutée
+       z-index négatifs pour que les pseudoéléments soient derrière le contenu */
+    footer {
+      position:relative; border-top:2px solid rgba(201,168,76,0.3);
+      padding:60px 48px 28px; overflow:hidden;
+    }
+    footer::before {
+      content:''; position:absolute; inset:0;
+      background-image:url('images/pci.jpg');
+      background-size:cover; background-position:center;
+      filter:blur(8px); transform:scale(1.05); z-index:-2;
+    }
+    footer::after {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(160deg, rgba(7,15,32,0.90) 0%, rgba(13,27,62,0.87) 50%, rgba(7,15,32,0.92) 100%);
+      z-index:-1;
+    }
+
+    /* Grille du footer : marque (large) + 3 colonnes de liens
+       grid-template-columns:2fr 1fr 1fr 1fr = la marque prend 2x la place d'une colonne */
+    .footer-grille { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; max-width:1200px; margin:0 auto 48px; position:relative; z-index:1; }
+    .footer-marque p { font-family:'Playfair Display',serif; font-size:1.35rem; font-weight:900; color:#fff; margin-bottom:11px; }
+    .footer-marque small { color:rgba(255,255,255,0.52); font-size:0.8rem; line-height:1.85; display:block; }
+
+    /* Trait doré décoratif sous le nom dans le footer */
+    .footer-marque-trait { width:48px; height:2px; background:var(--or); margin:13px 0; }
+    .footer-col h4 { font-size:0.7rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--or); margin-bottom:18px; }
+    .footer-col ul { list-style:none; }
+    .footer-col ul li { margin-bottom:9px; }
+    .footer-col ul li a { color:rgba(255,255,255,0.52); text-decoration:none; font-size:0.84rem; transition:color 0.3s; }
+    .footer-col ul li a:hover { color:var(--or); }
+
+    /* Bas du footer : ligne de copyright */
+    .footer-bas { border-top:1px solid rgba(255,255,255,0.11); padding-top:20px; text-align:center; color:rgba(255,255,255,0.42); font-size:0.73rem; max-width:1200px; margin:0 auto; position:relative; z-index:1; }
+
+    /* Animation d'apparition utilisée sur les éléments du hero
+       @keyframes définit les étapes d'une animation
+       from = état de départ | to = état final
+       L'élément commence invisible et décalé vers le bas, puis remonte en apparaissant */
+    @keyframes apparitre { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Responsive — adapte la mise en page pour les tablettes (< 1024px)
+       @media s'applique uniquement quand la condition est vraie */
+    @media (max-width:1024px) {
+      nav { padding:0 24px; }
+      #villes { padding:20px 24px 80px; }
+      .villes-grille { grid-template-columns:repeat(2,1fr); } /* 2 colonnes au lieu de 3 */
+      .ville-card { height:360px !important; } /* !important écrase toutes les autres règles de hauteur */
+      .ville-card:nth-child(7), .ville-card:nth-child(10) { grid-column:span 1 !important; } /* Annule les span 2 */
+      .chiffres-grille { grid-template-columns:repeat(2,1fr); } /* 2 colonnes de chiffres */
+      .footer-grille   { grid-template-columns:repeat(2,1fr); }
+      .contact-grille  { grid-template-columns:1fr; } /* Formulaire et infos en colonne unique */
+      #culture { padding:70px 24px; }
+      .carrousel-scene { grid-template-columns:1fr; min-height:auto; } /* Carrousel en une colonne */
+      .c-img-zone { height:320px; position:relative; }
+      .c-info-zone { padding:34px 26px; }
+      .i-details { grid-template-columns:1fr; } /* Pastilles en une colonne */
+      .c-barre { display:none; } /* Cache la barre de progression sur tablette */
+    }
+
+    /* Responsive pour les mobiles (< 768px) */
+    @media (max-width:768px) {
+      /* Sur mobile, les liens de nav sont cachés dans un menu déroulant
+         display:none = caché par défaut
+         display:flex est ajouté par JavaScript quand on clique sur le hamburger */
+      .nav-liens { display:none; position:fixed; top:72px; left:0; right:0; background:var(--bg-nav); flex-direction:column; padding:24px; gap:0; border-top:2px solid rgba(201,168,76,0.3); box-shadow:0 8px 24px rgba(0,0,0,0.15); }
+      .nav-liens.ouvert { display:flex; } /* Classe ajoutée par JS au clic hamburger */
+      .nav-liens li { border-bottom:1px solid var(--bordure); }
+      .nav-liens a { padding:15px 0; display:block; font-size:0.88rem; }
+      .hamburger { display:flex; } /* Affiche le bouton hamburger sur mobile */
+      .btn-theme span:last-child { display:none; } /* Cache le texte "Mode Clair/Sombre", garde juste l'emoji */
+      #villes { padding:20px 16px 60px; }
+      .villes-grille { grid-template-columns:1fr; } /* 1 seule colonne sur mobile */
+      .ville-card { height:280px !important; grid-column:span 1 !important; }
+      /* Sur mobile le bouton et le tag sont toujours visibles (pas besoin de survol) */
+      .ville-btn { opacity:1; transform:translateY(0); }
+      .ville-tag { opacity:1; transform:translateY(0); }
+      #chiffres { padding:60px 24px; }
+      .chiffres-grille { grid-template-columns:repeat(2,1fr); gap:14px; }
+      .chiffre-item { border-left:none; padding:18px 10px; }
+      #contact { padding:60px 16px 70px; }
+      .contact-grille { grid-template-columns:1fr; gap:34px; }
+      .form-ligne { grid-template-columns:1fr; } /* Prénom et Nom en colonne */
+      .contact-form-box { padding:26px 18px; }
+      footer { padding:46px 22px 22px; }
+      .footer-grille { grid-template-columns:1fr; gap:30px; }
+      .c-mini { width:68px; height:46px; } /* Miniatures plus petites sur mobile */
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Bandeau d'annonce rouge en tout haut de la page -->
+  <div class="top-bar">
+    Maroc — Royaume de Lumière &nbsp;·&nbsp; 10 Destinations Exceptionnelles &nbsp;·&nbsp; Découvrez votre prochain voyage
+  </div>
+
+  <!-- Navigation fixe (reste visible lors du scroll)
+       id="navbar" : ciblé par JavaScript pour changer la bordure au scroll -->
+  <nav id="navbar">
+
+    <!-- Logo cliquable (ramène en haut de page) -->
+    <a href="#hero" class="nav-logo">
+      <!-- SVG = image vectorielle dessinée en code, ne se pixelise jamais
+           viewBox="0 0 40 40" : système de coordonnées interne
+           polygon : forme géométrique avec des points
+           fill="none" : intérieur transparent
+           stroke : couleur du contour | stroke-width : épaisseur -->
+      <svg class="nav-etoile" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="20,2 24,16 38,16 27,25 31,38 20,30 9,38 13,25 2,16 16,16" fill="none" stroke="#8B1A1A" stroke-width="1.5"/>
+        <polygon points="20,8 22.5,17 32,17 24,22.5 27,31.5 20,26.5 13,31.5 16,22.5 8,17 17.5,17" fill="rgba(139,26,26,0.12)" stroke="#C9A84C" stroke-width="0.8"/>
+      </svg>
+      <div class="nav-logo-texte">
+        <strong>Maroc</strong>
+        <span>Portail du Tourisme</span>
+      </div>
+    </a>
+
+    <!-- Bouton hamburger mobile (3 traits) — visible seulement sur mobile via CSS
+         aria-label : texte pour les lecteurs d'écran (accessibilité) -->
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Liste des liens de navigation
+         href="#section" = liens ancres qui font défiler jusqu'à la section correspondante -->
+    <ul class="nav-liens" id="nav-liens">
+      <li><a href="#hero">Accueil</a></li>
+      <li><a href="#villes">Destinations</a></li>
+      <li><a href="#chiffres">En Chiffres</a></li>
+      <li><a href="#culture">Culture</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+
+    <!-- Bouton bascule thème clair/sombre
+         onclick géré par JavaScript via addEventListener
+         id="themeIco" et id="themeLbl" : ciblés par JS pour changer l'emoji et le texte -->
+    <button class="btn-theme" id="btnTheme" aria-label="Changer le thème">
+      <span id="themeIco">☀️</span>
+      <span id="themeLbl">Mode Clair</span>
+    </button>
+  </nav>
+
+  <!-- Section Hero — diaporama plein écran avec titre animé -->
+  <section id="hero">
+
+    <!-- Conteneur de toutes les slides du diaporama
+         JavaScript change la classe "actif" entre les slides toutes les 5 secondes -->
+    <div class="hero-slides" id="hero-slides">
+      <!-- Chaque slide contient une image et un attribut data-ville
+           data-ville : JavaScript lit cet attribut pour afficher le nom de la ville -->
+      <div class="hero-slide actif" data-ville="Marrakech"><img src="images/pca.jpg" alt="Marrakech — Mosquée Koutoubia"></div>
+      <div class="hero-slide" data-ville="Dakhla"><img src="images/pcb.jpg" alt="Dakhla — Lagune turquoise"></div>
+      <div class="hero-slide" data-ville="Chefchaouen"><img src="images/pcc.jpg" alt="Chefchaouen — La Ville Bleue"></div>
+      <div class="hero-slide" data-ville="Merzouga"><img src="images/pcd.jpg" alt="Merzouga — Dunes de l'Erg Chebbi"></div>
+      <div class="hero-slide" data-ville="Safi"><img src="images/pce.jpg" alt="Safi — Port atlantique"></div>
+      <div class="hero-slide" data-ville="Agadir"><img src="images/pcf.jpg" alt="Agadir — Baie de soleil"></div>
+      <div class="hero-slide" data-ville="Rabat"><img src="images/pcg.jpg" alt="Rabat — Capitale du Royaume"></div>
+      <div class="hero-slide" data-ville="Essaouira"><img src="images/pch.jpg" alt="Essaouira — Cité des Vents"></div>
+      <div class="hero-slide" data-ville="Fès"><img src="images/pci.jpg" alt="Fès — Capitale Spirituelle"></div>
+      <div class="hero-slide" data-ville="Ouarzazate"><img src="images/pcj.jpg" alt="Ouarzazate — Aït Benhaddou"></div>
+    </div>
+
+    <!-- Overlay dégradé sombre pour améliorer la lisibilité du texte -->
+    <div class="hero-overlay"></div>
+
+    <!-- Nom de la ville affiché en haut à droite, mis à jour par JavaScript -->
+    <div style="position:absolute;top:50%;right:48px;transform:translateY(-50%);z-index:4;text-align:right;">
+      <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--or);letter-spacing:0.15em;text-transform:uppercase;opacity:0;transition:opacity 0.8s;" id="hero-ville-nom"></div>
+    </div>
+
+    <!-- Contenu textuel centré du hero -->
+    <div class="hero-contenu">
+      <!-- Badge "Portail Officiel" -->
+      <div class="hero-badge"><span>Royaume du Maroc · Portail Officiel du Tourisme</span></div>
+
+      <!-- h1 = titre principal unique de la page (important pour le SEO)
+           Deux lignes dans deux <span> pour styler différemment -->
+      <h1 class="hero-slogan">
+        <span class="ligne1">Bienvenue au</span>
+        <span class="ligne2">Royaume de Lumière</span>
+      </h1>
+
+      <!-- Sous-titre -->
+      <p class="hero-sous-titre">Mille ans d'histoire · Mille couleurs · Un seul Royaume</p>
+
+      <!-- Bouton CTA (Call To Action) — lien ancre vers la section villes -->
+      <a href="#villes" class="hero-cta">Explorer les destinations</a>
+    </div>
+
+    <!-- Points indicateurs de navigation du diaporama
+         Les boutons sont créés dynamiquement par JavaScript
+         car le nombre de slides peut changer -->
+    <div class="hero-indicateurs" id="hero-indicateurs"></div>
+  </section>
+
+  <!-- Séparateur décoratif entre le hero et les villes
+       Contient une étoile SVG chérifienne et un texte "10 Destinations · 1 Royaume" -->
+  <div class="separateur">
+    <svg width="30" height="30" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="20,2 24,16 38,16 27,25 31,38 20,30 9,38 13,25 2,16 16,16" fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+    </svg>
+    <p>10 Destinations · 1 Royaume</p>
+  </div>
+
+  <!-- Section des 10 destinations
+       Chaque carte est un lien <a> vers la page de la ville correspondante -->
+  <section id="villes">
+    <!-- h2 = titre de niveau 2 (sous-titre de section) -->
+    <h2 class="section-titre">Nos <span class="accent">Destinations</span></h2>
+    <p class="section-sous-titre">10 villes d'exception — Cliquez pour explorer chaque destination</p>
+
+    <!-- Grille CSS des 10 cartes — dispose automatiquement les cartes avec les hauteurs définies en CSS -->
+    <div class="villes-grille">
+
+      <!-- Carte 1 : Marrakech
+           href="../marrakech/marrakech.html" = chemin relatif vers la page Marrakech
+           ../ = remonter d'un niveau dans les dossiers -->
+      <a href="../marrakech/marrakech.html" class="ville-card">
+        <!-- Image de fond de la carte -->
+        <img src="images/pca.jpg" alt="Marrakech" class="ville-card-img">
+        <!-- Overlay dégradé CSS -->
+        <div class="ville-card-overlay"></div>
+        <!-- Tag "Ville Impériale" visible au survol -->
+        <div class="ville-tag">Ville Impériale</div>
+        <!-- Contenu texte en bas de la carte -->
+        <div class="ville-card-contenu">
+          <div class="ville-numero">01 — Marrakech</div>
+          <h3 class="ville-nom">Marrakech</h3>
+          <p class="ville-slogan">La Ville Rouge · Perle du Sud</p>
+          <!-- <span> utilisé car on est déjà dans un <a> — on ne peut pas imbriquer un <a> dans un <a> -->
+          <span class="ville-btn">Découvrir →</span>
+        </div>
+      </a>
+
+      <!-- Cartes 2 à 10 : même structure pour chaque ville -->
+      <a href="../dakhla/dakhla.html" class="ville-card">
+        <img src="images/pcb.jpg" alt="Dakhla" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Désert et Océan</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">02 — Dakhla</div>
+          <h3 class="ville-nom">Dakhla</h3>
+          <p class="ville-slogan">Lagune Bleue · Capitale du Kitesurf</p>
+          <span class="ville-btn">Découvrir →</span>
+        </div>
+      </a>
+
+      <a href="../chefchaoun/chefchaoun.html" class="ville-card">
+        <img src="images/pcc.jpg" alt="Chefchaouen" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Ville Bleue</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">03 — Chefchaouen</div>
+          <h3 class="ville-nom">Chefchaouen</h3>
+          <p class="ville-slogan">La Perle Bleue du Rif</p>
+          <span class="ville-btn">Découvrir →</span>
+        </div>
+      </a>
+
+      <a href="../merzouga/merzouga.html" class="ville-card">
+        <img src="images/pcd.jpg" alt="Merzouga" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Sahara</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">04 — Merzouga</div>
+          <h3 class="ville-nom">Merzouga</h3>
+          <p class="ville-slogan">Porte du Sahara · Erg Chebbi</p>
+          <span class="ville-btn">Découvrir →</span>
+        </div>
+      </a>
+
+      <a href="../safi/safi.html" class="ville-card">
+        <img src="images/pce.jpg" alt="Safi" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Cité des Potiers</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">05 — Safi</div>
+          <h3 class="ville-nom">Safi</h3>
+          <p class="ville-slogan">Capitale Mondiale de la Céramique</p>
+          <span class="ville-btn">Découvrir →</span>
+        </div>
+      </a>
+
+      <a href="../agadir/agadir.html" class="ville-card">
+        <img src="images/pcf.jpg" alt="Agadir" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Balnéaire</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">06 — Agadir</div>
+          <h3 class="ville-nom">Agadir</h3>
+          <p class="ville-slogan">Baie du Soleil · Riviera Marocaine</p>
+          <span class="ville-btn">Découvrir →</span>
+        </div>
+      </a>
+
+      <a href="../rabat/rabat.html" class="ville-card">
+        <!-- object-position:center 30% = recadre l'image pour montrer le haut de la photo -->
+        <img src="images/pcg.jpg" alt="Rabat" class="ville-card-img" style="object-position:center 30%;">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Capitale</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">07 — Rabat</div>
+          <h3 class="ville-nom">Rabat</h3>
+          <p class="ville-slogan">Capitale du Royaume · Ville Lumière</p>
+          <span class="ville-btn">Découvrir →</span>
+        </div>
+      </a>
+
+      <a href="../essaouira/essaouira.html" class="ville-card">
+        <img src="images/pch.jpg" alt="Essaouira" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Cité des Vents</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">08 — Essaouira</div>
+          <h3 class="ville-nom">Essaouira</h3>
+          <p class="ville-slogan">Mogador · Joyau de l'Atlantique</p>
+          <span class="ville-btn">Découvrir →</span>
+        </div>
+      </a>
+
+      <a href="../fes/fes.html" class="ville-card">
+        <img src="images/pci.jpg" alt="Fès" class="ville-card-img">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Ville Impériale</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">09 — Fès</div>
+          <h3 class="ville-nom">Fès</h3>
+          <p class="ville-slogan">Capitale Spirituelle · Médina UNESCO</p>
+          <span class="ville-btn">Découvrir →</span>
+        </div>
+      </a>
+
+      <a href="../ouarzazate/ouarzazate.html" class="ville-card">
+        <img src="images/pcj.jpg" alt="Ouarzazate" class="ville-card-img" style="object-position:center 60%;">
+        <div class="ville-card-overlay"></div>
+        <div class="ville-tag">Hollywood du Désert</div>
+        <div class="ville-card-contenu">
+          <div class="ville-numero">10 — Ouarzazate</div>
+          <h3 class="ville-nom">Ouarzazate</h3>
+          <p class="ville-slogan">Aït Benhaddou · Porte du Sahara · Hollywood d'Afrique</p>
+          <span class="ville-btn">Découvrir →</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Section "Le Maroc en Chiffres"
+       Les nombres défilent de 0 jusqu'à leur valeur grâce à JavaScript
+       IntersectionObserver déclenche l'animation quand la section devient visible -->
+  <section id="chiffres">
+    <!-- style inline pour surcharger la couleur dans cette section spécifique -->
+    <h2 class="section-titre" style="color:#fff;margin-bottom:52px;">Le Maroc en <span class="accent" style="color:var(--or);font-style:italic;">Chiffres</span></h2>
+    <div class="chiffres-grille">
+      <!-- id="count1" à "count4" : ciblés par JavaScript pour animer les chiffres -->
+      <div class="chiffre-item"><div class="chiffre-nombre" id="count1">0</div><div class="chiffre-desc">Millions de touristes par an</div></div>
+      <div class="chiffre-item"><div class="chiffre-nombre" id="count2">0</div><div class="chiffre-desc">Sites inscrits à l'UNESCO</div></div>
+      <div class="chiffre-item"><div class="chiffre-nombre" id="count3">0</div><div class="chiffre-desc">Villes impériales historiques</div></div>
+      <div class="chiffre-item"><div class="chiffre-nombre" id="count4">0</div><div class="chiffre-desc">Km de côtes atlantiques et méditerranéennes</div></div>
+    </div>
+  </section>
+
+  <!-- Section Culture Marocaine avec carrousel interactif
+       12 thèmes culturels défilent automatiquement toutes les 5 secondes -->
+  <section id="culture">
+
+    <!-- En-tête de la section -->
+    <div class="culture-header">
+      <span class="eti">✦ Patrimoine Vivant</span>
+      <h2>La <em>Culture</em> Marocaine</h2>
+      <div class="trait">
+        <!-- SVG étoile dans le séparateur -->
+        <svg width="22" height="22" viewBox="0 0 40 40">
+          <polygon points="20,2 24,16 38,16 27,25 31,38 20,30 9,38 13,25 2,16 16,16" fill="none" stroke="#C9A84C" stroke-width="1.6"/>
+        </svg>
+      </div>
+      <p>Le Maroc est un pays véritablement enrichi par sa culture. Ces informations et ces images sont là pour mieux vous faire connaître nos traditions. Pour découvrir chaque ville en détail, explorez les destinations ci-dessus.</p>
+    </div>
+
+    <!-- Carrousel : image à gauche + infos à droite
+         id="cultureCarrousel" : référencé pour l'accessibilité -->
+    <div class="culture-carrousel" id="cultureCarrousel">
+      <div class="carrousel-scene">
+
+        <!-- Zone image (colonne gauche)
+             onclick sur imgZone = pause/reprise via JavaScript -->
+        <div class="c-img-zone" id="cImgZone">
+          <!-- Overlay dégradé sur l'image -->
+          <div class="img-ov"></div>
+
+          <!-- 12 diapos — seule la première a la classe "actif"
+               JavaScript change la classe "actif" pour afficher la bonne diapo -->
+          <div class="c-diapo actif">
+            <span class="c-badge">Salat — Prière collective</span>
+            <img src="images/A.jpg" alt="Salat — prière de l'Aïd Al-Fitr au Maroc">
+          </div>
+          <div class="c-diapo">
+            <span class="c-badge">Musique Marocaine</span>
+            <img src="images/B.jpg" alt="Musiciens marocains — Gnaoua et Chaabi place Djemaa El-Fna">
+          </div>
+          <div class="c-diapo">
+            <span class="c-badge">Sahara — Merzouga</span>
+            <img src="images/C.jpg" alt="Dunes de l'Erg Chebbi à Merzouga — méharée au coucher du soleil">
+          </div>
+          <div class="c-diapo">
+            <span class="c-badge">Takchita — Mariage</span>
+            <img src="images/D.jpg" alt="Takchita de mariée marocaine brodée or et vert — cérémonie de mariage">
+          </div>
+          <div class="c-diapo">
+            <span class="c-badge">Gastronomie Marocaine</span>
+            <img src="images/H.jpg" alt="Table marocaine traditionnelle — makla, nouriture marocaine">
+          </div>
+          <div class="c-diapo">
+            <span class="c-badge">Ftour — Aïd El-Fitr</span>
+            <img src="images/I.jpg" alt="Table du Ftour Aïd El-Fitr — harira, chebakia, msemen, dattes">
+          </div>
+          <div class="c-diapo">
+            <span class="c-badge">Le Guerrab — Porteur d'eau</span>
+            <img src="images/K.jpg" alt="Guerrab — porteur d'eau traditionnel marocain avec son chapeau coloré">
+          </div>
+          <div class="c-diapo">
+            <span class="c-badge">Achoura — Derbouka & Jeux</span>
+            <img src="images/M.jpg" alt="Achoura — derbouka, jeux traditionnels et festivités marocaines">
+          </div>
+          <div class="c-diapo">
+            <span class="c-badge">Ramadan Kareem</span>
+            <img src="images/F.jpg" alt="Ramadan — table marocaine du Shor et du Ftour en famille">
+          </div>
+          <div class="c-diapo">
+            <span class="c-badge">Aïd Al-Adha — Aïd Lkbir</span>
+            <img src="images/O.jpg" alt="Aïd Al-Adha — table familiale marocaine tajine, couscous, méchoui">
+          </div>
+          <div class="c-diapo">
+            <span class="c-badge">Plage Jebha — Al Hoceima</span>
+            <img src="images/plageJbha.jpg" alt="Plage de Jebha — mer méditerranéenne cristalline Al Hoceima Rif">
+          </div>
+          <div class="c-diapo">
+            <span class="c-badge">Kandoura — Djellaba Homme</span>
+            <img src="images/P.jpg" alt="Kandoura marocaine pour homme — vêtement traditionnel élégant">
+          </div>
+
+          <!-- Compteur de diapos "01 / 12"
+               id="nAct" : JavaScript met à jour ce nombre à chaque changement de diapo -->
+          <div class="img-cpt">
+            <span class="n1" id="nAct">01</span>
+            <span class="ns">/</span>
+            <span class="n2">12</span>
+          </div>
+
+          <!-- Icône pause/play — visible seulement quand le carrousel est en pause
+               JavaScript ajoute la classe "pause" sur imgZone pour l'afficher -->
+          <div class="img-pause" id="imgPause">⏸</div>
+        </div>
+
+        <!-- Zone infos (colonne droite)
+             class="iv" = info visible — classe qui déclenche les animations d'entrée CSS
+             id= sur chaque élément : JavaScript met à jour leur contenu à chaque changement de diapo -->
+        <div class="c-info-zone iv" id="cInfoZone">
+          <div class="i-categ" id="iCateg">Spiritualité & Prière</div>
+          <h3 class="i-titre" id="iTitre">La <em>Salat</em> — Prière de l'Aïd</h3>
+          <p class="i-desc" id="iDesc">La salat de l'Aïd Al-Fitr est l'une des prières les plus émouvantes du calendrier islamique marocain. Des milliers de fidèles, vêtus de leurs plus beaux habits — djellabas blanches et caftans brodés — se rassemblent dans les esplanades à l'aube pour prier ensemble. Cette image de l'unité, de la dévotion et de la gratitude collective est au cœur de l'identité marocaine.</p>
+          <!-- Grille des 4 pastilles de détails — contenu mis à jour par JavaScript -->
+          <div class="i-details" id="iDetails">
+            <div class="d-item"><div class="d-lbl">Type de prière</div><div class="d-val">Salat Al-Aïd — prière collective</div></div>
+            <div class="d-item"><div class="d-lbl">Moment</div><div class="d-val">Après l'aurore le jour de l'Aïd</div></div>
+            <div class="d-item"><div class="d-lbl">Tenue</div><div class="d-val">Djellaba blanche, babouches, turban</div></div>
+            <div class="d-item"><div class="d-lbl">Signification</div><div class="d-val">Unité, gratitude, fraternité</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contrôles du carrousel : boutons ← → + barre de progression + points -->
+      <div class="c-ctrls">
+        <!-- aria-label : accessibilité — décrit l'action du bouton pour les lecteurs d'écran -->
+        <button class="c-btn" id="btnPrev" aria-label="Précédent">&#8592;</button>
+        <button class="c-btn" id="btnNext" aria-label="Suivant">&#8594;</button>
+        <!-- Barre de progression : .c-barre-fill s'anime de 0% à 100% en 5 secondes via JS -->
+        <div class="c-barre"><div class="c-barre-fill" id="barreFill"></div></div>
+        <!-- Points de navigation : créés dynamiquement par JavaScript -->
+        <div class="c-dots" id="cDots"></div>
+      </div>
+
+      <!-- Bande de miniatures cliquables sous le carrousel
+           data-i="0" etc : index de la diapo correspondante, lu par JavaScript -->
+      <div class="c-minis" id="cMinis">
+        <div class="c-mini actif" data-i="0" data-nom="Salat Aïd"><img src="images/A.jpg" alt=""></div>
+        <div class="c-mini" data-i="1" data-nom="Musique"><img src="images/B.jpg" alt=""></div>
+        <div class="c-mini" data-i="2" data-nom="Sahara"><img src="images/C.jpg" alt=""></div>
+        <div class="c-mini" data-i="3" data-nom="Takchita"><img src="images/D.jpg" alt=""></div>
+        <div class="c-mini" data-i="4" data-nom="Gastronomie"><img src="images/H.jpg" alt=""></div>
+        <div class="c-mini" data-i="5" data-nom="Ftour Aïd"><img src="images/I.jpg" alt=""></div>
+        <div class="c-mini" data-i="6" data-nom="Guerrab"><img src="images/K.jpg" alt=""></div>
+        <div class="c-mini" data-i="7" data-nom="Achoura"><img src="images/M.jpg" alt=""></div>
+        <div class="c-mini" data-i="8" data-nom="Ramadan"><img src="images/F.jpg" alt=""></div>
+        <div class="c-mini" data-i="9" data-nom="Aïd Lkbir"><img src="images/O.jpg" alt=""></div>
+        <div class="c-mini" data-i="10" data-nom="Plage Jebha"><img src="images/plageJbha.jpg" alt=""></div>
+        <div class="c-mini" data-i="11" data-nom="Kandoura"><img src="images/P.jpg" alt=""></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Contact avec formulaire validé par JavaScript -->
+  <section id="contact">
+
+    <!-- En-tête de la section contact -->
+    <div style="text-align:center;margin-bottom:54px;">
+      <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:var(--or-fonce);margin-bottom:10px;">Nous contacter</p>
+      <h2 class="section-titre">Planifiez votre <span class="accent">Voyage</span></h2>
+      <!-- Séparateur décoratif inline -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:14px auto;max-width:280px;">
+        <span style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.5));"></span>
+        <span style="color:var(--or);font-size:1.1rem;">✦</span>
+        <span style="flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,0.5),transparent);"></span>
+      </div>
+      <p style="font-size:0.86rem;color:var(--txt-body);max-width:460px;margin:0 auto;line-height:1.7;">Une question sur le Maroc ? Envie de préparer votre séjour ? Notre équipe vous répond rapidement.</p>
+    </div>
+
+    <!-- Grille contact : formulaire à gauche + infos à droite -->
+    <div class="contact-grille">
+
+      <!-- Formulaire de contact
+           La validation est faite par JavaScript (fonction envoyerContact)
+           Les valeurs sont lues via .value sur les éléments avec id= -->
+      <div class="contact-form-box">
+        <h3>Envoyez-nous <em>un message</em></h3>
+        <p class="form-sous">Tous les champs marqués * sont obligatoires.</p>
+
+        <!-- Deux champs côte à côte grâce à form-ligne -->
+        <div class="form-ligne">
+          <div class="form-groupe">
+            <label>Prénom *</label>
+            <!-- type="text" : champ texte libre
+                 id="c-prenom" : JavaScript lit la valeur de ce champ
+                 placeholder : texte d'exemple grisé -->
+            <input type="text" id="c-prenom" placeholder="Votre prénom">
+          </div>
+          <div class="form-groupe">
+            <label>Nom *</label>
+            <input type="text" id="c-nom" placeholder="Votre nom">
+          </div>
+        </div>
+
+        <div class="form-groupe">
+          <label>Email *</label>
+          <!-- type="email" : validation basique du format email par le navigateur -->
+          <input type="email" id="c-email" placeholder="votre@email.com">
+        </div>
+
+        <div class="form-groupe">
+          <label>Sujet</label>
+          <!-- select : liste déroulante avec des options prédéfinies
+               selectedIndex=0 : JavaScript remet à zéro après envoi -->
+          <select id="c-sujet">
+            <option value="">Choisir un sujet...</option>
+            <option>Informations générales</option>
+            <option>Préparer mon voyage</option>
+            <option>Destinations et activités</option>
+            <option>Hébergement et restaurants</option>
+            <option>Surf et sports nautiques</option>
+            <option>Culture et artisanat</option>
+            <option>Autre</option>
+          </select>
+        </div>
+
+        <div class="form-groupe">
+          <label>Message *</label>
+          <!-- textarea : zone de texte multiligne, redimensionnable verticalement -->
+          <textarea id="c-message" placeholder="Décrivez votre projet de voyage, vos questions..."></textarea>
+        </div>
+
+        <!-- onclick appelle la fonction JavaScript envoyerContact() -->
+        <button class="btn-contact" onclick="envoyerContact()">Envoyer ma demande</button>
+
+        <!-- Message de succès : caché par défaut (display:none en CSS)
+             JavaScript le rend visible après validation réussie
+             setTimeout le cache à nouveau après 5 secondes -->
+        <div class="form-success" id="contact-ok">✓ Message envoyé ! Merci, nous vous répondrons très bientôt.</div>
+      </div>
+
+      <!-- Colonne droite : titre + infos de contact (email, téléphone, adresse, horaires) -->
+      <div class="contact-info-box">
+        <div>
+          <h3>Prêt à <em>Découvrir</em><br>le Maroc ?</h3>
+          <p class="info-intro">Que vous rêviez des ruelles bleues de Chefchaouen, des dunes dorées de Merzouga ou de la Médina de Fès, nous sommes là pour vous accompagner à chaque étape de votre aventure.</p>
+        </div>
+
+        <!-- Chaque item d'info : icône + label + valeur
+             border-left doré + effet translateX au survol -->
+        <div class="contact-info-item">
+          <div class="cii-icone"></div>
+          <div>
+            <div class="cii-lbl">Email</div>
+            <div class="cii-val"><a href="mailto:contact@maroc-tourisme.ma">contact@maroc-tourisme.ma</a></div>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="cii-icone"></div>
+          <div>
+            <div class="cii-lbl">Téléphone</div>
+            <!-- href="tel:..." = lien cliquable sur mobile pour appeler directement -->
+            <div class="cii-val"><a href="tel:+212522000000">+212 5 22 00 00 00</a></div>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="cii-icone"> </div>
+          <div>
+            <div class="cii-lbl">Adresse</div>
+            <div class="cii-val">Mhanech, ENSA — Tétouan, Maroc</div>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="cii-icone"></div>
+          <div>
+            <div class="cii-lbl">Disponibilité</div>
+            <div class="cii-val">Lun – Ven : 9h – 18h &nbsp;·&nbsp; Sam : 9h – 13h</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer
+       Image de fond floutée via ::before + overlay sombre via ::after (technique CSS)
+       Liens vers toutes les pages de villes + infos pratiques -->
+  <footer>
+    <div class="footer-grille">
+
+      <!-- Colonne marque : nom + description -->
+      <div class="footer-marque">
+        <p>Maroc Tourisme</p>
+        <div class="footer-marque-trait"></div>
+        <small>Portail officiel du tourisme au Maroc.<br>Découvrez les merveilles du Royaume : médinas millénaires, désert du Sahara, côtes atlantiques et méditerranéennes, montagnes de l'Atlas et gastronomie incomparable.</small>
+      </div>
+
+      <!-- Colonnes de liens du footer -->
+      <div class="footer-col">
+        <h4>Destinations</h4>
+        <ul>
+          <li><a href="../marrakech/marrakech.html">Marrakech</a></li>
+          <li><a href="../dakhla/dakhla.html">Dakhla</a></li>
+          <li><a href="../chefchaoun/chefchaoun.html">Chefchaouen</a></li>
+          <li><a href="../merzouga/merzouga.html">Merzouga</a></li>
+          <li><a href="../safi/safi.html">Safi</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Découvrir</h4>
+        <ul>
+          <li><a href="../agadir/agadir.html">Agadir</a></li>
+          <li><a href="../rabat/rabat.html">Rabat</a></li>
+          <li><a href="../essaouira/essaouira.html">Essaouira</a></li>
+          <li><a href="../fes/fes.html">Fès</a></li>
+          <li><a href="../ouarzazate/ouarzazate.html">Ouarzazate</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Infos Pratiques</h4>
+        <ul>
+          <li><a href="#culture">Culture Marocaine</a></li>
+          <li><a href="#">Activités & Sports</a></li>
+          <li><a href="#">Gastronomie</a></li>
+          <li><a href="#">Hébergement</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Ligne de copyright en bas -->
+    <div class="footer-bas">
+      <p>© 2026 — Portail Tourisme Maroc &nbsp;|&nbsp; Fait avec ❤️ pour promouvoir le Maroc</p>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT — placé en fin de body pour ne pas bloquer le chargement du HTML
+       Le navigateur lit le HTML de haut en bas : si le JS était dans le <head>,
+       il s'exécuterait avant que le HTML soit chargé et ne trouverait pas les éléments -->
+  <script>
+
+  /* Données des 12 thèmes culturels du carrousel
+     Objet JavaScript (tableau d'objets)
+     Chaque objet correspond à une diapositive et contient :
+     categ : catégorie affichée en petit texte doré
+     titre : titre avec balises HTML (<em>) pour l'italique doré
+     desc : description longue
+     d : tableau de paires [{l: label, v: valeur}] pour les 4 pastilles de détails */
+  var CULTURE_DATA = [
+    {
+      categ:"Spiritualité & Prière", titre:"La <em>Salat</em> — Prière de l'Aïd",
+      desc:"La salat de l'Aïd Al-Fitr est l'une des prières les plus émouvantes du calendrier islamique marocain. Des milliers de fidèles, vêtus de leurs plus beaux habits — djellabas blanches et caftans brodés — se rassemblent dans les esplanades à l'aube pour prier ensemble. Cette image de l'unité, de la dévotion et de la gratitude collective est au cœur de l'identité marocaine.",
+      d:[{l:"Type",v:"Salat Al-Aïd — prière collective"},{l:"Moment",v:"Après l'aurore le jour de l'Aïd"},{l:"Tenue",v:"Djellaba blanche, babouches, turban"},{l:"Signification",v:"Unité, gratitude, fraternité"}]
+    },
+    {
+      categ:"Musique Traditionnelle", titre:"La <em>Musique</em> Marocaine",
+      desc:"La musique andalouse marocaine — ou Tarab Andaloussi — est l'un des patrimoines musicaux les plus raffinés du Maroc. Héritée de l'Andalousie médiévale, elle se joue à l'oud, au rabab, au qanun et au violon, avec des voix classiques polyphoniques. Les grandes villes de Fès, Tétouan, Rabat et Meknès en sont les capitales vivantes. Le Chaabi populaire et l'Aïta rurale complètent ce riche paysage musical marocain, qui vibre dans les fêtes, les moussems et les festivals.",
+      d:[{l:"Styles",v:"Andaloussi, Chaabi, Aïta, Malhoun"},{l:"Instruments",v:"Oud, Rabab, Qanun, Violon, Bendir"},{l:"Villes",v:"Fès, Tétouan, Rabat, Meknès"},{l:"Patrimoine",v:"Musique Andalouse — héritage d'Al-Andalus"}]
+    },
+    {
+      categ:"Sahara & Désert", titre:"L'Erg Chebbi — <em>Merzouga</em>",
+      desc:"Les dunes dorées de l'Erg Chebbi, près de Merzouga dans la province d'Errachidia, atteignent 150 mètres de hauteur. Ce grand erg saharien est traversé depuis le Moyen Âge par des caravanes sur la route de l'or et du sel trans-saharienne. Aujourd'hui, randonnées à dos de dromadaire, bivouacs sous les étoiles et levers de soleil inoubliables en font l'une des expériences les plus magiques du Maroc.",
+      d:[{l:"Hauteur dunes",v:"Jusqu'à 150 mètres"},{l:"Province",v:"Errachidia — Drâa-Tafilalet"},{l:"Activités",v:"Méharée, bivouac, quad, randonnée"},{l:"Meilleure saison",v:"Octobre à Avril"}]
+    },
+    {
+      categ:"Mariage & Traditions", titre:"La <em>Takchita</em> — Robe de Mariée",
+      desc:"La takchita est la robe de cérémonie la plus précieuse du patrimoine vestimentaire marocain. Composée de deux pièces superposées — la dfina et la takchita — brodées de fil d'or (maâlem), de sequins et de perles, elle est portée par la mariée qui en revêt plusieurs lors de sa soirée de noces. Chaque takchita raconte l'histoire d'un maâlem brodeur dont le savoir-faire se transmet de génération en génération à Fès et Marrakech.",
+      d:[{l:"Composition",v:"Dfina + Takchita superposées"},{l:"Broderie",v:"Sfifa, Maâlem, fil d'or, perles"},{l:"Nombre lors du mariage",v:"3 à 7 tenues différentes"},{l:"Capitales",v:"Fès, Marrakech, Rabat"}]
+    },
+    {
+      categ:"Gastronomie Marocaine", titre:"La <em>Table</em> Marocaine",
+      desc:"La cuisine marocaine est classée parmi les plus riches et les plus savoureuses du monde. Tajine d'agneau aux pruneaux, couscous du vendredi, pastilla au pigeon et amandes, zaalouk, taktouka, briouate... L'utilisation des épices (safran, ras el-hanout, cumin, coriandre) combinée à des ingrédients locaux de qualité crée une gastronomie d'une complexité aromatique unique. Le repas marocain est un acte d'hospitalité et de partage.",
+      d:[{l:"Plats emblématiques",v:"Tajine, Couscous, Pastilla, Harira"},{l:"Épices stars",v:"Safran, Ras el-hanout, Cumin"},{l:"Boisson nationale",v:"Atay — Thé à la menthe sucré"},{l:"Classement",v:"Top 5 des cuisines mondiales"}]
+    },
+    {
+      categ:"Aïd El-Fitr — Ftour", titre:"Le <em>Ftour</em> de l'Aïd El-Fitr",
+      desc:"L'Aïd El-Fitr — ou Aïd Seghir — marque la fin du Ramadan. Le matin, après la prière collective, la famille se réunit autour d'une table généreuse : atay (thé à la menthe), rghaïf (crêpes feuilletées) au miel ou au beurre, dattes, lait, jus d'orange frais et pâtisseries marocaines. Le déjeuner de l'Aïd rassemble toute la famille — c'est une fête de joie, de visites, de cadeaux aux enfants et de partage avec les voisins et les proches.",
+      d:[{l:"Fête",v:"Aïd El-Fitr — fin du Ramadan"},{l:"Table du matin",v:"Atay, Rghaïf, Dattes, Lait, Miel"},{l:"Tenue",v:"Vêtements neufs — djellaba ou caftan"},{l:"Tradition",v:"Visites familiales et cadeaux aux enfants"}]
+    },
+    {
+      categ:"Personnages Iconiques", titre:"Le <em>Guerrab</em> — Porteur d'Eau",
+      desc:"Le Guerrab, porteur d'eau traditionnel, est l'un des personnages les plus colorés et les plus symboliques du Maroc. Vêtu d'un habit rouge brodé, il porte une outre en peau de chèvre (guirba) et fait tinter ses gobelets en cuivre pour attirer les assoiffés. Autrefois indispensable dans les médinas avant l'eau courante, il anime aujourd'hui la place Djemaa El-Fna de Marrakech, incarnant la générosité et l'hospitalité légendaires du peuple marocain.",
+      d:[{l:"Lieu iconique",v:"Djemaa El-Fna, Marrakech"},{l:"Équipement",v:"Guirba, gobelets en cuivre, chapeau"},{l:"Chapeau",v:"Brodé, pompons multicolores, miroirs"},{l:"Symbole",v:"Générosité et hospitalité marocaines"}]
+    },
+    {
+      categ:"Achoura — Fête Berbère", titre:"L'<em>Achoura</em> — Derbouka & Jeux",
+      desc:"L'Achoura est célébrée le 10 du mois de Mouharram. Au Maroc, cette fête a une double dimension : religieuse (commémoration de l'Hégire) et festive populaire. Les enfants jouent au jet d'eau, les tambours (derbouka, bendir) résonnent dans les rues, et des feux de joie sont allumés dans certaines régions. C'est une fête de générosité : on distribue friandises et cadeaux aux enfants, et l'on partage les mets en famille.",
+      d:[{l:"Date",v:"10 Mouharram (calendrier hégirien)"},{l:"Tradition populaire",v:"Jeux d'eau, percussions, feux de joie"},{l:"Instruments",v:"Derbouka (tbilat), Bendir, Tbel"},{l:"Pour les enfants",v:"Jouets, friandises, cadeaux"}]
+    },
+    {
+      categ:"Ramadan Kareem", titre:"Le <em>Ramadan</em> au Maroc",
+      desc:"Le Ramadan est le mois le plus sacré et le plus vibrant de l'année au Maroc. De l'aurore au coucher du soleil, les croyants jeûnent, prient et se recueillent. À l'appel du muezzin au Maghreb, les familles rompent le jeûne autour d'un Ftour somptueux : harira, chebakia, dattes, lait, jus d'orange frais. Les nuits du Ramadan sont magiques — les souks restent ouverts tard, les mosquées résonnent de récitations coraniques, et l'entraide et la générosité sont à leur comble.",
+      d:[{l:"Durée",v:"29 ou 30 jours — 9ᵉ mois hégirien"},{l:"Ftour marocain",v:"Harira, Chebakia, Sellou, Dates"},{l:"Nuit du destin",v:"Laylat Al-Qadr — 27ᵉ nuit"},{l:"Ambiance",v:"Ferveur, solidarité, partage familial"}]
+    },
+    {
+      categ:"Aïd Al-Adha — Aïd Lkbir", titre:"L'<em>Aïd Al-Adha</em> — Grande Fête",
+      desc:"L'Aïd Al-Adha, ou Aïd Al-Kbir (Grande Fête), est la fête religieuse la plus importante du Maroc. Chaque famille sacrifie un mouton en commémoration du sacrifice du prophète Ibrahim. La table familiale se remplit alors de méchoui grillé, de boulfaf (brochettes de foie), de tajine d'agneau, de couscous aux légumes et de nombreuses pâtisseries. L'atmosphère est à la joie, au partage — une partie de la viande est obligatoirement donnée aux plus démunis.",
+      d:[{l:"Nom en arabe",v:"عيد الأضحى — Aïd Al-Adha"},{l:"Rituel central",v:"Sacrifice du mouton (Ad-Dahiya)"},{l:"Plats traditionnels",v:"Méchoui, Boulfaf, Couscous, Tajine"},{l:"Solidarité",v:"1/3 de la viande aux nécessiteux"}]
+    },
+    {
+      categ:"Plages & Nature Méditerranéenne", titre:"Plage de <em>Jebha</em> — Chefchaouen",
+      desc:"El Jebha est un pittoresque village de pêcheurs situé sur la côte méditerranéenne du Maroc, dans la province de Chefchaouen (région Tanger-Tétouan-Al Hoceïma). Encadrée de falaises dorées plongeant dans une mer d'un bleu turquoise exceptionnel, cette plage sauvage et préservée est idéale pour la baignade, le snorkeling et le cliff-diving. Son port de pêche artisanal et son atmosphère authentique en font l'une des perles méconnues du littoral rifain.",
+      d:[{l:"Province",v:"Chefchaouen — région TTH"},{l:"Type",v:"Village de pêcheurs, falaises, mer turquoise"},{l:"Activités",v:"Baignade, snorkeling, cliff-diving, pêche"},{l:"Meilleure saison",v:"Juin à Septembre"}]
+    },
+    {
+      categ:"Habillement Traditionnel", titre:"La <em>Kandoura</em> — Djellaba Homme",
+      desc:"La djellaba (kandoura) est le vêtement traditionnel marocain par excellence pour l'homme. Confectionnée en laine pour l'hiver et en coton léger pour l'été, elle se distingue par sa capuche pointue caractéristique — le qob. Portée lors des prières du vendredi, des fêtes de l'Aïd et des cérémonies, elle symbolise l'élégance sobre, la dignité et l'appartenance culturelle. Chaque région du Maroc a ses couleurs et ses styles préférés.",
+      d:[{l:"Tissu",v:"Laine (hiver), coton ou lin (été)"},{l:"Capuche",v:"Le Qob — signature de la djellaba"},{l:"Occasions",v:"Prière, fêtes, cérémonies, quotidien"},{l:"Régions",v:"Styles différents : Atlas, Souss, Rif, côtier"}]
+    }
+  ];
+
+  /* Carrousel Culture — initialisation
+     On récupère les éléments HTML dont on aura besoin
+     querySelectorAll retourne une NodeList (liste) de tous les éléments correspondants */
+  var diapos   = document.querySelectorAll('.c-diapo');   /* Toutes les diapos */
+  var minis    = document.querySelectorAll('.c-mini');    /* Toutes les miniatures */
+  var infoZone = document.getElementById('cInfoZone');   /* Zone texte droite */
+  var nAct     = document.getElementById('nAct');        /* Compteur "01" */
+  var dotsCont = document.getElementById('cDots');       /* Conteneur des points */
+  var barreFill= document.getElementById('barreFill');   /* Barre de progression */
+  var imgZone  = document.getElementById('cImgZone');    /* Zone image cliquable */
+
+  var idx=0;          /* Index de la diapositive actuellement affichée */
+  var TOTAL=diapos.length; /* Nombre total de diapos (12) */
+  var auto;           /* Stocke l'intervalle automatique pour pouvoir le stopper */
+  var isPaused=false; /* État pause/lecture du carrousel */
+
+  /* Création dynamique des points de navigation
+     On crée un bouton <button> par diapositive
+     for...var = boucle classique (on évite let/const pour compatibilité) */
+  for(var i=0;i<TOTAL;i++){
+    var pt=document.createElement('button'); /* Crée un nouveau bouton HTML */
+    pt.className='c-dot'+(i===0?' actif':''); /* Classe active pour le premier point */
+    pt.setAttribute('aria-label','Diapo '+(i+1)); /* Accessibilité */
+    pt.dataset.i=i; /* Stocke l'index dans data-i pour le retrouver au clic */
+    /* addEventListener : écoute le clic sur ce point
+       +this.dataset.i : le + convertit la chaîne en nombre */
+    pt.addEventListener('click',function(){goTo(+this.dataset.i);relance();});
+    dotsCont.appendChild(pt); /* Ajoute le point dans le conteneur */
+  }
+
+  /* Fonction setInfos : met à jour le texte de la zone info droite
+     i = index de la diapo à afficher */
+  function setInfos(i){
+    var d=CULTURE_DATA[i]; /* Récupère les données de la diapo i */
+    infoZone.classList.remove('iv'); /* Retire la classe qui déclenche les animations */
+    setTimeout(function(){
+      /* setTimeout : attend 160ms pour que l'animation de sortie soit terminée
+         avant de changer le contenu */
+      document.getElementById('iCateg').textContent=d.categ;
+      document.getElementById('iTitre').innerHTML=d.titre; /* innerHTML car le titre contient <em> */
+      document.getElementById('iDesc').textContent=d.desc;
+      /* .map() transforme chaque paire {l,v} en HTML
+         .join('') concatène tout en une seule chaîne HTML */
+      document.getElementById('iDetails').innerHTML=d.d.map(function(x){
+        return '<div class="d-item"><div class="d-lbl">'+x.l+'</div><div class="d-val">'+x.v+'</div></div>';
+      }).join('');
+      infoZone.classList.add('iv'); /* Remet la classe pour déclencher les animations d'entrée */
+    },160);
+  }
+
+  /* Fonction principale de navigation : va à la diapositive i */
+  function goTo(i){
+    /* Retire la classe actif de la diapo/mini/point actuel */
+    diapos[idx].classList.remove('actif');
+    minis[idx].classList.remove('actif');
+    document.querySelectorAll('.c-dot')[idx].classList.remove('actif');
+
+    /* Calcule le nouvel index avec modulo pour la navigation circulaire
+       ((i % TOTAL) + TOTAL) % TOTAL gère les cas négatifs (précédent depuis 0 → va à 11) */
+    idx=((i%TOTAL)+TOTAL)%TOTAL;
+
+    /* Ajoute la classe actif à la nouvelle diapo/mini/point */
+    diapos[idx].classList.add('actif');
+    minis[idx].classList.add('actif');
+    document.querySelectorAll('.c-dot')[idx].classList.add('actif');
+
+    /* Met à jour le compteur avec padding (01, 02... au lieu de 1, 2...) */
+    nAct.textContent=(idx+1).toString().padStart(2,'0');
+
+    /* Met à jour les textes de la zone info */
+    setInfos(idx);
+
+    /* Fait défiler les miniatures pour que la miniature active soit visible */
+    minis[idx].scrollIntoView({behavior:'smooth',inline:'nearest',block:'nearest'});
+
+    /* Réinitialise et relance la barre de progression
+       On coupe d'abord la transition pour remettre à 0 instantanément
+       puis requestAnimationFrame attend le prochain rendu pour relancer l'animation */
+    barreFill.style.transition='none';
+    barreFill.style.width='0%';
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      barreFill.style.transition='width 5s linear'; /* Animation sur 5 secondes */
+      barreFill.style.width='100%';
+    });});
+  }
+
+  /* Fonction relance : stoppe et redémarre le défilement automatique
+     clearInterval stoppe l'intervalle en cours
+     setInterval relance un nouvel intervalle de 5000ms (5 secondes) */
+  function relance(){
+    clearInterval(auto);
+    auto=setInterval(function(){if(!isPaused)goTo(idx+1);},5000);
+  }
+
+  /* Boutons précédent et suivant */
+  document.getElementById('btnPrev').addEventListener('click',function(){goTo(idx-1);relance();});
+  document.getElementById('btnNext').addEventListener('click',function(){goTo(idx+1);relance();});
+
+  /* Clic sur une miniature : navigue vers la diapo correspondante */
+  minis.forEach(function(m){
+    m.addEventListener('click',function(){goTo(+this.dataset.i);relance();});
+  });
+
+  /* Clic sur la zone image : bascule entre pause et lecture
+     classList.toggle(classe, condition) : ajoute si true, retire si false */
+  imgZone.addEventListener('click',function(){
+    isPaused=!isPaused; /* Inverse la valeur booléenne */
+    imgZone.classList.toggle('pause',isPaused);
+    document.getElementById('imgPause').textContent=isPaused?'▶':'⏸'; /* Change l'icône */
+  });
+  imgZone.title='Cliquer pour pause / reprise'; /* Tooltip au survol */
+
+  /* Démarrage du carrousel : on ajoute la classe iv immédiatement
+     et on lance la barre de progression et le défilement automatique */
+  setTimeout(function(){
+    infoZone.classList.add('iv');
+    barreFill.style.transition='width 5s linear';
+    barreFill.style.width='100%';
+  },350); /* Petit délai pour que la page soit bien rendue */
+  relance();
+
+  /* Diaporama Hero — même logique que le carrousel culture mais plus simple
+     Les slides changent toutes les 5 secondes */
+  var hSlides=document.querySelectorAll('.hero-slide');      /* Toutes les slides hero */
+  var hVilleNom=document.getElementById('hero-ville-nom');  /* Élément "nom de la ville" */
+  var hIndicateurs=document.getElementById('hero-indicateurs'); /* Conteneur des points */
+  var hIdx=0; /* Index de la slide hero active */
+  var hAuto;  /* Intervalle automatique du hero */
+
+  /* Création des points indicateurs pour le hero */
+  hSlides.forEach(function(s,i){
+    var b=document.createElement('button');
+    b.className='hero-indicateur'+(i===0?' actif':'');
+    b.setAttribute('aria-label','Slide '+(i+1));
+    b.addEventListener('click',function(){
+      hGoTo(i);
+      clearInterval(hAuto);
+      hAuto=setInterval(hNext,5000); /* Relance l'auto après clic manuel */
+    });
+    hIndicateurs.appendChild(b);
+  });
+
+  /* Navigue vers la slide hero d'index i */
+  function hGoTo(i){
+    hSlides[hIdx].classList.remove('actif');
+    document.querySelectorAll('.hero-indicateur')[hIdx].classList.remove('actif');
+    /* Fondu du nom de la ville : on le cache, attend 300ms, change le texte, réaffiche */
+    hVilleNom.style.opacity='0';
+    setTimeout(function(){
+      hVilleNom.textContent=hSlides[i].getAttribute('data-ville'); /* Lit data-ville */
+      hVilleNom.style.opacity='1';
+    },300);
+    hIdx=i;
+    hSlides[hIdx].classList.add('actif');
+    document.querySelectorAll('.hero-indicateur')[hIdx].classList.add('actif');
+  }
+
+  /* Passe à la slide suivante (avec retour au début si on est à la dernière) */
+  function hNext(){ hGoTo((hIdx+1)%hSlides.length); }
+
+  /* Démarre le défilement automatique du hero */
+  hAuto=setInterval(hNext,5000);
+
+  /* Affiche le nom de la première ville après 800ms */
+  setTimeout(function(){
+    hVilleNom.textContent=hSlides[0].getAttribute('data-ville');
+    hVilleNom.style.opacity='1';
+  },800);
+
+  /* Effet parallaxe sur le hero : l'image se décale légèrement pendant le scroll
+     window.scrollY = distance scrollée depuis le haut
+     translateY : décale l'image vers le bas proportionnellement au scroll (facteur 0.28)
+     On ne l'applique que si on est dans la zone du hero (scrollY < hauteur fenêtre) */
+  window.addEventListener('scroll',function(){
+    if(window.scrollY<window.innerHeight){
+      var si=document.querySelector('.hero-slide.actif img');
+      if(si) si.style.transform='scale(1) translateY('+(window.scrollY*0.28)+'px)';
+    }
+  });
+
+  /* Animation des compteurs de chiffres
+     Les nombres partent de 0 et s'animent jusqu'à leur valeur cible
+     Déclenchée une seule fois quand la section #chiffres devient visible */
+  var cibles={count1:14,count2:9,count3:4,count4:3500}; /* Valeurs cibles pour chaque compteur */
+  var suffixes={count1:'M',count2:'',count3:'',count4:''}; /* Suffixes (M pour millions) */
+  var comptActives=false; /* Garde en mémoire si l'animation a déjà été déclenchée */
+
+  /* Fonction d'animation d'un compteur
+     id : id de l'élément HTML à animer
+     cible : valeur finale
+     sfx : suffixe à ajouter (ex: "M") */
+  function animCpt(id,cible,sfx){
+    var el=document.getElementById(id);
+    var dur=2000; /* Durée de l'animation : 2000ms = 2 secondes */
+    var t0=performance.now(); /* Temps de départ */
+
+    /* requestAnimationFrame : demande au navigateur d'appeler step() au prochain rendu
+       Cela crée une boucle d'animation fluide synchronisée avec le rafraîchissement écran */
+    function step(t){
+      var p=Math.min((t-t0)/dur,1); /* Progression entre 0 et 1 */
+      var e=1-Math.pow(1-p,3);      /* Easing cubic-out : démarre vite, ralentit à la fin */
+      el.textContent=Math.floor(e*cible)+sfx; /* Affiche la valeur intermédiaire arrondie */
+      if(p<1) requestAnimationFrame(step); /* Continue l'animation tant que p < 1 */
+      else el.textContent=cible+sfx; /* Valeur finale exacte quand animation terminée */
+    }
+    requestAnimationFrame(step); /* Démarre l'animation */
+  }
+
+  /* IntersectionObserver : déclenche une action quand un élément entre dans le viewport
+     threshold:0.4 = déclenche quand 40% de la section est visible
+     C'est plus efficace que d'écouter l'événement scroll */
+  new IntersectionObserver(function(ents){
+    if(ents[0].isIntersecting && !comptActives){ /* isIntersecting = l'élément est visible */
+      comptActives=true; /* Ne déclenche qu'une seule fois */
+      /* Lance chaque animation avec un délai croissant (0ms, 150ms, 300ms, 450ms) */
+      Object.keys(cibles).forEach(function(id,i){
+        setTimeout(function(){animCpt(id,cibles[id],suffixes[id]);},i*150);
+      });
+    }
+  },{threshold:0.4}).observe(document.getElementById('chiffres')); /* Observe la section */
+
+  /* Animation d'apparition des cartes de villes au scroll
+     Les cartes sont initialement invisibles et décalées vers le bas
+     Elles apparaissent quand elles entrent dans le viewport */
+  var cards=document.querySelectorAll('.ville-card');
+  cards.forEach(function(c,i){
+    c.style.opacity='0';
+    c.style.transform='translateY(40px)';
+    /* transition-delay croissant : chaque carte apparaît légèrement après la précédente
+       i*0.07 = 0s, 0.07s, 0.14s, 0.21s... */
+    c.style.transition='opacity 0.7s ease '+(i*0.07)+'s, transform 0.7s ease '+(i*0.07)+'s';
+  });
+
+  /* Un observer par carte pour déclencher l'animation à son entrée individuelle
+     unobserve : arrête d'observer une fois l'animation déclenchée (optimisation) */
+  var obsCards=new IntersectionObserver(function(ents){
+    ents.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.style.opacity='1';
+        e.target.style.transform='translateY(0)';
+        obsCards.unobserve(e.target); /* Plus besoin d'observer cette carte */
+      }
+    });
+  },{threshold:0.08}); /* Déclenche dès que 8% de la carte est visible */
+  cards.forEach(function(c){ obsCards.observe(c); }); /* Active l'observation de chaque carte */
+
+  /* Bascule thème clair/sombre
+     document.documentElement = l'élément <html>
+     getAttribute/setAttribute : lit et modifie l'attribut data-theme */
+  var html=document.documentElement;
+  document.getElementById('btnTheme').addEventListener('click',function(){
+    var dark=html.getAttribute('data-theme')==='dark'; /* Thème actuel */
+    html.setAttribute('data-theme', dark?'light':'dark'); /* Bascule vers l'autre */
+    document.getElementById('themeIco').textContent=dark?'🌙':'☀️'; /* Change l'emoji */
+    document.getElementById('themeLbl').textContent=dark?'Mode Sombre':'Mode Clair'; /* Change le texte */
+  });
+
+  /* Menu mobile hamburger
+     classList.toggle : ajoute la classe si absente, la retire si présente */
+  document.getElementById('hamburger').addEventListener('click',function(){
+    document.getElementById('nav-liens').classList.toggle('ouvert');
+  });
+
+  /* Ferme le menu mobile quand on clique sur un lien */
+  document.querySelectorAll('.nav-liens a').forEach(function(a){
+    a.addEventListener('click',function(){
+      document.getElementById('nav-liens').classList.remove('ouvert');
+    });
+  });
+
+  /* Change la bordure de la nav quand on scroll (effet de surlignage)
+     scrollY > 80 : on a scrollé de plus de 80px */
+  window.addEventListener('scroll',function(){
+    var nav=document.getElementById('navbar');
+    if(window.scrollY>80){
+      nav.style.borderBottomColor='rgba(201,168,76,0.5)'; /* Bordure dorée plus visible */
+    } else {
+      nav.style.borderBottomColor='rgba(201,168,76,0.28)'; /* Bordure dorée discrète */
+    }
+  });
+
+  /* Validation et envoi du formulaire de contact
+     Vérifie les champs obligatoires et le format de l'email */
+  function envoyerContact(){
+    /* .value.trim() : lit la valeur du champ et supprime les espaces en début/fin */
+    var p=document.getElementById('c-prenom').value.trim();
+    var e=document.getElementById('c-email').value.trim();
+    var m=document.getElementById('c-message').value.trim();
+
+    /* Validation 1 : champs obligatoires vides ?
+       !p = true si p est une chaîne vide (falsy en JavaScript) */
+    if(!p||!e||!m){
+      alert('Veuillez remplir les champs obligatoires : Prénom, Email et Message.');
+      return; /* Arrête la fonction */
+    }
+
+    /* Validation 2 : format email valide ?
+       /regex/.test(string) = vérifie si la chaîne correspond au motif
+       \S+ = un ou plusieurs caractères non-espaces
+       Le motif cherche : "quelquechose @ quelquechose . quelquechose" */
+    if(!/\S+@\S+\.\S+/.test(e)){
+      alert('Adresse email invalide.');
+      return;
+    }
+
+    /* Si tout est valide : affiche le message de succès */
+    document.getElementById('contact-ok').style.display='block';
+
+    /* Vide tous les champs du formulaire */
+    ['c-prenom','c-nom','c-email','c-message'].forEach(function(id){
+      document.getElementById(id).value='';
+    });
+    document.getElementById('c-sujet').selectedIndex=0; /* Remet la liste à "Choisir un sujet..." */
+
+    /* Cache le message de succès après 5 secondes */
+    setTimeout(function(){
+      document.getElementById('contact-ok').style.display='none';
+    },5000);
+  }
+
+  </script>
+</body>
+</html>

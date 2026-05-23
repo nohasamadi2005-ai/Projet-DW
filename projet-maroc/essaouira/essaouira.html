@@ -1,0 +1,3157 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- viewport : rend la page responsive (s'adapte à tous les écrans : mobile, tablette, PC) -->
+
+  <title>Essaouira – La Cité des Alizés</title>
+  <!-- title : texte affiché dans l'onglet du navigateur -->
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <!-- Google Fonts : charge 2 polices depuis internet -->
+  <!-- Playfair Display : police serif élégante utilisée pour les titres -->
+  <!-- Raleway : police sans-serif moderne utilisée pour le texte courant -->
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Leaflet CSS : styles de la bibliothèque de carte interactive (OpenStreetMap) -->
+
+  <!-- ============================================================ -->
+  <!-- DEBUT DU CSS — toute la mise en forme visuelle de la page    -->
+  <!-- ============================================================ -->
+  <style>
+    /* ============================================================
+   VARIABLES CSS GLOBALES
+   Définies une seule fois ici, réutilisées partout avec var(--nom)
+   Si on change une couleur ici, elle change partout sur la page
+   ============================================================ */
+    :root {
+      --blue: #1B4F72;
+      /* Bleu principal : boutons, titres, navbar */
+      --blue-mid: #1A5276;
+      /* Bleu moyen : fond de la section restaurants */
+      --blue-dark: #0e2d42;
+      /* Bleu très foncé : top-bar et footer */
+      --blue-acc: #2E86C1;
+      /* Bleu accent plus clair : couleur au survol des boutons */
+      --gold: #D4AC0D;
+      /* Or : titres eyebrow, séparateurs décoratifs */
+      --sand: #F0E6D3;
+      /* Sable clair : utilisé dans les badges de carte */
+      --cream: #F8F3EA;
+      /* Crème doux : fond des sections alternées */
+      --white: #FFFFFF;
+      /* Blanc pur */
+      --dark: #0d1a24;
+      /* Quasi-noir : couleur principale du texte */
+      --teal: #148F77;
+      /* Vert teal : badges de catégorie "nature" */
+    }
+
+    /* ============================================================
+   RESET UNIVERSEL
+   Supprime les marges et paddings par défaut du navigateur
+   Évite les différences d'affichage entre Chrome, Firefox, Safari
+   ============================================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* * = sélectionne TOUS les éléments de la page */
+    /* margin:0 = supprime les espaces extérieurs par défaut */
+    /* padding:0 = supprime les espaces intérieurs par défaut */
+    /* box-sizing:border-box = le padding est inclus dans la largeur totale */
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* scroll-behavior:smooth = défilement animé lors du clic sur un lien ancre (#section) */
+
+    body {
+      font-family: 'Raleway', sans-serif;
+      /* Police Raleway pour tout le texte du site */
+      background: var(--cream);
+      /* Fond crème doux pour toute la page */
+      color: var(--dark);
+      /* Couleur du texte : quasi-noir */
+      overflow-x: hidden;
+      /* Masque le défilement horizontal (évite les bugs mobiles) */
+    }
+
+    /* ============================================================
+   BARRE SUPERIEURE (TOP BAR)
+   Le bandeau bleu foncé tout en haut de la page
+   ============================================================ */
+    .top-bar {
+      background: var(--blue-dark);
+      /* Fond bleu très foncé */
+      color: #fff;
+      /* Texte blanc */
+      text-align: center;
+      /* Texte centré horizontalement */
+      padding: 7px;
+      /* Espace intérieur de 7px autour du texte */
+      font-size: 12px;
+      /* Petite taille de police */
+      letter-spacing: 1.5px;
+      /* Espacement entre les lettres */
+    }
+
+    /* ============================================================
+   BARRE DE NAVIGATION PRINCIPALE
+   La navbar blanche qui reste visible quand on scrolle
+   ============================================================ */
+    nav {
+      position: sticky;
+      /* Reste collée en haut lors du scroll */
+      top: 0;
+      /* Collée tout en haut de la fenêtre */
+      z-index: 900;
+      /* Au-dessus de tous les autres éléments */
+      background: rgba(255, 255, 255, 0.97);
+      /* Blanc légèrement transparent */
+      backdrop-filter: blur(12px);
+      /* Flou derrière la navbar (effet verre) */
+      box-shadow: 0 2px 24px rgba(27, 79, 114, .13);
+      /* Ombre portée douce sous la navbar */
+      display: flex;
+      /* Flexbox : aligne logo et liens côte à côte */
+      align-items: center;
+      /* Centre verticalement le contenu */
+      justify-content: space-between;
+      /* Logo à gauche, liens à droite */
+      padding: 0 48px;
+      /* Espacement intérieur gauche/droite */
+      height: 68px;
+      /* Hauteur fixe de la navbar */
+    }
+
+    /* LOGO DE LA NAVBAR (ancre SVG + texte ESSAOUIRA) */
+    .nav-logo {
+      display: flex;
+      /* Aligne l'icône SVG et le texte côte à côte */
+      align-items: center;
+      /* Centre verticalement l'icône et le texte */
+      gap: 10px;
+      /* Espace de 10px entre l'icône et le texte */
+      text-decoration: none;
+      /* Supprime le soulignement du lien */
+    }
+
+    .nav-logo svg {
+      width: 38px;
+      height: 38px;
+    }
+
+    /* Taille de l'icône SVG du logo */
+
+    .logo-text .city {
+      font-family: 'Playfair Display', serif;
+      /* Police élégante pour le nom de la ville */
+      font-size: 19px;
+      /* Taille du nom ESSAOUIRA */
+      font-weight: 700;
+      /* Gras */
+      color: var(--blue);
+      /* Couleur bleue principale */
+      letter-spacing: 2px;
+      /* Lettres espacées pour un effet luxueux */
+    }
+
+    .logo-text .sub {
+      font-size: 9.5px;
+      /* Très petite taille pour le sous-titre "Cité des Alizés" */
+      color: #999;
+      /* Gris clair */
+      letter-spacing: 2px;
+      /* Lettres espacées */
+      text-transform: uppercase;
+      /* Tout en majuscules */
+    }
+
+    /* LISTE DES LIENS DE NAVIGATION */
+    .nav-links {
+      display: flex;
+      /* Aligne les liens horizontalement */
+      list-style: none;
+      /* Supprime les puces de liste */
+      gap: 0;
+      /* Pas d'espace entre les liens (géré par le padding) */
+      align-items: center;
+      /* Centre verticalement les liens */
+    }
+
+    .nav-links a {
+      display: block;
+      /* Occupe toute la zone cliquable */
+      padding: 10px 14px;
+      /* Zone cliquable autour du texte */
+      text-decoration: none;
+      /* Supprime le soulignement */
+      color: #333;
+      /* Gris foncé par défaut */
+      font-size: 11px;
+      /* Petite taille de police */
+      font-weight: 700;
+      /* Gras */
+      letter-spacing: .8px;
+      /* Léger espacement des lettres */
+      text-transform: uppercase;
+      /* Tout en majuscules */
+      transition: color .2s;
+      /* Animation douce lors du changement de couleur */
+      white-space: nowrap;
+      /* Empêche le texte de passer à la ligne */
+    }
+
+    .nav-links a:hover {
+      color: var(--blue);
+    }
+
+    /* Couleur bleue au survol de la souris */
+
+    /* LIEN ACTIF dans la navbar (mis à jour par le JavaScript lors du scroll) */
+    .nav-links a.active {
+      color: var(--blue);
+      /* Bleu pour le lien de la section active */
+      border-bottom: 2px solid var(--blue);
+      /* Soulignement bleu sous le lien actif */
+    }
+
+    /* Bouton hamburger - caché par défaut sur desktop */
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; background: none; border: none; }
+    .nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--blue); border-radius: 2px; transition: all .3s; }
+
+    /* ============================================================
+   SECTION HERO — La grande section plein écran en haut de page
+   ============================================================ */
+    #hero {
+      position: relative;
+      /* Permet de positionner les enfants en absolu */
+      height: 100vh;
+      /* Hauteur = 100% de la fenêtre du navigateur */
+      min-height: 580px;
+      /* Hauteur minimale pour les petits écrans */
+      display: flex;
+      /* Flexbox pour centrer le contenu */
+      align-items: center;
+      /* Centre verticalement le contenu */
+      justify-content: center;
+      /* Centre horizontalement le contenu */
+      overflow: hidden;
+      /* Masque ce qui dépasse (utile pour l'image de fond) */
+      background: #0e2d42;
+      /* Couleur de fond de secours si l'image ne charge pas */
+    }
+
+    /* IMAGE DE FOND DU HERO */
+    .hero-img {
+      position: absolute;
+      /* Couvre tout le hero sans affecter le flux */
+      inset: 0;
+      /* Raccourci pour top:0; right:0; bottom:0; left:0 */
+      background: url('images/ESSAOUIRA.png') center/cover no-repeat;
+      /* url(...) = chemin vers la photo de fond */
+      /* center = centre l'image */
+      /* cover = l'image couvre tout l'espace sans déformation */
+      /* no-repeat = pas de répétition de l'image */
+      background-color: #1B4F72;
+      /* Couleur bleue si l'image est manquante */
+      opacity: .6;
+      /* Opacité à 60% pour assombrir légèrement la photo */
+      transition: opacity 1s;
+      /* Animation douce si l'opacité change */
+    }
+
+    /* DÉGRADÉ PAR-DESSUS L'IMAGE (améliore la lisibilité du texte) */
+    .hero-overlay {
+      position: absolute;
+      /* Couvre tout le hero */
+      inset: 0;
+      background: linear-gradient(to bottom,
+          /* Dégradé de haut en bas */
+          rgba(14, 45, 66, .4) 0%,
+          /* Bleu foncé semi-transparent en haut */
+          rgba(5, 18, 28, .75) 100%
+          /* Quasi-opaque en bas pour lire le texte */
+        );
+    }
+
+    /* MOTIF GÉOMÉTRIQUE EN FILIGRANE (les cercles discrets sur le hero) */
+    .hero-pattern {
+      position: absolute;
+      /* Couvre tout le hero */
+      inset: 0;
+      opacity: .06;
+      /* Très transparent (6%) pour rester discret */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='20' fill='none' stroke='%23fff' stroke-width='1'/%3E%3Ccircle cx='30' cy='30' r='10' fill='none' stroke='%23fff' stroke-width='.8'/%3E%3Cline x1='10' y1='30' x2='50' y2='30' stroke='%23fff' stroke-width='.6'/%3E%3Cline x1='30' y1='10' x2='30' y2='50' stroke='%23fff' stroke-width='.6'/%3E%3C/svg%3E");
+      /* Image SVG encodée directement en base64 : deux cercles + une croix */
+      /* Répétée en mosaïque sur tout le fond du hero */
+    }
+
+    /* CONTENU TEXTUEL CENTRAL DU HERO (badge + titre + sous-titre + boutons) */
+    .hero-content {
+      position: relative;
+      /* Au-dessus de l'image et des overlays */
+      z-index: 2;
+      /* Z-index élevé pour être visible devant tous les autres */
+      text-align: center;
+      /* Texte centré */
+      color: #fff;
+      /* Texte blanc */
+      padding: 0 24px;
+      /* Marges latérales sur mobile */
+    }
+
+    /* PETIT BADGE DORÉ AU-DESSUS DU TITRE ("Patrimoine UNESCO · Médina classée") */
+    .hero-tag {
+      display: inline-block;
+      /* Se comporte comme un bouton */
+      border: 1px solid rgba(212, 172, 13, .6);
+      /* Bordure dorée semi-transparente */
+      color: var(--gold);
+      /* Texte doré */
+      font-size: 11px;
+      /* Petite taille */
+      letter-spacing: 3px;
+      /* Lettres très espacées */
+      text-transform: uppercase;
+      /* Majuscules */
+      padding: 6px 20px;
+      /* Espace intérieur */
+      border-radius: 2px;
+      /* Coins légèrement arrondis */
+      margin-bottom: 22px;
+      /* Espace sous le badge avant le titre */
+      animation: fadeDown .9s ease both;
+      /* Animation d'entrée depuis le haut */
+    }
+
+    /* GRAND TITRE PRINCIPAL "ESSAOUIRA" */
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      /* Police élégante pour les titres */
+      font-size: clamp(48px, 9vw, 108px);
+      /* clamp(min, idéal, max) : taille fluide */
+      /* 48px minimum sur mobile, 9vw en fonction de l'écran, 108px maximum */
+      font-weight: 700;
+      /* Gras */
+      letter-spacing: 6px;
+      /* Lettres très espacées */
+      line-height: 1;
+      /* Hauteur de ligne compacte */
+      text-shadow: 0 4px 40px rgba(0, 0, 0, .4);
+      /* Ombre sous le texte pour lisibilité */
+      animation: fadeDown .9s .15s ease both;
+      /* Animation avec délai de 0.15s */
+    }
+
+    .hero-title em {
+      font-style: italic;
+      /* Italique pour la partie "OUIRA" */
+      color: var(--gold);
+      /* Couleur dorée pour contraste visuel */
+    }
+
+    /* SOUS-TITRE DU HERO ("La Cité des Alizés — Perle de l'Atlantique") */
+    .hero-sub {
+      font-size: 15px;
+      /* Taille modérée */
+      letter-spacing: 4px;
+      /* Lettres très espacées */
+      opacity: .8;
+      /* Légèrement transparent */
+      text-transform: uppercase;
+      /* Majuscules */
+      margin: 14px 0 38px;
+      /* Espacement : 14px en haut, 38px en bas */
+      animation: fadeDown .9s .3s ease both;
+      /* Animation avec délai de 0.3s */
+    }
+
+    /* GROUPE DE BOUTONS ("Découvrir" + "Voir la galerie") */
+    .hero-btns {
+      display: flex;
+      /* Aligne les boutons côte à côte */
+      gap: 14px;
+      /* Espace de 14px entre les deux boutons */
+      justify-content: center;
+      /* Centrés horizontalement */
+      animation: fadeDown .9s .45s ease both;
+      /* Animation avec délai de 0.45s */
+    }
+
+    /* BOUTON PRINCIPAL PLEIN (fond bleu) */
+    .btn-primary {
+      background: var(--blue);
+      /* Fond bleu */
+      color: #fff;
+      /* Texte blanc */
+      text-decoration: none;
+      /* Pas de soulignement */
+      padding: 14px 40px;
+      /* Espace intérieur */
+      border-radius: 40px;
+      /* Coins très arrondis (pilule) */
+      font-size: 12px;
+      /* Petite taille */
+      font-weight: 700;
+      /* Gras */
+      letter-spacing: 2px;
+      /* Lettres espacées */
+      text-transform: uppercase;
+      /* Majuscules */
+      cursor: pointer;
+      /* Curseur main au survol */
+      border: none;
+      /* Pas de bordure */
+      box-shadow: 0 4px 24px rgba(27, 79, 114, .5);
+      /* Ombre bleue sous le bouton */
+      transition: all .3s;
+      /* Animation douce sur toutes les propriétés */
+    }
+
+    .btn-primary:hover {
+      background: var(--blue-acc);
+      /* Bleu plus clair au survol */
+      transform: translateY(-2px);
+      /* Monte légèrement de 2px au survol */
+    }
+
+    /* BOUTON SECONDAIRE TRANSPARENT (contour blanc) */
+    .btn-outline {
+      background: transparent;
+      /* Fond transparent */
+      color: #fff;
+      /* Texte blanc */
+      text-decoration: none;
+      padding: 14px 40px;
+      border-radius: 40px;
+      /* Coins très arrondis */
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, .5);
+      /* Bordure blanche semi-transparente */
+      transition: all .3s;
+    }
+
+    .btn-outline:hover {
+      border-color: #fff;
+      /* Bordure blanche pleine au survol */
+      background: rgba(255, 255, 255, .1);
+      /* Fond légèrement blanc au survol */
+    }
+
+    /* VAGUE SVG DÉCORATIVE EN BAS DU HERO */
+    .hero-wave {
+      position: absolute;
+      /* Positionnée en bas du hero */
+      bottom: 0;
+      /* Collée en bas */
+      left: 0;
+      /* Depuis la gauche */
+      right: 0;
+      /* Jusqu'à la droite */
+      line-height: 0;
+      /* Supprime l'espace blanc sous le SVG */
+    }
+
+    /* ANIMATION FADEDOWN : entrée depuis le haut avec fondu */
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        /* Commence invisible */
+        transform: translateY(-18px);
+        /* Commence 18px au-dessus */
+      }
+
+      to {
+        opacity: 1;
+        /* Finit visible */
+        transform: translateY(0);
+        /* Finit à sa position normale */
+      }
+    }
+
+    /* INDICATEUR DE SCROLL ANIMÉ (flèche en bas du hero) */
+    .scroll-hint {
+      position: absolute;
+      /* Positionné en bas du hero */
+      bottom: 38px;
+      /* 38px du bas */
+      left: 50%;
+      /* Centré horizontalement */
+      transform: translateX(-50%);
+      /* Correction du centrage */
+      color: rgba(255, 255, 255, .5);
+      /* Blanc semi-transparent */
+      font-size: 11px;
+      letter-spacing: 2px;
+      display: flex;
+      /* Aligne texte et flèche en colonne */
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      animation: bob 2s ease-in-out infinite;
+      /* Animation de rebond en boucle infinie */
+    }
+
+    /* ANIMATION BOB : rebond vertical de l'indicateur de scroll */
+    @keyframes bob {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* Position normale */
+      50% {
+        transform: translateX(-50%) translateY(6px);
+      }
+
+      /* Descend de 6px au milieu */
+    }
+
+    /* ============================================================
+   EN-TÊTE DE SECTION RÉUTILISABLE
+   Utilisé dans toutes les sections : titre + sous-titre + séparateur
+   ============================================================ */
+    .sec-head {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    /* Centré avec espace en bas */
+
+    .sec-head .eyebrow {
+      display: inline-block;
+      /* Se comporte comme un élément en ligne avec dimensions */
+      font-size: 10px;
+      /* Très petite taille */
+      font-weight: 700;
+      /* Gras */
+      letter-spacing: 3px;
+      /* Lettres très espacées */
+      text-transform: uppercase;
+      /* Majuscules */
+      color: var(--gold);
+      /* Couleur dorée */
+      margin-bottom: 10px;
+      /* Espace sous l'eyebrow avant le titre h2 */
+    }
+
+    .sec-head h2 {
+      font-family: 'Playfair Display', serif;
+      /* Police élégante pour les titres */
+      font-size: clamp(28px, 4vw, 44px);
+      /* Taille fluide entre 28px et 44px */
+      color: var(--blue);
+      /* Couleur bleue */
+    }
+
+    .sec-head h2 em {
+      font-style: italic;
+    }
+
+    /* Italique pour la partie en <em> */
+
+    /* SÉPARATEUR DÉCORATIF (ligne — losange doré — ligne) */
+    .sec-head .divider {
+      display: flex;
+      /* Aligne les éléments côte à côte */
+      align-items: center;
+      /* Centre verticalement */
+      justify-content: center;
+      /* Centre horizontalement */
+      gap: 10px;
+      /* Espace entre les éléments */
+      margin-top: 14px;
+      /* Espace au-dessus du séparateur */
+    }
+
+    .sec-head .divider span {
+      width: 60px;
+      /* Longueur de chaque trait */
+      height: 1px;
+      /* Épaisseur du trait */
+      background: var(--gold);
+      /* Couleur dorée */
+      opacity: .6;
+      /* Semi-transparent */
+    }
+
+    .sec-head .divider i {
+      color: var(--gold);
+      font-size: 12px;
+    }
+
+    /* Le losange ✦ doré */
+
+    .sec-head p {
+      color: #777;
+      /* Gris clair pour le texte descriptif */
+      font-size: 13.5px;
+      margin-top: 14px;
+      max-width: 520px;
+      /* Largeur max pour la lisibilité */
+      margin-inline: auto;
+      /* Centre horizontalement */
+      line-height: 1.7;
+      /* Hauteur de ligne confortable */
+    }
+
+    /* ============================================================
+   SECTION ACTIVITÉS
+   Fond blanc, cartes filtrables par catégorie
+   ============================================================ */
+    #activites {
+      padding: 80px 60px;
+      background: #fff;
+    }
+
+    /* padding:80px 60px = 80px en haut/bas, 60px à gauche/droite */
+
+    /* BARRE DE FILTRES (boutons Tout / Culture / Nature / Sport...) */
+    .filter-bar {
+      display: flex;
+      /* Aligne les boutons côte à côte */
+      gap: 10px;
+      /* Espace entre les boutons */
+      justify-content: center;
+      /* Centrés horizontalement */
+      flex-wrap: wrap;
+      /* Passe à la ligne si pas assez de place */
+      margin-bottom: 44px;
+      /* Espace sous la barre de filtres */
+    }
+
+    .filter-btn {
+      padding: 8px 22px;
+      /* Espace intérieur des boutons */
+      border-radius: 30px;
+      /* Coins très arrondis */
+      border: 2px solid var(--blue);
+      /* Bordure bleue */
+      background: transparent;
+      /* Fond transparent par défaut */
+      color: var(--blue);
+      /* Texte bleu */
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all .25s;
+      /* Animation douce */
+      text-transform: uppercase;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--blue);
+      /* Fond bleu au survol ou quand actif */
+      color: #fff;
+      /* Texte blanc au survol ou quand actif */
+    }
+
+    /* GRILLE DE CARTES D'ACTIVITÉ (responsive : 3 colonnes sur PC) */
+    .cards-grid {
+      display: grid;
+      /* Grille CSS */
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      /* auto-fill = crée autant de colonnes que possible */
+      /* minmax(290px,1fr) = chaque colonne fait au moins 290px et prend 1 fraction */
+      gap: 28px;
+      /* Espace entre les cartes */
+      max-width: 1200px;
+      /* Largeur max de la grille */
+      margin: 0 auto;
+      /* Centrage horizontal */
+    }
+
+    /* CARTE D'ACTIVITÉ INDIVIDUELLE */
+    .act-card {
+      border-radius: 14px;
+      /* Coins arrondis */
+      overflow: hidden;
+      /* Masque ce qui dépasse (image zoom) */
+      background: #fff;
+      /* Fond blanc */
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .09);
+      /* Ombre portée douce */
+      transition: transform .3s, box-shadow .3s;
+      /* Animation douce au survol */
+      cursor: pointer;
+      /* Curseur main */
+    }
+
+    .act-card:hover {
+      transform: translateY(-8px);
+      /* Monte de 8px au survol */
+      box-shadow: 0 16px 48px rgba(27, 79, 114, .18);
+      /* Ombre plus prononcée au survol */
+    }
+
+    .act-card.hidden {
+      display: none;
+    }
+
+    /* Masquée par le JavaScript lors du filtrage */
+
+    /* ZONE IMAGE DE LA CARTE */
+    .card-img-wrap {
+      position: relative;
+      /* Permet de positionner le badge en absolu par-dessus */
+      height: 210px;
+      /* Hauteur fixe de la zone image */
+      overflow: hidden;
+      /* Masque le débordement lors du zoom */
+    }
+
+    .card-img-wrap img {
+      width: 100%;
+      /* L'image occupe toute la largeur */
+      height: 100%;
+      /* L'image occupe toute la hauteur */
+      object-fit: cover;
+      /* L'image couvre sans se déformer */
+      transition: transform .5s;
+      /* Animation douce pour le zoom au survol */
+    }
+
+    .act-card:hover .card-img-wrap img {
+      transform: scale(1.07);
+    }
+
+    /* Zoom de 7% sur l'image quand on survole la carte */
+
+    /* BADGE DE CATÉGORIE (coin haut gauche de chaque carte) */
+    .card-badge {
+      position: absolute;
+      /* Positionné par-dessus l'image */
+      top: 14px;
+      /* 14px du haut de l'image */
+      left: 14px;
+      /* 14px du bord gauche */
+      padding: 5px 14px;
+      /* Espace intérieur */
+      border-radius: 20px;
+      /* Coins très arrondis */
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      /* Texte blanc */
+    }
+
+    /* Couleurs des badges selon la catégorie */
+    .badge-culture {
+      background: #1a3a5c;
+    }
+
+    /* Bleu marine pour Culture */
+    .badge-sport {
+      background: #148F77;
+    }
+
+    /* Vert teal pour Sport */
+    .badge-nature {
+      background: #1a5c3a;
+    }
+
+    /* Vert foncé pour Nature */
+    .badge-food {
+      background: #C0392B;
+    }
+
+    /* Rouge pour Gastronomie */
+    .badge-artisanat {
+      background: #7D6608;
+    }
+
+    /* Or foncé pour Artisanat */
+    .badge-bien-etre {
+      background: #5c1a5c;
+    }
+
+    /* Violet pour Bien-être */
+
+    /* CORPS TEXTE DE LA CARTE (titre + description + tags + bouton) */
+    .card-body {
+      padding: 18px 20px 20px;
+    }
+
+    /* Espace intérieur du corps de carte */
+    .card-body h3 {
+      font-family: 'Playfair Display', serif;
+      /* Police élégante pour le titre */
+      font-size: 19px;
+      margin-bottom: 6px;
+      color: var(--dark);
+      /* Quasi-noir */
+    }
+
+    .card-body p {
+      font-size: 12.5px;
+      color: #777;
+      /* Gris pour la description */
+      line-height: 1.65;
+      /* Hauteur de ligne confortable */
+      margin-bottom: 14px;
+    }
+
+    /* PETITS TAGS D'INFO (horaires, prix) */
+    .card-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .card-meta span {
+      font-size: 11px;
+      background: var(--cream);
+      /* Fond crème */
+      padding: 3px 10px;
+      border-radius: 12px;
+      /* Coins arrondis (pilule) */
+      color: var(--blue);
+      /* Texte bleu */
+      font-weight: 600;
+    }
+
+    /* BOUTON PETIT FORMAT (bas de chaque carte) */
+    .btn-sm {
+      background: var(--blue);
+      /* Fond bleu */
+      color: #fff;
+      /* Texte blanc */
+      border: none;
+      padding: 9px 20px;
+      border-radius: 20px;
+      /* Coins très arrondis */
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .8px;
+      transition: background .2s;
+      /* Animation douce du fond */
+    }
+
+    .btn-sm:hover {
+      background: var(--blue-acc);
+    }
+
+    /* Bleu plus clair au survol */
+
+    /* ============================================================
+   SECTION GALERIE PHOTOS
+   Grille asymétrique avec lightbox (agrandissement au clic)
+   ============================================================ */
+    #galerie {
+      padding: 80px 60px;
+      background: var(--cream);
+    }
+
+    /* GRILLE ASYMÉTRIQUE SUR 3 COLONNES */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      /* 3 colonnes de taille égale */
+      grid-template-rows: auto;
+      /* Hauteur automatique des lignes */
+      gap: 10px;
+      /* Espace entre les photos */
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .gal-item {
+      overflow: hidden;
+      /* Masque le débordement lors du zoom */
+      border-radius: 10px;
+      /* Coins arrondis */
+      position: relative;
+      /* Pour l'overlay au survol */
+      cursor: pointer;
+      /* Curseur main (indique que c'est cliquable) */
+    }
+
+    /* Disposition spécifique de chaque photo dans la grille */
+    .gal-item:nth-child(1) {
+      grid-column: span 2;
+      height: 300px;
+    }
+
+    /* 1ère photo : s'étend sur 2 colonnes, hauteur 300px (grande photo principale) */
+    .gal-item:nth-child(2) {
+      height: 300px;
+    }
+
+    /* 2ème photo : 1 colonne, 300px */
+    .gal-item:nth-child(3) {
+      height: 240px;
+    }
+
+    /* 3ème photo */
+    .gal-item:nth-child(4) {
+      height: 240px;
+    }
+
+    /* 4ème photo */
+    .gal-item:nth-child(5) {
+      grid-column: span 1;
+      height: 240px;
+    }
+
+    /* 5ème photo */
+    .gal-item:nth-child(6) {
+      grid-column: span 1;
+      height: 260px;
+    }
+
+    /* 6ème photo */
+    .gal-item:nth-child(7) {
+      grid-column: span 1;
+      height: 260px;
+    }
+
+    /* 7ème : côte à côte avec la 6ème */
+
+    .gal-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* Couvre sans déformer */
+      display: block;
+      /* Supprime l'espace blanc sous l'image */
+      transition: transform .5s;
+      /* Animation de zoom douce */
+    }
+
+    .gal-item:hover img {
+      transform: scale(1.06);
+    }
+
+    /* Zoom 6% au survol */
+
+    /* OVERLAY AU SURVOL (fond bleu + icône agrandir) */
+    .gal-overlay {
+      position: absolute;
+      /* Par-dessus l'image */
+      inset: 0;
+      background: rgba(27, 79, 114, 0);
+      /* Transparent par défaut */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .3s;
+      /* Animation douce */
+    }
+
+    .gal-item:hover .gal-overlay {
+      background: rgba(27, 79, 114, .35);
+    }
+
+    /* Fond bleu semi-transparent apparaît au survol */
+
+    .gal-overlay svg {
+      opacity: 0;
+      /* Icône invisible par défaut */
+      transition: opacity .3s;
+      width: 40px;
+      height: 40px;
+      fill: #fff;
+      /* Icône blanche */
+    }
+
+    .gal-item:hover .gal-overlay svg {
+      opacity: 1;
+    }
+
+    /* Icône visible au survol */
+
+    /* ============================================================
+   LIGHTBOX — Visionneuse plein écran au clic sur une photo
+   ============================================================ */
+    .lightbox {
+      display: none;
+      /* Masquée par défaut */
+      position: fixed;
+      /* Fixe : couvre toute la fenêtre */
+      inset: 0;
+      background: rgba(0, 0, 0, .92);
+      /* Fond noir quasi-opaque */
+      z-index: 3000;
+      /* Au-dessus de TOUT (modale, navbar...) */
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    /* Le JavaScript ajoute cette classe pour l'afficher */
+
+    .lb-inner {
+      position: relative;
+      /* Pour positionner les boutons et la légende */
+      max-width: 88vw;
+      /* 88% de la largeur de la fenêtre */
+      max-height: 88vh;
+      /* 88% de la hauteur de la fenêtre */
+    }
+
+    .lb-inner img {
+      max-width: 88vw;
+      max-height: 88vh;
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* BOUTON FERMER LA LIGHTBOX (X) */
+    .lb-close {
+      position: absolute;
+      /* En dehors de l'image, au-dessus */
+      top: -44px;
+      /* 44px au-dessus de l'image */
+      right: 0;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      opacity: .8;
+    }
+
+    .lb-close:hover {
+      opacity: 1;
+    }
+
+    /* Pleinement visible au survol */
+
+    /* BOUTONS NAVIGATION GAUCHE/DROITE */
+    .lb-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      /* Centrés verticalement */
+      background: rgba(27, 79, 114, .7);
+      /* Fond bleu semi-transparent */
+      border: none;
+      color: #fff;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      /* Cercle */
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s;
+    }
+
+    .lb-nav:hover {
+      background: var(--blue);
+    }
+
+    /* Bleu plein au survol */
+    .lb-prev {
+      left: -56px;
+    }
+
+    /* Bouton précédent : à gauche de l'image */
+    .lb-next {
+      right: -56px;
+    }
+
+    /* Bouton suivant : à droite de l'image */
+
+    .lb-caption {
+      position: absolute;
+      bottom: -36px;
+      /* Sous l'image */
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: rgba(255, 255, 255, .7);
+      /* Blanc semi-transparent */
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    /* ============================================================
+   SECTION RESTAURANTS & HÉBERGEMENT
+   Fond bleu moyen, cartes filtrables
+   ============================================================ */
+    #restaurants {
+      padding: 80px 60px;
+      background: var(--blue-mid);
+    }
+
+    /* Adaptation des textes sur fond bleu */
+    #restaurants .sec-head h2 {
+      color: #fff;
+    }
+
+    /* Titre blanc */
+    #restaurants .sec-head .eyebrow {
+      color: var(--gold);
+    }
+
+    /* Eyebrow doré */
+    #restaurants .sec-head p {
+      color: rgba(255, 255, 255, .65);
+    }
+
+    /* Description semi-transparente */
+
+    /* BARRE DE FILTRES RESTAURANTS (Tout / Restaurants / Hôtels / Riads) */
+    .rh-filter-bar {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 44px;
+    }
+
+    .rh-filter-btn {
+      padding: 7px 20px;
+      border-radius: 30px;
+      border: 2px solid rgba(255, 255, 255, .4);
+      /* Bordure blanche semi-transparente */
+      background: transparent;
+      color: rgba(255, 255, 255, .85);
+      /* Texte blanc semi-transparent */
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all .25s;
+      text-transform: uppercase;
+    }
+
+    .rh-filter-btn:hover,
+    .rh-filter-btn.active {
+      background: #fff;
+      color: var(--blue);
+    }
+
+    /* Fond blanc et texte bleu quand actif ou survolé */
+
+    /* GRILLE DE CARTES RESTAURANT/HOTEL */
+    .rh-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 26px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .rh-card {
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .18);
+      transition: transform .3s, box-shadow .3s;
+      cursor: pointer;
+    }
+
+    .rh-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 18px 52px rgba(0, 0, 0, .25);
+    }
+
+    .rh-card.hidden {
+      display: none;
+    }
+
+    /* Masquée par le JavaScript lors du filtrage */
+
+    /* IMAGE DE LA CARTE RESTAURANT */
+    .rh-card-img {
+      position: relative;
+      height: 195px;
+      overflow: hidden;
+    }
+
+    .rh-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .5s;
+    }
+
+    .rh-card:hover .rh-card-img img {
+      transform: scale(1.07);
+    }
+
+    /* Zoom au survol */
+
+    /* BADGE TYPE (Restaurant / Hôtel / Riad) */
+    .rh-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 5px 12px;
+      border-radius: 16px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .badge-resto {
+      background: #C0392B;
+    }
+
+    /* Rouge pour les restaurants */
+    .badge-hotel {
+      background: #1a3a5c;
+    }
+
+    /* Bleu marine pour les hôtels */
+    .badge-riad {
+      background: #148F77;
+    }
+
+    /* Vert teal pour les riads */
+
+    /* ÉTOILES EN HAUT À DROITE DE L'IMAGE */
+    .stars {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, .5);
+      color: var(--gold);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+    }
+
+    /* CORPS DE LA CARTE RESTAURANT */
+    .rh-body {
+      padding: 18px 20px 20px;
+    }
+
+    .rh-body .cat {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .rh-body h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--dark);
+      margin-bottom: 7px;
+    }
+
+    .rh-body p {
+      font-size: 12.5px;
+      color: #777;
+      line-height: 1.65;
+      margin-bottom: 12px;
+    }
+
+    .rh-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .rh-meta span {
+      font-size: 11px;
+      background: var(--cream);
+      padding: 3px 10px;
+      border-radius: 12px;
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+   SECTION CARTE INTERACTIVE (Leaflet.js + OpenStreetMap)
+   ============================================================ */
+    #carte {
+      padding: 80px 60px;
+      background: #fff;
+    }
+
+    .map-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      /* Carte à gauche (flex), liste à droite (320px fixe) */
+      gap: 28px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    #map {
+      height: 480px;
+      /* Hauteur de la carte */
+      border-radius: 14px;
+      /* Coins arrondis */
+      box-shadow: 0 4px 30px rgba(0, 0, 0, .12);
+      /* Ombre portée */
+      z-index: 1;
+      /* Au-dessus du fond mais sous la navbar */
+    }
+
+    /* LISTE DES LIEUX CLIQUABLES À DROITE DE LA CARTE */
+    .map-list {
+      overflow-y: auto;
+      max-height: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .map-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .map-list::-webkit-scrollbar-thumb {
+      background: var(--gold);
+      border-radius: 2px;
+    }
+
+    /* Barre de scroll dorée et fine pour la liste des lieux */
+
+    .map-item {
+      background: var(--cream);
+      border-radius: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      border-left: 4px solid transparent;
+      /* Bordure gauche invisible par défaut */
+      transition: all .2s;
+    }
+
+    .map-item:hover,
+    .map-item.active-place {
+      border-left-color: var(--blue);
+      /* Bordure bleue quand actif/survolé */
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(27, 79, 114, .1);
+    }
+
+    .map-item h4 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 3px;
+    }
+
+    .map-item p {
+      font-size: 11.5px;
+      color: #888;
+    }
+
+    .map-item .type-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    /* Petit point coloré indiquant le type de lieu (culture, nature, hotel) */
+
+    /* ============================================================
+   SECTION MÉTÉO & CONTACT
+   Fond crème, 2 colonnes : météo à gauche, formulaire à droite
+   ============================================================ */
+    #contact {
+      padding: 80px 60px;
+      background: var(--cream);
+    }
+
+    .mc-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      /* Deux colonnes de taille égale */
+      gap: 48px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* BLOC MÉTÉO (dégradé bleu-vert) */
+    .meteo-box {
+      background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 60%, #148F77 100%);
+      /* Dégradé diagonal : bleu très foncé → bleu moyen → vert teal */
+      border-radius: 18px;
+      padding: 32px;
+      color: #fff;
+      box-shadow: 0 8px 40px rgba(27, 79, 114, .35);
+    }
+
+    .meteo-city {
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: .7;
+      margin-bottom: 4px;
+    }
+
+    .meteo-temp {
+      font-family: 'Playfair Display', serif;
+      font-size: 72px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    /* Très grande taille pour la température (ex: 22°C) */
+    .meteo-desc {
+      font-size: 16px;
+      margin: 6px 0 24px;
+      opacity: .85;
+    }
+
+    .meteo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Grille 2x2 pour les 4 indicateurs météo */
+    .meteo-item {
+      background: rgba(255, 255, 255, .12);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    /* Fond blanc très légèrement transparent */
+    .meteo-item .label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      opacity: .65;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .meteo-item .val {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* FORMULAIRE DE CONTACT */
+    .contact-form {
+      background: #fff;
+      border-radius: 18px;
+      padding: 36px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, .08);
+    }
+
+    .contact-form h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: var(--blue);
+      margin-bottom: 6px;
+    }
+
+    .contact-form .sub {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    /* Espace sous chaque groupe de champ */
+    .form-group label {
+      display: block;
+      /* Le label occupe toute la ligne */
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      /* Champ pleine largeur */
+      padding: 11px 14px;
+      /* Espace intérieur confortable */
+      border: 1.5px solid #e0d8c8;
+      /* Bordure beige claire */
+      border-radius: 8px;
+      /* Coins légèrement arrondis */
+      font-family: 'Raleway', sans-serif;
+      font-size: 13px;
+      color: var(--dark);
+      background: #faf4e8;
+      /* Fond crème très doux */
+      transition: border-color .2s;
+      /* Animation douce au focus */
+      outline: none;
+      /* Supprime le contour bleu par défaut du navigateur */
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--blue);
+    }
+
+    /* Bordure bleue quand le champ est sélectionné (focus) */
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    /* resize:vertical = l'utilisateur peut agrandir verticalement mais pas horizontalement */
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* Deux champs côte à côte (Prénom + Nom) */
+
+    .form-success {
+      display: none;
+      /* Masqué par défaut */
+      background: #f0fdf4;
+      /* Fond vert très clair */
+      border: 1px solid #86efac;
+      /* Bordure verte */
+      color: #166534;
+      /* Texte vert foncé */
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-top: 14px;
+    }
+
+    /* Le JavaScript change display:none en display:block après l'envoi du formulaire */
+
+    /* ============================================================
+   FOOTER
+   Fond bleu très foncé, texte blanc/transparent
+   ============================================================ */
+    footer {
+      background: var(--blue-dark);
+      /* Fond bleu très foncé */
+      color: rgba(255, 255, 255, .75);
+      /* Texte blanc semi-transparent */
+      padding: 50px 60px 30px;
+      text-align: center;
+    }
+
+    .foot-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .foot-sub {
+      font-size: 10px;
+      letter-spacing: 3px;
+      opacity: .5;
+      margin-bottom: 28px;
+    }
+
+    .foot-links {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .foot-links a {
+      color: rgba(255, 255, 255, .6);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: .5px;
+      transition: color .2s;
+    }
+
+    .foot-links a:hover {
+      color: #fff;
+    }
+
+    /* Blanc plein au survol */
+
+    /* ============================================================
+   FENÊTRE MODALE (popup détail au clic sur une carte)
+   ============================================================ */
+    .modal-overlay {
+      display: none;
+      /* Masquée par défaut */
+      position: fixed;
+      /* Fixe sur tout l'écran */
+      inset: 0;
+      background: rgba(0, 0, 0, .78);
+      /* Fond noir semi-transparent */
+      z-index: 2000;
+      /* Au-dessus de tout sauf la lightbox */
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    /* JavaScript ajoute cette classe pour l'afficher */
+
+    .modal {
+      background: #fff;
+      border-radius: 18px;
+      max-width: 780px;
+      width: 100%;
+      max-height: 90vh;
+      /* 90% de la hauteur de fenêtre */
+      overflow-y: auto;
+      /* Défilement si le contenu est trop long */
+      position: relative;
+      animation: modalIn .3s ease;
+      /* Animation d'apparition */
+    }
+
+    /* ANIMATION D'APPARITION DE LA MODALE */
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+
+      /* Commence invisible et en bas */
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Finit visible à sa position normale */
+    }
+
+    /* BOUTON FERMER LA MODALE (X en haut à droite) */
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(0, 0, 0, .45);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      /* Cercle */
+      font-size: 17px;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s;
+    }
+
+    .modal-close:hover {
+      background: var(--blue);
+    }
+
+    /* Fond bleu au survol */
+
+    .modal-img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Grande image en haut de la modale */
+
+    .modal-body {
+      padding: 28px 30px 32px;
+    }
+
+    /* Espace intérieur du corps de la modale */
+    .modal-body .m-cat {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .modal-body h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      color: var(--dark);
+      margin-bottom: 14px;
+    }
+
+    .modal-body .m-desc {
+      font-size: 13.5px;
+      color: #555;
+      line-height: 1.78;
+      margin-bottom: 22px;
+    }
+
+    /* GRILLE DE DÉTAILS (horaires, prix, conseils...) */
+    .modal-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      /* 2 colonnes de détails */
+      gap: 12px;
+      background: var(--cream);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .modal-detail .d-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 3px;
+    }
+
+    .modal-detail .d-val {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    /* ============================================================
+   BARRE LATÉRALE FLOTTANTE (raccourcis navigation rapide)
+   Les 3 boutons fixes à droite de l'écran
+   ============================================================ */
+    .sidebar {
+      position: fixed;
+      /* Fixe : reste visible lors du scroll */
+      right: 0;
+      /* Collée à droite de l'écran */
+      top: 50%;
+      /* Centrée verticalement */
+      transform: translateY(-50%);
+      /* Correction du centrage */
+      z-index: 800;
+      /* Au-dessus du contenu normal */
+      display: flex;
+      flex-direction: column;
+      /* Boutons empilés verticalement */
+      gap: 4px;
+    }
+
+    .s-btn {
+      background: var(--blue);
+      color: #fff;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      border-radius: 4px 0 0 4px;
+      /* Coins arrondis seulement à gauche */
+      /* Donne l'effet de "sortir" du bord droit de l'écran */
+      cursor: pointer;
+      transition: background .2s;
+      border: none;
+    }
+
+    .s-btn:hover {
+      background: var(--blue-acc);
+    }
+
+    /* Bleu plus clair au survol */
+
+    /* ============================================================
+   RESPONSIVE MOBILE — styles pour écrans < 900px
+   ============================================================ */
+    @media (max-width: 900px) {
+      nav {
+        padding: 0 16px;
+      }
+
+      /* Réduit le padding de la navbar sur mobile */
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 68px;
+        left: 0;
+        right: 0;
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(0,0,0,.1);
+        padding: 16px 0;
+        z-index: 999;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 12px 24px; border-bottom: 1px solid #e0e8f0; }
+      .nav-hamburger { display: flex; } /* Affiche le hamburger sur mobile */
+
+      /* Menu hamburger visible sur mobile */
+
+      #activites,
+      #galerie,
+      #restaurants,
+      #carte,
+      #contact {
+        padding: 52px 18px;
+      }
+
+      /* Réduit les espaces des sections sur mobile */
+
+      .map-layout,
+      .mc-layout {
+        grid-template-columns: 1fr;
+      }
+
+      /* Passe de 2 colonnes à 1 colonne sur mobile */
+
+      #map {
+        height: 320px;
+      }
+
+      /* Réduit la hauteur de la carte sur mobile */
+
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      /* 2 colonnes au lieu de 3 pour la galerie sur mobile */
+
+      .gal-item:nth-child(1),
+      .gal-item:nth-child(6),
+      .gal-item:nth-child(7) {
+        grid-column: span 1;
+        height: 200px;
+      }
+
+      /* Annule le span 2 colonnes sur mobile, toutes les photos font 1 colonne */
+
+      .modal-details {
+        grid-template-columns: 1fr;
+      }
+
+      /* 1 colonne au lieu de 2 pour les détails de la modale sur mobile */
+
+      .lb-prev {
+        left: -8px;
+      }
+
+      /* Bouton précédent moins décalé sur mobile */
+      .lb-next {
+        right: -8px;
+      }
+
+      /* Bouton suivant moins décalé sur mobile */
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      /* Prénom et Nom sur des lignes séparées sur mobile */
+    }
+
+    /* ============================================================
+   FIN DU CSS
+   ============================================================ */
+  </style>
+</head>
+
+<!-- ============================================================ -->
+<!-- DEBUT DU HTML — structure visible de la page                 -->
+<!-- ============================================================ -->
+
+<body>
+
+  <!-- TOP BAR : bandeau bleu foncé informatif tout en haut -->
+  <div class="top-bar">Essaouira — La Cité des Alizés · Perle de l'Atlantique</div>
+  <!-- Ce div utilise la classe .top-bar définie dans le CSS -->
+
+  <!-- NAVIGATION PRINCIPALE : navbar collante blanche -->
+  <nav>
+
+    <!-- LOGO : lien cliquable qui ramène en haut de page (#) -->
+    <a class="nav-logo" href="#">
+
+      <!-- SVG du logo : ancre stylisée avec point doré -->
+      <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+        <!-- Cercle du haut de l'ancre -->
+        <circle cx="30" cy="18" r="7" fill="none" stroke="#1B4F72" stroke-width="2.2" />
+        <!-- Barre verticale de l'ancre -->
+        <line x1="30" y1="25" x2="30" y2="52" stroke="#1B4F72" stroke-width="2.2" />
+        <!-- Arc du bas de l'ancre -->
+        <path d="M18,42 Q30,56 42,42" fill="none" stroke="#1B4F72" stroke-width="2.2" />
+        <!-- Barre horizontale de l'ancre -->
+        <line x1="22" y1="52" x2="38" y2="52" stroke="#1B4F72" stroke-width="2" />
+        <!-- Point doré au centre du cercle (décoration) -->
+        <circle cx="30" cy="18" r="3" fill="#D4AC0D" opacity=".8" />
+      </svg>
+
+      <!-- Texte du logo : nom + sous-titre -->
+      <div class="logo-text">
+        <div class="city">ESSAOUIRA</div> <!-- Nom en grand -->
+        <div class="sub">Cité des Alizés</div> <!-- Sous-titre en petit -->
+      </div>
+    </a>
+
+    <!-- LISTE DES LIENS DE NAVIGATION -->
+    <!-- La classe "active" est ajoutée/retirée par le JavaScript lors du scroll -->
+    <ul class="nav-links">
+      <li><a href="#hero" class="active">Accueil</a></li>
+      <!-- href="#hero" : lien ancre qui scrolle vers la section id="hero" -->
+      <li><a href="#activites">Activités</a></li>
+      <!-- Lien vers la section id="activites" -->
+      <li><a href="#galerie">Galerie</a></li>
+      <!-- Lien vers la section id="galerie" -->
+      <li><a href="#restaurants">Restaurants & Hôtels</a></li>
+      <!-- Lien vers la section id="restaurants" -->
+      <li><a href="#carte">Carte</a></li>
+      <!-- Lien vers la section id="carte" -->
+      <li><a href="#contact">Météo & Contact</a></li>
+      <!-- Lien vers la section id="contact" -->
+      <li><a href="../index/dashboard.html">Portail touristique</a></li>
+      <!-- Lien vers la page principale du projet (remonte d'un dossier avec ..) -->
+    </ul>
+    <!-- Bouton hamburger mobile -->
+    <button class="nav-hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+
+  <!-- ============================================================ -->
+  <!-- SECTION HERO : première section plein écran                  -->
+  <!-- ============================================================ -->
+  <section id="hero">
+    <!-- id="hero" : identifiant unique utilisé par les liens ancres et le JavaScript -->
+
+    <!-- Couche 1 : image de fond (photo ESSAOUIRA.png) -->
+    <div class="hero-img"></div>
+    <!-- L'image est chargée via CSS background-image dans .hero-img -->
+
+    <!-- Couche 2 : dégradé sombre pour lisibilité du texte -->
+    <div class="hero-overlay"></div>
+
+    <!-- Couche 3 : motif géométrique discret en filigrane (cercles) -->
+    <div class="hero-pattern"></div>
+
+    <!-- Vague SVG décorative en bas du hero (transition visuelle vers la section suivante) -->
+    <svg class="hero-wave" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <!-- Première vague : plus haute, semi-transparente -->
+      <path
+        d="M0,120 L0,80 Q120,40 240,70 Q360,100 480,50 Q600,0 720,60 Q840,120 960,55 Q1080,0 1200,65 Q1320,120 1440,70 L1440,120Z"
+        fill="rgba(14,45,66,0.55)" />
+      <!-- Deuxième vague : plus basse, plus opaque -->
+      <path d="M0,120 L0,100 Q180,70 360,95 Q540,120 720,80 Q900,40 1080,85 Q1260,120 1440,90 L1440,120Z"
+        fill="rgba(14,45,66,0.7)" />
+    </svg>
+
+    <!-- Couche 4 : contenu textuel centré du hero -->
+    <div class="hero-content">
+
+      
+
+      <!-- Grand titre principal : "ESSA" en blanc + "OUIRA" en or italique -->
+      <h1 class="hero-title">ESSA<em>OUIRA</em></h1>
+      <!-- <em> = italique + couleur dorée définie dans le CSS -->
+
+      <!-- Sous-titre descriptif -->
+      <p class="hero-sub">La Cité des Alizés — Perle de l'Atlantique</p>
+
+      <!-- Groupe des deux boutons d'action -->
+      <div class="hero-btns">
+        <!-- Bouton principal : scrolle vers la section activités au clic -->
+        <button class="btn-primary"
+          onclick="document.getElementById('activites').scrollIntoView({behavior:'smooth'})">Découvrir</button>
+        <!-- onclick = action JavaScript exécutée au clic -->
+        <!-- getElementById('activites') = trouve l'élément avec id="activites" -->
+        <!-- scrollIntoView({behavior:'smooth'}) = scroll animé vers cet élément -->
+
+        <!-- Bouton secondaire : scrolle vers la galerie au clic -->
+        <button class="btn-outline"
+          onclick="document.getElementById('galerie').scrollIntoView({behavior:'smooth'})">Voir la galerie</button>
+      </div>
+    </div>
+
+    <!-- Indicateur de scroll animé (flèche "DÉFILER" en bas du hero) -->
+    <div class="scroll-hint">
+      <span style="font-size:10px;letter-spacing:2px;">DÉFILER</span>
+      <!-- Flèche vers le bas en SVG -->
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12l7 7 7-7" />
+        <!-- Ligne verticale + V pour former une flèche vers le bas -->
+      </svg>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION ACTIVITÉS : cartes filtrables                        -->
+  <!-- ============================================================ -->
+  <section id="activites">
+
+    <!-- En-tête de section réutilisable -->
+    <div class="sec-head">
+      <div class="eyebrow">À découvrir</div> <!-- Petit texte doré au-dessus du titre -->
+      <h2>Activités <em>touristiques</em></h2> <!-- Titre principal -->
+      <div class="divider"><span></span><i>✦</i><span></span></div>
+      <!-- Séparateur : ligne — losange ✦ — ligne -->
+      <p>Des remparts portugais aux plages de kitesurf, Essaouira offre une magie unique entre mer, vent et culture.</p>
+    </div>
+
+    <!-- BARRE DE FILTRES : chaque bouton appelle filterAct() avec sa catégorie -->
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterAct('all',this)">Tout</button>
+      <!-- 'all' = affiche toutes les cartes, 'this' = référence au bouton cliqué -->
+      <button class="filter-btn" onclick="filterAct('culture',this)">Culture</button>
+      <button class="filter-btn" onclick="filterAct('nature',this)">Nature & Mer</button>
+      <button class="filter-btn" onclick="filterAct('sport',this)">Sport</button>
+      <button class="filter-btn" onclick="filterAct('artisanat',this)">Artisanat</button>
+      <button class="filter-btn" onclick="filterAct('food',this)">Gastronomie</button>
+    </div>
+
+    <!-- GRILLE DES CARTES D'ACTIVITÉ -->
+    <div class="cards-grid" id="actGrid">
+      <!-- id="actGrid" : utilisé par le JavaScript pour trouver les cartes à filtrer -->
+
+      <!-- CARTE 1 : Médina UNESCO (catégorie : culture) -->
+      <div class="act-card" data-cat="culture" onclick="openModal('medina')">
+        <!-- data-cat="culture" : attribut lu par le JavaScript pour filtrer -->
+        <!-- onclick="openModal('medina')" : ouvre la modale avec les données de 'medina' -->
+        <div class="card-img-wrap">
+          <img src="images/Medina.png" alt="Médina d'Essaouira"
+            onerror="this.style.background='linear-gradient(135deg,#1B4F72,#148F77)';this.style.height='210px'">
+          <!-- onerror : si l'image est manquante, affiche un dégradé de couleur à la place -->
+          <span class="card-badge badge-culture">Culture</span>
+          <!-- Badge bleu marine "Culture" positionné en haut à gauche de l'image -->
+        </div>
+        <div class="card-body">
+          <h3>Médina UNESCO</h3>
+          <p>La médina d'Essaouira, classée au patrimoine mondial de l'UNESCO en 2001, est un labyrinthe de ruelles
+            blanches et bleues d'une beauté saisissante.</p>
+          <div class="card-meta"><span>Toute la journée</span><span>Entrée libre</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE 2 : Remparts & Skala (catégorie : culture) -->
+      <div class="act-card" data-cat="culture" onclick="openModal('remparts')">
+        <div class="card-img-wrap">
+          <img src="images/Remparts.png" alt="Remparts Essaouira"
+            onerror="this.style.background='linear-gradient(135deg,#0e2d42,#1B4F72)';this.style.height='210px'">
+          <span class="card-badge badge-culture">Culture</span>
+        </div>
+        <div class="card-body">
+          <h3>Remparts & Skala</h3>
+          <p>Les remparts du XVIIIe siècle construits par le sultan Mohammed III offrent une vue imprenable sur l'océan
+            Atlantique et les îles Purpuraires.</p>
+          <div class="card-meta"><span>8h–18h</span><span>10 MAD</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE 3 : Plage (catégorie : nature) -->
+      <div class="act-card" data-cat="nature" onclick="openModal('plage')">
+        <div class="card-img-wrap">
+          <img src="images/surf.jpg" alt="Plage Essaouira"
+            onerror="this.style.background='linear-gradient(135deg,#1a5c3a,#1B4F72)';this.style.height='210px'">
+          <span class="card-badge badge-nature">Nature & Mer</span>
+        </div>
+        <div class="card-body">
+          <h3>Plage d'Essaouira</h3>
+          <p>Une plage de sable doré s'étendant sur 10 km, balayée par les alizés, avec en toile de fond les dunes et
+            l'Atlantique à perte de vue.</p>
+          <div class="card-meta"><span>Accès libre</span><span>Gratuit</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE 4 : Kitesurf & Windsurf (catégorie : sport) -->
+      <div class="act-card" data-cat="sport" onclick="openModal('kitesurf')">
+        <div class="card-img-wrap">
+          <img src="images/windsurf.jpg" alt="Kitesurf Essaouira"
+            onerror="this.style.background='linear-gradient(135deg,#148F77,#1a3a5c)';this.style.height='210px'">
+          <span class="card-badge badge-sport">Sport</span>
+        </div>
+        <div class="card-body">
+          <h3>Kitesurf & Windsurf</h3>
+          <p>Capitale mondiale du kitesurf, Essaouira attire les riders du monde entier grâce à ses alizés constants.
+            Cours et location disponibles sur la plage.</p>
+          <div class="card-meta"><span>9h–18h</span><span>300–600 MAD</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE 5 : Souks & Artisanat (catégorie : artisanat) -->
+      <div class="act-card" data-cat="artisanat" onclick="openModal('souks')">
+        <div class="card-img-wrap">
+          <img src="images/artisana thuya.png" alt="Souks Essaouira"
+            onerror="this.style.background='linear-gradient(135deg,#7D6608,#c9a96e)';this.style.height='210px'">
+          <span class="card-badge badge-artisanat">Artisanat</span>
+        </div>
+        <div class="card-body">
+          <h3>Souks & Artisanat</h3>
+          <p>Essaouira est réputée pour ses artisans du thuya, ses galeries d'art et sa scène musicale gnawa. Les souks
+            regorgent de bijoux berbères et d'objets uniques.</p>
+          <div class="card-meta"><span>9h–20h</span><span>Libre</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE 6 : Port & Grillades de Poissons (catégorie : food) -->
+      <div class="act-card" data-cat="food" onclick="openModal('poissons')">
+        <div class="card-img-wrap">
+          <img src="images/poissons.png" alt="Port de pêche"
+            onerror="this.style.background='linear-gradient(135deg,#C0392B,#1B4F72)';this.style.height='210px'">
+          <span class="card-badge badge-food">Gastronomie</span>
+        </div>
+        <div class="card-body">
+          <h3>Port & Grillades de Poissons</h3>
+          <p>Le port bleu d'Essaouira et ses grillades de poissons frais sont une institution. Sardines, crevettes et
+            calamars grillés à la minute face aux bateaux de pêche.</p>
+          <div class="card-meta"><span>11h–17h</span><span>30–80 MAD</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE 7 : Festival Gnaoua (catégorie : culture) -->
+      <div class="act-card" data-cat="culture" onclick="openModal('gnaoua')">
+        <div class="card-img-wrap">
+          <img src="images/festival gnaoua.png" alt="Festival Gnaoua"
+            onerror="this.style.background='linear-gradient(135deg,#5c1a5c,#1B4F72)';this.style.height='210px'">
+          <span class="card-badge badge-culture">Culture</span>
+        </div>
+        <div class="card-body">
+          <h3>Festival Gnaoua</h3>
+          <p>Le Festival Gnaoua et Musiques du Monde est l'un des plus grands festivals de musique d'Afrique. Chaque
+            juin, Essaouira vibre au rythme des maâlems gnawa et des artistes internationaux.</p>
+          <div class="card-meta"><span>Juin chaque année</span><span>Entrée libre</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE 8 : Balade à Cheval (catégorie : sport) -->
+      <div class="act-card" data-cat="sport" onclick="openModal('cheval')">
+        <div class="card-img-wrap">
+          <img src="images/balade cheval.png" alt="Balade à cheval"
+            onerror="this.style.background='linear-gradient(135deg,#7D6608,#1a5c3a)';this.style.height='210px'">
+          <span class="card-badge badge-sport">Sport</span>
+        </div>
+        <div class="card-body">
+          <h3>Balade à Cheval</h3>
+          <p>Galoper au bord de l'Atlantique sur la plage d'Essaouira est une expérience inoubliable. Des balades
+            guidées à cheval sont proposées au coucher du soleil sur 10 km de sable doré.</p>
+          <div class="card-meta"><span>7h–19h</span><span>150–300 MAD</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+    </div><!-- fin #actGrid -->
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION GALERIE : photos avec lightbox au clic               -->
+  <!-- ============================================================ -->
+  <section id="galerie">
+    <div class="sec-head">
+      <div class="eyebrow">En images</div>
+      <h2><em>Galerie</em> photos</h2>
+      <div class="divider"><span></span><i>✦</i><span></span></div>
+      <p>Cliquez sur une photo pour l'agrandir.</p>
+    </div>
+
+    <!-- GRILLE DE PHOTOS : chaque item appelle openLb(index) pour ouvrir la lightbox -->
+    <div class="gallery-grid">
+
+      <div class="gal-item" onclick="openLb(0)">
+        <!-- openLb(0) : ouvre la lightbox sur la photo d'index 0 (première du tableau lbSrcs) -->
+        <img src="images/ESSAOUIRA.png" alt="Remparts Essaouira"
+          onerror="this.style.background='linear-gradient(135deg,#1B4F72,#148F77)'">
+        <div class="gal-overlay">
+          <!-- Icône SVG "agrandir" (deux flèches diagonales) -->
+          <svg viewBox="0 0 24 24">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="gal-item" onclick="openLb(1)">
+        <!-- openLb(1) : photo d'index 1 dans le tableau -->
+        <img src="images/medina ruelles bleues.png" alt="Médina ruelles bleues et blanches"
+          onerror="this.style.background='linear-gradient(135deg,#0e2d42,#1B4F72)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg></div>
+      </div>
+
+      <div class="gal-item" onclick="openLb(2)">
+        <img src="images/canon.png" alt="Canons face à l'Atlantique"
+          onerror="this.style.background='linear-gradient(135deg,#148F77,#1a3a5c)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg></div>
+      </div>
+
+      <div class="gal-item" onclick="openLb(3)">
+        <img src="images/plage essaouira.png" alt="Plage Essaouira"
+          onerror="this.style.background='linear-gradient(135deg,#1a5c3a,#1B4F72)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg></div>
+      </div>
+
+      <div class="gal-item" onclick="openLb(4)">
+        <img src="images/kitsurf.png" alt="Kitesurf alizés Essaouira"
+          onerror="this.style.background='linear-gradient(135deg,#C0392B,#1B4F72)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg></div>
+      </div>
+
+      <!-- Photos 6 et 7 : même span 1 colonne pour être côte à côte dans la grille -->
+      <div class="gal-item" onclick="openLb(5)">
+        <img src="images/bijoux.png" alt="Bijoux berbères"
+          onerror="this.style.background='linear-gradient(135deg,#7D6608,#c9a96e)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg></div>
+      </div>
+
+      <div class="gal-item" onclick="openLb(6)">
+        <!-- openLb(6) : dernière photo du tableau lbSrcs (index 6) -->
+        <img src="images/sardines.png" alt="Port de pêche et sardines"
+          onerror="this.style.background='linear-gradient(135deg,#0e2d42,#148F77)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg></div>
+      </div>
+
+    </div><!-- fin .gallery-grid -->
+  </section>
+
+  <!-- LIGHTBOX : fenêtre plein écran pour agrandir les photos de la galerie -->
+  <div class="lightbox" id="lightbox">
+    <!-- id="lightbox" : ciblée par le JavaScript pour l'ouvrir/fermer -->
+    <div class="lb-inner">
+      <!-- Bouton fermer : appelle closeLb() -->
+      <button class="lb-close" onclick="closeLb()">X</button>
+      <!-- Bouton précédent : navLb(-1) = recule d'une photo -->
+      <button class="lb-nav lb-prev" onclick="navLb(-1)">&#8249;</button>
+      <!-- Image affichée dans la lightbox (src changée par le JavaScript) -->
+      <img id="lbImg" src="" alt="">
+      <!-- Bouton suivant : navLb(1) = avance d'une photo -->
+      <button class="lb-nav lb-next" onclick="navLb(1)">&#8250;</button>
+      <!-- Légende de la photo (texte changé par le JavaScript) -->
+      <div class="lb-caption" id="lbCap"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SECTION RESTAURANTS & HÉBERGEMENT                            -->
+  <!-- ============================================================ -->
+  <section id="restaurants">
+    <div class="sec-head">
+      <div class="eyebrow">Où manger & dormir</div>
+      <h2>Restaurants & <em>Hébergement</em></h2>
+      <div class="divider"><span></span><i>✦</i><span></span></div>
+      <p style="color:rgba(255,255,255,.65)">Les meilleures adresses de la cité des alizés.</p>
+    </div>
+
+    <!-- FILTRES : tout / restaurants / hotels / riads -->
+    <div class="rh-filter-bar">
+      <button class="rh-filter-btn active" onclick="filterRH('all',this)">Tout</button>
+      <button class="rh-filter-btn" onclick="filterRH('restaurant',this)">Restaurants</button>
+      <button class="rh-filter-btn" onclick="filterRH('hotel',this)">Hôtels</button>
+      <button class="rh-filter-btn" onclick="filterRH('riad',this)">Riads</button>
+    </div>
+
+    <!-- GRILLE DES CARTES : data-rh = type utilisé par filterRH() -->
+    <div class="rh-grid" id="rhGrid">
+      <!-- id="rhGrid" : ciblé par le JavaScript pour trouver les cartes à filtrer -->
+
+      <!-- CARTE : Chez Sam (type: restaurant) -->
+      <div class="rh-card" data-rh="restaurant" onclick="openModal('chezSam')">
+        <div class="rh-card-img">
+          <img src="images/chez sam.png" alt="Chez Sam"
+            onerror="this.style.background='linear-gradient(135deg,#1B4F72,#148F77)'">
+          <span class="rh-badge badge-resto">Restaurant</span>
+          <span class="stars">★★★★★</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Fruits de mer</div>
+          <h3>Chez Sam</h3>
+          <p>Institution du port depuis les années 70, Chez Sam est la table incontournable pour déguster des fruits de
+            mer ultra-frais face aux bateaux de pêche.</p>
+          <div class="rh-meta"><span>120–280 MAD</span><span>Port</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE : Taros Café (type: restaurant) -->
+      <div class="rh-card" data-rh="restaurant" onclick="openModal('tarosBR')">
+        <div class="rh-card-img">
+          <img src="images/taros.png" alt="Taros Café"
+            onerror="this.style.background='linear-gradient(135deg,#7D6608,#1B4F72)'">
+          <span class="rh-badge badge-resto">Restaurant Rooftop</span>
+          <span class="stars">★★★★☆</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Rooftop & Bar</div>
+          <h3>Taros Café</h3>
+          <p>Perché sur les remparts face à l'océan, Taros est le rendez-vous bohème de la ville. Cuisine fusion
+            marocaine-méditerranéenne et concerts de gnawa chaque soir.</p>
+          <div class="rh-meta"><span>100–250 MAD</span><span>Place Moulay Hassan</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE : The Hungry Nomad Rooftop (type: restaurant) -->
+      <div class="rh-card" data-rh="restaurant" onclick="openModal('hungryNomad')">
+        <div class="rh-card-img">
+          <img src="images/the hungry nomad.png" alt="The Hungry Nomad Rooftop"
+            onerror="this.style.background='linear-gradient(135deg,#1a5c3a,#1B4F72)'">
+          <span class="rh-badge badge-resto">Restaurant Rooftop</span>
+          <span class="stars">★★★★★</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Marocaine & Arabe</div>
+          <h3>The Hungry Nomad Rooftop</h3>
+          <p>Vue panoramique sur la médina, cuisine marocaine et arabe savoureuse dans une ambiance chaleureuse et
+            décontractée.</p>
+          <div class="rh-meta"><span>Accessible</span><span>Médina</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE : Restaurant Khmissa (type: restaurant) -->
+      <div class="rh-card" data-rh="restaurant" onclick="openModal('khmissa')">
+        <div class="rh-card-img">
+          <img src="images/khmissa.png" alt="Restaurant Khmissa"
+            onerror="this.style.background='linear-gradient(135deg,#C0392B,#7D6608)'">
+          <span class="rh-badge badge-resto">Restaurant</span>
+          <span class="stars">★★★★★</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Cuisine Marocaine</div>
+          <h3>Restaurant Khmissa</h3>
+          <p>Un incontournable pour la bonne cuisine marocaine à Essaouira. Ambiance chaleureuse, plats généreux et
+            savoureux.</p>
+          <div class="rh-meta"><span>Accessible</span><span>Médina</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE : Atlantis 12 (type: riad) -->
+      <div class="rh-card" data-rh="riad" onclick="openModal('atlantis12')">
+        <div class="rh-card-img">
+          <img src="images/atlantis12.png" alt="Atlantis 12"
+            onerror="this.style.background='linear-gradient(135deg,#148F77,#1B4F72)'">
+          <span class="rh-badge badge-riad">Maison d'hôtes</span>
+          <span class="stars">★★★★☆</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Maison D'hôtes & D'art</div>
+          <h3>Atlantis 12</h3>
+          <p>Maison d'hôtes d'art unique à Ounagha, aux murs blancs et poutres en bois naturel. Un havre de paix alliant
+            authenticité et créations artistiques.</p>
+          <div class="rh-meta"><span>À partir de 480 MAD/nuit</span><span>Ounagha</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE : Riad Al Madina (type: riad) -->
+      <div class="rh-card" data-rh="riad" onclick="openModal('riadAlMadina')">
+        <div class="rh-card-img">
+          <img src="images/riad al madina.png" alt="Riad Al Madina"
+            onerror="this.style.background='linear-gradient(135deg,#1a3a5c,#148F77)'">
+          <span class="rh-badge badge-riad">Riad</span>
+          <span class="stars">★★★★☆</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Riad — Old Medina</div>
+          <h3>Riad Al Madina</h3>
+          <p>Riad 4 étoiles au coeur de l'ancienne médina, à 100m du centre et 350m de la plage. Patio traditionnel et
+            ambiance authentique.</p>
+          <div class="rh-meta"><span>À partir de 480 MAD/nuit</span><span>Old Medina</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE : Hôtel Le Medina Essaouira (type: hotel) -->
+      <div class="rh-card" data-rh="hotel" onclick="openModal('medina5s')">
+        <div class="rh-card-img">
+          <img src="images/le medina essaouira.png" alt="Hôtel Le Medina Essaouira"
+            onerror="this.style.background='linear-gradient(135deg,#1B4F72,#0e2d42)'">
+          <span class="rh-badge badge-hotel">Hôtel</span>
+          <span class="stars">★★★★★</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Hôtel 5 étoiles</div>
+          <h3>Hôtel Le Medina Essaouira</h3>
+          <p>Le seul palace 5 étoiles d'Essaouira, adossé aux remparts face à l'Atlantique. Spa thalasso, piscine
+            chauffée et restaurant gastronomique.</p>
+          <div class="rh-meta"><span>2000–5000 MAD/nuit</span><span>Bord de mer</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- CARTE : Sofitel Essaouira Mogador (type: hotel) -->
+      <div class="rh-card" data-rh="hotel" onclick="openModal('sofitelEss')">
+        <div class="rh-card-img">
+          <img src="images/sofitel.png" alt="Sofitel Essaouira"
+            onerror="this.style.background='linear-gradient(135deg,#1a3a5c,#148F77)'">
+          <span class="rh-badge badge-hotel">Hôtel</span>
+          <span class="stars">★★★★★</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Resort Balnéaire</div>
+          <h3>Sofitel Essaouira Mogador</h3>
+          <p>Resort luxueux à quelques pas de la plage, avec casino, golf 18 trous, thalassothérapie et 7 restaurants.
+          </p>
+          <div class="rh-meta"><span>1800–4500 MAD/nuit</span><span>Mogador Beach</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+    </div><!-- fin #rhGrid -->
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION CARTE INTERACTIVE (Leaflet.js + OpenStreetMap)       -->
+  <!-- ============================================================ -->
+  <section id="carte">
+    <div class="sec-head">
+      <div class="eyebrow">Se repérer</div>
+      <h2>Carte <em>interactive</em></h2>
+      <div class="divider"><span></span><i>✦</i><span></span></div>
+      <p>Cliquez sur un lieu pour voir les infos. Cliquez dans la liste pour centrer la carte.</p>
+    </div>
+    <div class="map-layout">
+      <!-- Conteneur de la carte Leaflet : rempli automatiquement par le JavaScript -->
+      <div id="map"></div>
+      <!-- id="map" : Leaflet utilise cet id pour savoir où afficher la carte -->
+
+      <!-- Liste des lieux cliquables : générée dynamiquement par le JavaScript -->
+      <div class="map-list" id="mapList"></div>
+      <!-- id="mapList" : le JavaScript ajoute les éléments de liste ici -->
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION MÉTÉO & CONTACT                                      -->
+  <!-- ============================================================ -->
+  <section id="contact">
+    <div class="sec-head">
+      <div class="eyebrow">Infos pratiques</div>
+      <h2>Météo & <em>Contact</em></h2>
+      <div class="divider"><span></span><i>✦</i><span></span></div>
+    </div>
+
+    <div class="mc-layout"><!-- 2 colonnes : météo à gauche, formulaire à droite -->
+
+      <!-- BLOC MÉTÉO : les valeurs sont remplies par la fonction loadMeteo() en JS -->
+      <div class="meteo-box" id="meteoBox">
+        <div class="meteo-city">Essaouira, Maroc</div>
+        <!-- Température : valeur mise à jour par loadMeteo() -->
+        <div class="meteo-temp" id="mTemp">--</div>
+        <!-- Description météo : valeur mise à jour par loadMeteo() -->
+        <div class="meteo-desc" id="mDesc">Chargement...</div>
+        <div class="meteo-grid"><!-- Grille 2x2 des 4 indicateurs météo -->
+          <div class="meteo-item">
+            <div class="label">Ressenti</div>
+            <div class="val" id="mFeel">--</div>
+          </div>
+          <div class="meteo-item">
+            <div class="label">Humidité</div>
+            <div class="val" id="mHum">--</div>
+          </div>
+          <div class="meteo-item">
+            <div class="label">Vent (Alizés)</div>
+            <div class="val" id="mWind">--</div>
+          </div>
+          <div class="meteo-item">
+            <div class="label">Couverture</div>
+            <div class="val" id="mCloud">--</div>
+          </div>
+          <!-- Les id mFeel, mHum, mWind, mCloud sont ciblés par loadMeteo() -->
+        </div>
+      </div>
+
+      <!-- FORMULAIRE DE CONTACT : validé par sendForm() en JavaScript -->
+      <div class="contact-form">
+        <h3>Nous contacter</h3>
+        <p class="sub">Une question sur Essaouira ? Écrivez-nous !</p>
+
+        <!-- Ligne double : Prénom + Nom côte à côte -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" id="fPrenom" placeholder="Votre prénom">
+            <!-- id="fPrenom" : ciblé par sendForm() pour récupérer la valeur -->
+          </div>
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" id="fNom" placeholder="Votre nom">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="fEmail" placeholder="email@exemple.com">
+          <!-- type="email" : validation du format email par le navigateur -->
+        </div>
+
+        <div class="form-group">
+          <label>Sujet</label>
+          <select id="fSujet"><!-- Liste déroulante des sujets -->
+            <option value="">Choisir un sujet...</option>
+            <option>Activités & Sports nautiques</option>
+            <option>Restaurants & Hébergement</option>
+            <option>Festival Gnawa</option>
+            <option>Infos pratiques</option>
+            <option>Autre</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="fMsg" placeholder="Votre message..."></textarea>
+        </div>
+
+        <!-- Bouton d'envoi : appelle sendForm() au clic -->
+        <button class="btn-primary" style="width:100%" onclick="sendForm()">Envoyer le message</button>
+
+        <!-- Message de succès : masqué par défaut, affiché par sendForm() après envoi -->
+        <div class="form-success" id="formOk">Message envoyé ! Merci, nous vous répondrons rapidement.</div>
+      </div>
+
+    </div><!-- fin .mc-layout -->
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- FOOTER                                                       -->
+  <!-- ============================================================ -->
+  <footer>
+    <div class="foot-logo">ESSAOUIRA</div> <!-- Grand titre blanc -->
+    <div class="foot-sub">La Cité des Alizés · Patrimoine UNESCO</div><!-- Sous-titre -->
+    <!-- Liens de navigation dans le footer -->
+    <div class="foot-links">
+      <a href="#hero">Accueil</a>
+      <a href="#activites">Activités</a>
+      <a href="#galerie">Galerie</a>
+      <a href="#restaurants">Restaurants</a>
+      <a href="#carte">Carte</a>
+      <a href="#contact">Contact</a>
+      <a href="../index/dashboard.html">Explorer le portail</a>
+    </div>
+  </footer>
+
+  <!-- BARRE LATÉRALE FLOTTANTE : 3 boutons fixes à droite de l'écran -->
+  <div class="sidebar">
+    <!-- Bouton 1 : retourne en haut de la page -->
+    <button class="s-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Haut de page">&#8593;</button>
+    <!-- window.scrollTo({top:0}) = remonte tout en haut de la page -->
+
+    <!-- Bouton 2 : scrolle vers la carte interactive -->
+    <button class="s-btn" onclick="document.getElementById('carte').scrollIntoView({behavior:'smooth'})"
+      title="Carte interactive">&#128506;</button>
+
+    <!-- Bouton 3 : scrolle vers le formulaire de contact -->
+    <button class="s-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})"
+      title="Contact">&#9993;</button>
+  </div>
+
+  <!-- MODALE : popup de détail au clic sur une carte activité ou restaurant -->
+  <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+    <!-- onclick sur le fond noir : ferme la modale si on clique en dehors -->
+    <!-- event.target===this : vérifie qu'on clique sur le fond et pas sur la modale elle-même -->
+    <div class="modal">
+      <!-- Bouton fermer (X) -->
+      <button class="modal-close" onclick="closeModal()">X</button>
+      <!-- Image en haut de la modale : src changée par openModal() -->
+      <img id="mImg" class="modal-img" src="" alt="">
+      <div class="modal-body">
+        <div id="mCat" class="m-cat"></div> <!-- Catégorie : remplie par openModal() -->
+        <h2 id="mTitle"></h2> <!-- Titre : rempli par openModal() -->
+        <p id="mDesc2" class="m-desc"></p> <!-- Description : remplie par openModal() -->
+        <div class="modal-details" id="mDets"></div>
+        <!-- Grille de détails : générée par openModal() via innerHTML -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- BIBLIOTHÈQUE LEAFLET : chargée avant le JavaScript custom    -->
+  <!-- ============================================================ -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Doit être chargé AVANT le code qui utilise L.map(), L.marker()... -->
+
+  <!-- ============================================================ -->
+  <!-- DEBUT DU JAVASCRIPT — toute l'interactivité de la page       -->
+  <!-- ============================================================ -->
+  <script>
+
+    /* ============================================================
+       1. DONNÉES DES MODALES
+       Objet JavaScript contenant les informations de chaque lieu/établissement.
+       Clé = identifiant utilisé dans onclick="openModal('clé')"
+       Valeur = objet avec : img, cat, title, desc, dets (tableau de détails)
+       ============================================================ */
+    const modalData = {
+
+      /* --- ACTIVITÉS --- */
+
+      medina: {
+        img: 'images/Medina.png',                          /* Chemin de l'image */
+        cat: 'Culture · Médina d\'Essaouira',              /* Catégorie affichée */
+        title: 'Médina d\'Essaouira — Patrimoine UNESCO',  /* Titre de la modale */
+        desc: 'Classée au patrimoine mondial de l\'UNESCO en 2001, la médina d\'Essaouira est un chef-d\'oeuvre d\'urbanisme du XVIIIe siècle. Ses ruelles blanches et bleues, ses portes sculptées, ses galeries d\'art et ses musiciens gnawa créent une atmosphère unique entre l\'Afrique, l\'Europe et l\'Orient.',
+        /* Tableau de paires [label, valeur] pour la grille de détails */
+        dets: [
+          ['Classement', 'UNESCO Patrimoine Mondial 2001'],
+          ['Construit', 'XVIIIe siècle'],
+          ['Architecte', 'Théodore Cornut'],
+          ['À ne pas manquer', 'Place Moulay Hassan, Rue Skala'],
+          ['Musique', 'Gnawa — patrimoine immatériel'],
+          ['Conseil', 'Se perdre dans les ruelles au lever du soleil']
+        ]
+      },
+
+      remparts: {
+        img: 'images/remparts.png', cat: 'Culture · Remparts d\'Essaouira',
+        title: 'Remparts & Skala de la Ville',
+        desc: 'Les remparts d\'Essaouira, construits au XVIIIe siècle sous le sultan Mohammed III, constituent l\'un des exemples les plus remarquables d\'architecture militaire côtière en Afrique du Nord.',
+        dets: [
+          ['Hauteur', '200 mètres de plate-forme'],
+          ['Construits', 'XVIIIe siècle'],
+          ['Canons', 'Bronze hollandais XVIIe siècle'],
+          ['Vue', 'Îles Purpuraires & Atlantique'],
+          ['Horaires', '8h – 18h (tous les jours)'],
+          ['Conseil', 'Coucher de soleil depuis la Skala']
+        ]
+      },
+
+      plage: {
+        img: 'images/surf.jpg', cat: 'Nature & Mer · Essaouira',
+        title: 'Plage d\'Essaouira',
+        desc: 'La plage d\'Essaouira s\'étend sur 10 km de sable doré, bordée de dunes et balayée par les alizés de l\'Atlantique.',
+        dets: [
+          ['Longueur', '10 km de sable doré'],
+          ['Alizés', 'Force 4 à 6 Beaufort (mai–sept)'],
+          ['Sports', 'Kitesurf, Windsurf, Surf, Équitation'],
+          ['Accès', 'Gratuit, depuis la médina à pied'],
+          ['Dunes', 'Au sud de la plage principale'],
+          ['Conseil', 'Matin calme, alizés l\'après-midi']
+        ]
+      },
+
+      kitesurf: {
+        img: 'images/windsurf.jpg', cat: 'Sport · Plage d\'Essaouira',
+        title: 'Kitesurf & Windsurf — Capitale des Alizés',
+        desc: 'Essaouira est reconnue mondialement comme l\'une des meilleures destinations de kitesurf et de windsurf au monde.',
+        dets: [
+          ['Vent', '20 à 35 noeuds (mai–sept)'],
+          ['Niveau', 'Débutant à expert'],
+          ['Cours', 'À partir de 300 MAD/h'],
+          ['Location', '250–450 MAD / session'],
+          ['Festival', 'Ocean Winds chaque année'],
+          ['Écoles', '8 centres certifiés sur la plage']
+        ]
+      },
+
+      souks: {
+        img: 'images/artisana thuya.png', cat: 'Artisanat · Médina d\'Essaouira',
+        title: 'Souks & Artisanat d\'Essaouira',
+        desc: 'Essaouira est la capitale marocaine de l\'artisanat du thuya, ce bois rare et odorant extrait des racines du thuya de Berbérie.',
+        dets: [
+          ['Spécialité', 'Artisanat du Thuya (bois rare)'],
+          ['À acheter', 'Boîtes thuya, bijoux argent, instruments gnawa'],
+          ['Galeries', 'Plus de 30 galeries d\'art contemporain'],
+          ['Souk principal', 'Rue de la Skala & Rue Attarine'],
+          ['Musique', 'Gnawa — Patrimoine UNESCO'],
+          ['Festival', 'Gnaoua World Music Festival (juin)']
+        ]
+      },
+
+      poissons: {
+        img: 'images/poissons.png', cat: 'Gastronomie · Port d\'Essaouira',
+        title: 'Port & Grillades de Poissons',
+        desc: 'Le port bleu d\'Essaouira est l\'un des plus pittoresques du Maroc. Chaque matin, les chalutiers rentrent avec leur pêche du jour.',
+        dets: [
+          ['Produit phare', 'Sardines, Crevettes, Homard'],
+          ['Prix', '30 à 80 MAD / assiette'],
+          ['Horaires', '11h – 17h (selon arrivée des bateaux)'],
+          ['Lieu', 'Port de pêche, côté grillades'],
+          ['Incontournable', 'Le jus de citron vert sur les sardines'],
+          ['Conseil', 'Y aller le matin pour le meilleur choix']
+        ]
+      },
+
+      gnaoua: {
+        img: 'images/festival gnaoua.png', cat: 'Culture · Festival d\'Essaouira',
+        title: 'Festival Gnaoua & Musiques du Monde',
+        desc: 'Né en 1998, le Festival Gnaoua et Musiques du Monde est devenu l\'un des plus grands rassemblements musicaux d\'Afrique.',
+        dets: [
+          ['Date', 'Chaque année en juin (4 jours)'],
+          ['Entrée', 'Gratuit (scènes en plein air)'],
+          ['Artistes', 'Maâlems gnawa & artistes internationaux'],
+          ['Lieu', 'Place Moulay Hassan & Plage'],
+          ['Depuis', '1998 — plus de 25 éditions'],
+          ['UNESCO', 'Gnawa — Patrimoine immatériel 2019']
+        ]
+      },
+
+      cheval: {
+        img: 'images/balade cheval.png', cat: 'Sport · Plage d\'Essaouira',
+        title: 'Balade à Cheval sur la Plage',
+        desc: 'L\'une des expériences les plus magiques d\'Essaouira est de galoper à cheval sur sa plage de sable doré de 10 km, face à l\'Atlantique.',
+        dets: [
+          ['Prix', '150 – 300 MAD / heure'],
+          ['Horaires', '7h – 19h (tous les jours)'],
+          ['Niveaux', 'Débutant à confirmé'],
+          ['Durée', '1h à 3h selon la formule'],
+          ['Parcours', 'Plage & dunes sur 10 km'],
+          ['Conseil', 'Balade coucher de soleil en fin de journée']
+        ]
+      },
+
+      /* --- RESTAURANTS --- */
+
+      chezSam: {
+        img: 'images/chez sam.png', cat: 'Restaurant · Port, Essaouira',
+        title: 'Chez Sam',
+        desc: 'Fondé dans les années 70, Chez Sam est l\'institution gastronomique du port d\'Essaouira.',
+        dets: [
+          ['Spécialité', 'Fruits de mer, Homard, Daurade'],
+          ['Prix moyen', '120 – 280 MAD / personne'],
+          ['Horaires', '12h – 22h (tous les jours)'],
+          ['Réservation', 'Recommandée en saison'],
+          ['Cadre', 'Barque au bord du port'],
+          ['Note', '4.8 / 5']
+        ]
+      },
+
+      tarosBR: {
+        img: 'images/taros.png', cat: 'Rooftop · Place Moulay Hassan',
+        title: 'Taros Café',
+        desc: 'Taros Café est le lieu emblématique de la vie sociale d\'Essaouira. Perché sur les remparts avec vue sur l\'Atlantique.',
+        dets: [
+          ['Spécialité', 'Cuisine fusion, Cocktails artisanaux'],
+          ['Prix moyen', '100 – 250 MAD / personne'],
+          ['Horaires', '11h – 01h (tous les jours)'],
+          ['Concerts', 'Gnawa chaque soir dès 20h'],
+          ['Vue', 'Atlantique & Place Moulay Hassan'],
+          ['Note', '4.7 / 5']
+        ]
+      },
+
+      hungryNomad: {
+        img: 'images/the hungry nomad.png', cat: 'Restaurant Rooftop · Médina',
+        title: 'The Hungry Nomad Rooftop',
+        desc: 'The Hungry Nomad Rooftop est l\'une des meilleures tables d\'Essaouira avec une note de 4,8/5.',
+        dets: [
+          ['Cuisine', 'Marocaine & Arabe'],
+          ['Note', '4.8 / 5 (579 avis)'],
+          ['Prix', 'Accessible'],
+          ['Lieu', 'Médina, Essaouira'],
+          ['Ambiance', 'Rooftop vue panoramique'],
+          ['Récompense', 'Travelers Choice 2025']
+        ]
+      },
+
+      khmissa: {
+        img: 'images/khmissa.png', cat: 'Restaurant · Médina',
+        title: 'Restaurant Khmissa',
+        desc: 'Le Restaurant Khmissa est une adresse incontournable d\'Essaouira, plébiscitée par 749 avis avec une note de 4,8/5.',
+        dets: [
+          ['Cuisine', 'Marocaine traditionnelle'],
+          ['Note', '4.8 / 5 (749 avis)'],
+          ['Prix', 'Accessible'],
+          ['Lieu', 'Médina, Essaouira'],
+          ['Ambiance', 'Conviviale & authentique'],
+          ['Récompense', 'Travelers Choice 2025']
+        ]
+      },
+
+      /* --- RIADS --- */
+
+      atlantis12: {
+        img: 'images/atlantis12.png', cat: 'Maison D\'hôtes · Ounagha',
+        title: 'Atlantis 12, Maison D\'hôtes Et D\'art',
+        desc: 'Atlantis 12 est une maison d\'hôtes d\'art exceptionnelle située à Ounagha, aux portes d\'Essaouira.',
+        dets: [
+          ['Catégorie', 'Maison d\'hôtes & D\'art'],
+          ['Note', '4.3 / 5 (12 avis)'],
+          ['Prix', 'À partir de 480 MAD/nuit'],
+          ['Lieu', 'Ounagha, près d\'Essaouira'],
+          ['Chambres', 'Suites avec oeuvres d\'art'],
+          ['Contact', 'WhatsApp & site disponibles']
+        ]
+      },
+
+      riadAlMadina: {
+        img: 'images/riad al madina.png', cat: 'Riad · Old Medina, Essaouira',
+        title: 'Riad Al Madina',
+        desc: 'Le Riad Al Madina est un riad 4 étoiles situé dans l\'ancienne médina d\'Essaouira.',
+        dets: [
+          ['Catégorie', 'Riad 4 étoiles'],
+          ['Note', '7.9 / 10 (929 avis)'],
+          ['Situation', '9.4 / 10 — Exceptionnelle'],
+          ['Prix', 'À partir de 480 MAD/nuit'],
+          ['Distance', '100m centre · 350m plage'],
+          ['Lieu', 'Old Medina, Essaouira']
+        ]
+      },
+
+      /* --- HÔTELS --- */
+
+      medina5s: {
+        img: 'images/le medina essaouira.png', cat: 'Hôtel 5 étoiles · Bord de mer',
+        title: 'Hôtel Le Medina Essaouira — MGallery',
+        desc: 'L\'Hôtel Le Medina Essaouira MGallery est le seul palace 5 étoiles d\'Essaouira.',
+        dets: [
+          ['Catégorie', 'Palace 5 étoiles MGallery'],
+          ['Prix', '2000 – 5000 MAD / nuit'],
+          ['Spa', 'Thalassothérapie marine'],
+          ['Piscine', 'Chauffée, vue Atlantique'],
+          ['Restaurant', 'Gastronomique fruits de mer'],
+          ['Note', '4.8 / 5']
+        ]
+      },
+
+      sofitelEss: {
+        img: 'images/sofitel.png', cat: 'Resort 5 étoiles · Mogador Beach',
+        title: 'Sofitel Essaouira Mogador Golf & Spa',
+        desc: 'Le Sofitel Essaouira Mogador est un vaste resort balnéaire face à l\'Atlantique.',
+        dets: [
+          ['Catégorie', 'Resort 5 étoiles Sofitel'],
+          ['Prix', '1800 – 4500 MAD / nuit'],
+          ['Golf', '18 trous face à l\'Atlantique'],
+          ['Spa', 'So Spa Thalasso'],
+          ['Piscines', '4 piscines dont olympique'],
+          ['Note', '4.7 / 5']
+        ]
+      }
+
+    }; /* fin de l'objet modalData */
+
+    /* ============================================================
+       2. FONCTION openModal(key)
+       Ouvre la modale et injecte les données de modalData[key]
+       Appelée par onclick="openModal('medina')" par exemple
+       ============================================================ */
+    function openModal(key) {
+      const d = modalData[key]; /* Récupère l'objet de données pour cette clé */
+      if (!d) return;           /* Si la clé n'existe pas, on arrête */
+
+      /* Injecte l'image dans la modale */
+      document.getElementById('mImg').src = d.img;
+      /* En cas d'erreur de chargement d'image : affiche un dégradé */
+      document.getElementById('mImg').onerror = function () {
+        this.style.cssText = 'width:100%;height:220px;display:block;background:linear-gradient(135deg,#1B4F72,#148F77)';
+      };
+
+      /* Injecte les textes dans les éléments HTML correspondants */
+      document.getElementById('mCat').textContent = d.cat;   /* Catégorie */
+      document.getElementById('mTitle').textContent = d.title; /* Titre */
+      document.getElementById('mDesc2').textContent = d.desc;  /* Description */
+
+      /* Génère la grille de détails en HTML à partir du tableau dets */
+      document.getElementById('mDets').innerHTML = d.dets.map(([l, v]) =>
+        /* Pour chaque paire [label, valeur], crée une div .modal-detail */
+        `<div class="modal-detail">
+       <div class="d-label">${l}</div>
+       <div class="d-val">${v}</div>
+     </div>`
+      ).join(''); /* join('') = colle tous les morceaux sans séparateur */
+
+      /* Affiche la modale en ajoutant la classe 'open' */
+      document.getElementById('modalOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden'; /* Bloque le scroll de la page derrière */
+    }
+
+    /* Ferme la modale en retirant la classe 'open' */
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('open');
+      document.body.style.overflow = ''; /* Réactive le scroll de la page */
+    }
+
+    /* Ferme la modale si on appuie sur la touche Échap */
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    /* ============================================================
+       3. FILTRAGE DES CARTES ACTIVITÉS
+       Masque/affiche les cartes selon la catégorie du bouton cliqué
+       ============================================================ */
+    function filterAct(cat, btn) {
+      /* Parcourt toutes les cartes dans #actGrid */
+      document.querySelectorAll('#actGrid .act-card').forEach(c => {
+        /* toggle('hidden', condition) : ajoute 'hidden' si condition est vraie */
+        /* La carte est masquée si : cat n'est pas 'all' ET sa catégorie ne correspond pas */
+        c.classList.toggle('hidden', cat !== 'all' && c.dataset.cat !== cat);
+        /* c.dataset.cat = valeur de l'attribut data-cat="..." sur la carte */
+      });
+      /* Retire la classe 'active' de tous les boutons de filtre */
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      /* Ajoute la classe 'active' au bouton cliqué (btn) */
+      btn.classList.add('active');
+    }
+
+    /* ============================================================
+       4. FILTRAGE DES CARTES RESTAURANTS/HÔTELS
+       Même logique que filterAct() mais utilise data-rh au lieu de data-cat
+       ============================================================ */
+    function filterRH(cat, btn) {
+      document.querySelectorAll('#rhGrid .rh-card').forEach(c => {
+        c.classList.toggle('hidden', cat !== 'all' && c.dataset.rh !== cat);
+        /* c.dataset.rh = valeur de l'attribut data-rh="..." sur la carte */
+      });
+      document.querySelectorAll('.rh-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    /* ============================================================
+       5. LIGHTBOX — Visionneuse plein écran pour la galerie
+       lbSrcs = tableau de toutes les photos avec leurs légendes
+       ============================================================ */
+    const lbSrcs = [
+      { src: 'images/ESSAOUIRA.png', cap: 'Essaouira — Vue panoramique' },
+      { src: 'images/medina ruelles bleues.png', cap: 'Médina — Ruelles bleues et blanches UNESCO' },
+      { src: 'images/canon.png', cap: 'Skala de la Ville — Canons face à l\'Atlantique' },
+      { src: 'images/plage essaouira.png', cap: 'Plage d\'Essaouira — Sable et Atlantique' },
+      { src: 'images/kitsurf.png', cap: 'Kitesurf — Capitale mondiale des alizés' },
+      { src: 'images/bijoux.png', cap: 'Bijoux berbères — Artisanat du thuya et argent' },
+      { src: 'images/sardines.png', cap: 'Port de pêche — Bateaux bleus et sardines' },
+    ];
+
+    let lbIdx = 0; /* Index de la photo actuellement affichée dans la lightbox */
+
+    /* Ouvre la lightbox sur la photo d'index i */
+    function openLb(i) {
+      lbIdx = i; /* Mémorise l'index actuel pour la navigation */
+      document.getElementById('lbImg').src = lbSrcs[i].src; /* Change l'image */
+      document.getElementById('lbCap').textContent = lbSrcs[i].cap; /* Change la légende */
+      document.getElementById('lightbox').classList.add('open');     /* Affiche la lightbox */
+      document.body.style.overflow = 'hidden'; /* Bloque le scroll derrière */
+    }
+
+    /* Ferme la lightbox */
+    function closeLb() {
+      document.getElementById('lightbox').classList.remove('open'); /* Masque la lightbox */
+      document.body.style.overflow = ''; /* Réactive le scroll */
+    }
+
+    /* Navigation dans la lightbox : dir = -1 (précédent) ou +1 (suivant) */
+    function navLb(dir) {
+      lbIdx = (lbIdx + dir + lbSrcs.length) % lbSrcs.length;
+      /* Modulo lbSrcs.length : boucle circulaire (après la dernière = première) */
+      openLb(lbIdx); /* Affiche la nouvelle photo */
+    }
+
+    /* Ferme la lightbox si on clique sur le fond noir (pas sur l'image) */
+    document.getElementById('lightbox').addEventListener('click', function (e) {
+      if (e.target === this) closeLb(); /* e.target = élément cliqué, this = la lightbox */
+    });
+
+    /* ============================================================
+       6. CARTE INTERACTIVE LEAFLET (OpenStreetMap)
+       Tableau des lieux + initialisation de la carte au chargement
+       ============================================================ */
+
+    /* Tableau de tous les lieux à afficher sur la carte */
+    const places = [
+      { name: 'Médina UNESCO', lat: 31.5125, lng: -9.7700, type: 'culture', col: '#1B4F72', desc: 'Patrimoine mondial UNESCO 2001' },
+      { name: 'Skala de la Ville', lat: 31.5148, lng: -9.7758, type: 'culture', col: '#1B4F72', desc: 'Remparts et canons face à l\'Atlantique' },
+      { name: 'Port de pêche', lat: 31.5080, lng: -9.7740, type: 'nature', col: '#148F77', desc: 'Grillades de poissons frais & bateaux bleus' },
+      { name: 'Plage d\'Essaouira', lat: 31.5020, lng: -9.7680, type: 'nature', col: '#148F77', desc: '10 km de sable, capitale du kitesurf' },
+      { name: 'Place Moulay Hassan', lat: 31.5135, lng: -9.7710, type: 'culture', col: '#1B4F72', desc: 'Coeur de la ville, Taros Café & terrasses' },
+      { name: 'Îles Purpuraires', lat: 31.5000, lng: -9.7900, type: 'nature', col: '#148F77', desc: 'Réserve naturelle, vue depuis les remparts' },
+      { name: 'Sofitel Mogador', lat: 31.4980, lng: -9.7560, type: 'hotel', col: '#1a3a5c', desc: 'Resort 5 étoiles golf & spa face à l\'Atlantique' },
+    ];
+    /* lat = latitude (nord/sud), lng = longitude (est/ouest) */
+    /* col = couleur du marqueur selon le type de lieu */
+
+    let leafletMap; /* Variable globale pour accéder à la carte depuis la liste */
+
+    /* window.addEventListener('load') : exécuté quand TOUTE la page est chargée */
+    window.addEventListener('load', () => {
+
+      /* Crée la carte Leaflet centrée sur Essaouira, zoom niveau 14 */
+      leafletMap = L.map('map').setView([31.511, -9.771], 14);
+      /* L.map('map') = initialise la carte dans le div id="map" */
+      /* setView([lat, lng], zoom) = centre et zoom initial */
+
+      /* Ajoute les tuiles OpenStreetMap comme fond de carte */
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'OpenStreetMap'
+        /* {s} = sous-domaine, {z} = zoom, {x}{y} = coordonnées de la tuile */
+      }).addTo(leafletMap); /* Ajoute la couche de tuiles à la carte */
+
+      const listEl = document.getElementById('mapList'); /* Récupère le div de la liste */
+      const typeCol = { culture: '#1B4F72', nature: '#148F77', hotel: '#1a3a5c' };
+      /* Couleurs par type pour les pastilles dans la liste */
+
+      /* Pour chaque lieu du tableau places : crée un marqueur + un élément de liste */
+      places.forEach((p, i) => {
+
+        /* Crée un marqueur HTML personnalisé (cercle coloré avec numéro) */
+        const icon = L.divIcon({
+          className: '', /* Pas de classe CSS par défaut */
+          html: `<div style="background:${p.col};width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;">${i + 1}</div>`,
+          /* Cercle coloré avec le numéro du lieu (i+1 car l'index commence à 0) */
+          iconSize: [28, 28], /* Taille du marqueur en pixels */
+          iconAnchor: [14, 14]  /* Point d'ancrage : centre du cercle */
+        });
+
+        /* Ajoute le marqueur sur la carte avec une popup d'information */
+        const m = L.marker([p.lat, p.lng], { icon }).addTo(leafletMap);
+        m.bindPopup(`<strong>${p.name}</strong><br><small>${p.desc}</small>`);
+        /* bindPopup : info-bulle qui s'ouvre au clic sur le marqueur */
+
+        /* Crée l'élément de liste HTML correspondant au lieu */
+        const item = document.createElement('div'); /* Crée un nouveau div */
+        item.className = 'map-item';                /* Lui donne la classe CSS */
+        item.innerHTML = `<h4><span class="type-dot" style="background:${typeCol[p.type]}"></span>${i + 1}. ${p.name}</h4><p>${p.desc}</p>`;
+        /* type-dot = pastille colorée selon le type (culture/nature/hotel) */
+
+        /* Au clic sur un élément de la liste : centre la carte sur ce lieu */
+        item.onclick = () => {
+          leafletMap.setView([p.lat, p.lng], 16); /* Centre et zoom sur le lieu */
+          m.openPopup();                           /* Ouvre la popup du marqueur */
+          /* Retire 'active-place' de tous les éléments de liste */
+          document.querySelectorAll('.map-item').forEach(x => x.classList.remove('active-place'));
+          item.classList.add('active-place'); /* Ajoute 'active-place' à l'élément cliqué */
+        };
+
+        listEl.appendChild(item); /* Ajoute l'élément à la liste HTML */
+      });
+
+    }); /* fin window.addEventListener('load') */
+
+    /* ============================================================
+       7. MÉTÉO — Données statiques affichées dans le bloc météo
+       Pour des données réelles, remplacer par un appel API météo
+       ============================================================ */
+    function loadMeteo() {
+      document.getElementById('mTemp').textContent = '22°C';              /* Température */
+      document.getElementById('mDesc').textContent = 'Ensoleillé avec alizés'; /* Description */
+      document.getElementById('mFeel').textContent = '20°C';              /* Ressenti */
+      document.getElementById('mHum').textContent = '72%';               /* Humidité */
+      document.getElementById('mWind').textContent = '28 km/h';           /* Vitesse du vent */
+      document.getElementById('mCloud').textContent = '15%';               /* Couverture nuageuse */
+    }
+    loadMeteo(); /* Appelée immédiatement : remplit les données météo dès le chargement */
+
+    /* ============================================================
+       8. FORMULAIRE DE CONTACT — Validation et affichage du succès
+       ============================================================ */
+    function sendForm() {
+      /* Récupère les valeurs des champs et supprime les espaces avec trim() */
+      const p = document.getElementById('fPrenom').value.trim(); /* Prénom */
+      const e = document.getElementById('fEmail').value.trim();  /* Email */
+      const m = document.getElementById('fMsg').value.trim();    /* Message */
+
+      /* Vérifie que les 3 champs obligatoires sont remplis */
+      if (!p || !e || !m) {
+        alert('Veuillez remplir les champs obligatoires (Prénom, Email, Message).');
+        return; /* Arrête la fonction si un champ est vide */
+      }
+
+      /* Vérifie le format de l'email avec une expression régulière */
+      if (!/\S+@\S+\.\S+/.test(e)) {
+        /* \S+ = un ou plusieurs caractères non-espace, @ obligatoire, . obligatoire */
+        alert('Adresse email invalide.');
+        return; /* Arrête si le format est incorrect */
+      }
+
+      /* Affiche le message de succès (change display:none en display:block) */
+      document.getElementById('formOk').style.display = 'block';
+
+      /* Réinitialise les champs du formulaire après envoi */
+      ['fPrenom', 'fNom', 'fEmail', 'fMsg'].forEach(id =>
+        document.getElementById(id).value = '' /* Vide chaque champ */
+      );
+      document.getElementById('fSujet').selectedIndex = 0; /* Remet la liste à "Choisir un sujet..." */
+    }
+
+    /* ============================================================
+       9. NAVIGATION ACTIVE AU SCROLL
+       Met à jour le lien actif dans la navbar selon la section visible
+       ============================================================ */
+    const sections = ['hero', 'activites', 'galerie', 'restaurants', 'carte', 'contact'];
+    /* Liste des ids de sections dans l'ordre d'apparition */
+
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY + 100;
+      /* window.scrollY = nombre de pixels scrollés depuis le haut */
+      /* +100 = décalage pour activer un peu avant d'arriver à la section */
+
+      sections.forEach(id => {
+        const el = document.getElementById(id); /* Trouve la section par son id */
+        if (!el) return; /* Si la section n'existe pas, passe à la suivante */
+
+        const link = document.querySelector(`nav a[href="#${id}"]`);
+        /* Trouve le lien de navigation correspondant à cette section */
+        if (!link) return; /* Si le lien n'existe pas, passe au suivant */
+
+        /* Si la position de scroll est dans la plage de cette section */
+        if (el.offsetTop <= y && el.offsetTop + el.offsetHeight > y) {
+          /* el.offsetTop = position du haut de la section depuis le haut de la page */
+          /* el.offsetHeight = hauteur de la section */
+
+          /* Retire 'active' de tous les liens de navigation */
+          document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+          /* Ajoute 'active' au lien de la section actuellement visible */
+          link.classList.add('active');
+        }
+      });
+
+    }, { passive: true });
+    /* passive:true = améliore les performances du scroll (dit au navigateur qu'on ne bloque pas) */
+
+    /* ============================================================
+       FIN DU JAVASCRIPT
+       ============================================================ */
+    /* ══ MENU HAMBURGER MOBILE ══ */
+    function toggleNav(){
+      document.querySelector('.nav-links').classList.toggle('open');
+    }
+    document.querySelectorAll('.nav-links a').forEach(link=>{
+      link.addEventListener('click',()=>{
+        document.querySelector('.nav-links').classList.remove('open');
+      });
+    });
+    document.addEventListener('click',function(e){
+      const nav=document.querySelector('.nav-links');
+      const btn=document.getElementById('hamburger');
+      if(nav&&nav.classList.contains('open')&&!nav.contains(e.target)&&!btn.contains(e.target)){
+        nav.classList.remove('open');
+      }
+    });
+  </script>
+</body>
+
+</html>

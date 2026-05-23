@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+
+
+<html lang="fr">
+
+
+<head>
+
+<meta charset="UTF-8">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- 
+  Balise viewport (responsive design) :
+  - width=device-width : La largeur de la page s'adapte à l'écran de l'appareil.
+  - initial-scale=1.0 : Zoom initial à 100%.
+  Indispensable pour que le site soit lisible sur mobile et tablette.
+-->
+
+<title>Safi – Cité de l'Océan</title>
+<!-- 
+  <title> : Texte affiché dans l'onglet du navigateur et dans les résultats Google.
+  Important pour le référencement (SEO).
+-->
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!-- 
+  Google Fonts : Chargement de deux polices externes depuis Google.
+  - Playfair Display : Police élégante avec sérif, utilisée pour les titres.
+    Variantes : normal/italique, poids 400 et 700.
+  - Raleway : Police moderne sans sérif, utilisée pour le corps du texte.
+    Variantes : poids 300, 400, 500, 600, 700.
+  rel="stylesheet" : Indique que le lien est une feuille de style CSS.
+-->
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<!-- 
+  Leaflet.js — CSS de la bibliothèque de carte interactive.
+  Leaflet est une librairie JavaScript open-source pour afficher des cartes
+  interactives (OpenStreetMap) dans une page web.
+  Cette ligne charge les styles nécessaires pour afficher la carte correctement.
+  Version utilisée : 1.9.4, chargée depuis le CDN unpkg.
+-->
+
+<style>
+/* 
+   VARIABLES CSS — :root
+   
+   :root est le pseudo-sélecteur représentant l'élément racine <html>.
+   Les variables CSS (custom properties) sont déclarées ici avec "--".
+   Avantage : modifier une variable change la couleur/valeur partout
+   dans le fichier. Facilite la maintenance du thème.
+   
+   Palette de couleurs utilisée (thème bleu océan + or) :
+   --blue      : Bleu principal (textes, boutons, badges)
+   --blue-mid  : Bleu intermédiaire (fond section restaurants)
+   --blue-dark : Bleu très foncé (top bar, footer, hero)
+   --blue-acc  : Bleu accent/hover (survol boutons)
+   --ocean     : Bleu océan (dégradés)
+   --gold      : Or/doré (détails décoratifs, étoiles, soulignements)
+   --cream     : Blanc cassé (fonds de sections alternées)
+   --white     : Blanc pur
+   --dark      : Bleu très sombre (texte principal)
+    */
+:root{
+  --blue:#0D3B6E;--blue-mid:#1A5276;--blue-dark:#082040;
+  --blue-acc:#1A7FC1;--ocean:#1B6CA8;--gold:#C9A96E;
+  --cream:#F0F6FC;--white:#FFFFFF;--dark:#0a1a2e;
+}
+
+/* 
+   RESET CSS
+   
+   * : Sélecteur universel — cible TOUS les éléments HTML.
+   margin:0; padding:0 : Supprime les marges et rembourrages
+     par défaut du navigateur (chaque navigateur applique ses propres
+     valeurs par défaut, ce reset les uniformise).
+   box-sizing:border-box : Le padding et la bordure sont inclus
+     dans la largeur/hauteur totale de l'élément.
+     Ex : un élément width:200px avec padding:20px fera bien 200px total
+     (au lieu de 240px sans border-box).
+    */
+*{margin:0;padding:0;box-sizing:border-box;}
+
+/* 
+   SCROLL FLUIDE
+   
+   html { scroll-behavior:smooth } :
+   Lorsqu'on clique sur un lien ancre (#section),
+   la page défile en douceur plutôt qu'en saut brusque.
+    */
+html{scroll-behavior:smooth;}
+
+/* 
+   STYLE GLOBAL DU BODY
+  
+   font-family : Raleway comme police principale, avec fallback
+     sur 'sans-serif' si Raleway n'est pas chargée.
+   background : Couleur de fond générale (crème/bleu très clair).
+   color : Couleur du texte par défaut (bleu très foncé).
+   overflow-x:hidden : Masque le débordement horizontal,
+     évite les barres de défilement latérales non voulues.
+    */
+body{font-family:'Raleway',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;}
+
+/* 
+   BARRE SUPÉRIEURE (TOP BAR)
+   
+   Petite bande d'information en haut de page.
+   background:var(--blue-dark) : Fond bleu très foncé.
+   color:#fff : Texte blanc.
+   text-align:center : Texte centré.
+   padding:7px : Espace intérieur vertical.
+   font-size:12px : Petite taille de texte.
+   letter-spacing:1.5px : Espacement entre les lettres (effet élégant).
+    */
+.top-bar{background:var(--blue-dark);color:#fff;text-align:center;padding:7px;font-size:12px;letter-spacing:1.5px;}
+
+/* 
+   BARRE DE NAVIGATION (NAVBAR)
+   
+   position:sticky : La navbar reste collée en haut de l'écran
+     lors du défilement (contrairement à fixed elle prend de la place
+     dans le flux normal du document).
+   top:0 : Collée au sommet de la fenêtre.
+   z-index:900 : Superposition — la nav passe au-dessus des autres
+     éléments (valeur haute = devant).
+   background:rgba(255,255,255,0.97) : Fond blanc quasi-opaque avec
+     légère transparence pour l'effet "verre dépoli".
+   backdrop-filter:blur(12px) : Flou de l'arrière-plan visible
+     à travers la transparence (effet glassmorphism).
+   box-shadow : Ombre portée sous la nav pour la détacher du contenu.
+   display:flex : Disposition en ligne (flexbox).
+   align-items:center : Alignement vertical centré.
+   justify-content:space-between : Logo à gauche, liens à droite.
+   padding:0 48px : Espacement horizontal de 48px de chaque côté.
+   height:68px : Hauteur fixe de la navbar.
+    */
+nav{position:sticky;top:0;z-index:900;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);box-shadow:0 2px 24px rgba(13,59,110,.15);display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:68px;}
+
+/* LOGO DE NAVIGATION */
+/* 
+   display:flex + gap:10px : Logo SVG et texte côte à côte avec 10px d'écart.
+   text-decoration:none : Supprime le soulignement du lien.
+*/
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo svg{width:38px;height:38px;}
+
+/* Texte du logo : "SAFI" en grand + sous-titre petit */
+.logo-text .city{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--blue);letter-spacing:2px;}
+.logo-text .sub{font-size:9.5px;color:#999;letter-spacing:2px;text-transform:uppercase;}
+
+/* 
+   LIENS DE NAVIGATION
+   list-style:none : Supprime les puces de liste.
+   display:flex : Liens en ligne horizontale.
+   gap:0 : Pas d'espace entre les éléments (l'espace vient du padding des <a>).
+*/
+.nav-links{display:flex;list-style:none;gap:0;align-items:center;}
+
+/*
+   Chaque lien <a> dans la nav :
+   display:block : Rend le lien cliquable sur toute sa surface.
+   padding:10px 14px : Zone de clic confortable.
+   text-decoration:none : Pas de soulignement.
+   font-size:11px, font-weight:700 : Petit texte en gras.
+   letter-spacing:.8px : Légère aération entre les lettres.
+   text-transform:uppercase : Texte en majuscules automatiquement.
+   transition:color .2s : Changement de couleur fluide au survol (0.2s).
+   white-space:nowrap : Empêche le texte de passer à la ligne.
+*/
+.nav-links a{display:block;padding:10px 14px;text-decoration:none;color:#333;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;transition:color .2s;white-space:nowrap;}
+.nav-links a:hover{color:var(--blue);}
+
+/* Lien actif (section en cours de lecture) : bleu + soulignement */
+.nav-links a.active{color:var(--blue);border-bottom:2px solid var(--blue);}
+
+/*
+   SECTION HERO (Bannière principale)
+   
+   La section hero est la première chose visible à l'ouverture.
+   Elle occupe 100% de la hauteur de la fenêtre (100vh).
+   
+   position:relative : Permet de positionner les enfants en absolu.
+   height:100vh : 100% de la hauteur visible du navigateur.
+   min-height:580px : Hauteur minimale pour les petits écrans.
+   display:flex + align/justify center : Centre le contenu.
+   overflow:hidden : Masque ce qui dépasse (vague du bas).
+   background:var(--blue-dark) : Couleur de secours si l'image ne charge pas.
+    */
+#hero{position:relative;height:100vh;min-height:580px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--blue-dark);}
+
+/* 
+   IMAGE D'ARRIÈRE-PLAN DU HERO
+   position:absolute;inset:0 : Couvre toute la zone de la section hero.
+   background:url('images/pc1.jpg') center/cover : Image centrée et
+     redimensionnée pour couvrir tout l'espace (cover = pas de bandes blanches).
+   background-color:var(--blue) : Fallback si l'image ne charge pas.
+   opacity:.6 : Image à 60% d'opacité pour laisser voir le texte par-dessus.
+*/
+.hero-img{position:absolute;inset:0;background:url('images/pc1.jpg') center/cover no-repeat;background-color:var(--blue);opacity:.6;}
+
+/*
+   OVERLAY DÉGRADÉ DU HERO
+   Couche semi-transparente par-dessus l'image pour assombrir
+   et améliorer la lisibilité du texte.
+   linear-gradient : Dégradé du haut vers le bas.
+   rgba(8,32,64,.4) : Bleu foncé à 40% en haut.
+   rgba(4,16,40,.75) : Bleu très foncé à 75% en bas.
+*/
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,32,64,.4) 0%,rgba(4,16,40,.75) 100%);}
+
+/*
+   MOTIF GÉOMÉTRIQUE DU HERO (pattern décoratif)
+   Petits cercles et lignes SVG encodés en base64 en arrière-plan.
+   opacity:.06 : Très discret (6%), juste pour une texture subtile.
+   background-image:url("data:image/svg+xml,...") : Image SVG inline encodée
+     directement dans le CSS, pas besoin de fichier externe.
+*/
+.hero-pattern{position:absolute;inset:0;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ccircle cx='40' cy='40' r='30' fill='none' stroke='%23fff' stroke-width='1'/%3E%3Ccircle cx='40' cy='40' r='18' fill='none' stroke='%23fff' stroke-width='.8'/%3E%3Cline x1='40' y1='10' x2='40' y2='70' stroke='%23fff' stroke-width='.5'/%3E%3Cline x1='10' y1='40' x2='70' y2='40' stroke='%23fff' stroke-width='.5'/%3E%3C/svg%3E");}
+
+/*
+   CONTENU TEXTE DU HERO
+   position:relative;z-index:2 : Au-dessus de l'image et de l'overlay.
+   text-align:center : Texte centré.
+   color:#fff : Texte en blanc.
+   padding:0 24px : Marge latérale pour les petits écrans.
+*/
+.hero-content{position:relative;z-index:2;text-align:center;color:#fff;padding:0 24px;}
+
+/*
+   TITRE PRINCIPAL DU HERO : "SAFI"
+   font-family:'Playfair Display',serif : Police élégante avec sérif.
+   font-size:clamp(52px,9vw,110px) : Taille fluide et responsive :
+     - Minimum : 52px
+     - Préféré : 9% de la largeur de l'écran
+     - Maximum : 110px
+   letter-spacing:6px : Large espacement entre les lettres.
+   line-height:1 : Hauteur de ligne = taille de police (compact).
+   text-shadow : Ombre portée pour la lisibilité.
+   animation:fadeDown .9s .15s ease both : Animation d'entrée
+     (descend depuis le haut, délai 0.15s, durée 0.9s).
+*/
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(52px,9vw,110px);font-weight:700;letter-spacing:6px;line-height:1;text-shadow:0 4px 40px rgba(0,0,0,.4);animation:fadeDown .9s .15s ease both;}
+
+/* <em> dans le titre : texte en italique doré pour "FI" dans "SAFI" */
+.hero-title em{font-style:italic;color:var(--gold);}
+
+/* Sous-titre du hero : "Cité de l'Océan — Capitale de la Poterie" */
+.hero-sub{font-size:15px;letter-spacing:4px;opacity:.8;text-transform:uppercase;margin:14px 0 38px;animation:fadeDown .9s .3s ease both;}
+
+/* Conteneur des boutons du hero : affichage en ligne centré */
+.hero-btns{display:flex;gap:14px;justify-content:center;animation:fadeDown .9s .45s ease both;}
+
+/*
+   BOUTON PRINCIPAL (style plein)
+   background:var(--blue) : Fond bleu.
+   padding:14px 40px : Espace intérieur confortable.
+   border-radius:40px : Bouton arrondi (pill shape).
+   font-size:12px; font-weight:700 : Texte petit et gras.
+   letter-spacing:2px : Espacement des lettres.
+   text-transform:uppercase : Majuscules automatiques.
+   box-shadow : Ombre bleue pour un effet de profondeur.
+   transition:all .3s : Toutes les transitions en 0.3s.
+*/
+.btn-primary{background:var(--blue);color:#fff;text-decoration:none;padding:14px 40px;border-radius:40px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:none;box-shadow:0 4px 24px rgba(13,59,110,.5);transition:all .3s;}
+.btn-primary:hover{background:var(--blue-acc);transform:translateY(-2px);}
+
+/*
+   BOUTON SECONDAIRE (style contour/outline)
+   Transparent avec bordure blanche semi-transparente.
+   Au survol : bordure blanche opaque + fond légèrement blanc.
+*/
+.btn-outline{background:transparent;color:#fff;text-decoration:none;padding:14px 40px;border-radius:40px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:2px solid rgba(255,255,255,.5);transition:all .3s;}
+.btn-outline:hover{border-color:#fff;background:rgba(255,255,255,.1);}
+
+/* Vague SVG décorative en bas du hero (crée une transition visuelle) */
+.hero-wave{position:absolute;bottom:0;left:0;right:0;line-height:0;}
+
+/*
+   ANIMATION FADE DOWN (apparition depuis le haut)
+   @keyframes : Définit une animation CSS réutilisable.
+   from : État initial (invisible, décalé de -18px vers le haut).
+   to : État final (visible, position normale).
+   Utilisée pour les éléments du hero avec des délais différents
+   (titre 0.15s, sous-titre 0.30s, boutons 0.45s) → effet cascade.
+*/
+@keyframes fadeDown{from{opacity:0;transform:translateY(-18px);}to{opacity:1;transform:translateY(0);}}
+
+/*
+   INDICATEUR DE DÉFILEMENT (flèche vers le bas)
+   position:absolute;bottom:38px;left:50%;transform:translateX(-50%) :
+     Centré horizontalement en bas de la section.
+   animation:bob 2s ease-in-out infinite : Animation de rebond infini.
+*/
+.scroll-hint{position:absolute;bottom:38px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.5);font-size:11px;letter-spacing:2px;display:flex;flex-direction:column;align-items:center;gap:8px;animation:bob 2s ease-in-out infinite;}
+
+/*
+   ANIMATION BOB (rebond vertical)
+   0%,100% : Position de départ et d'arrivée (translateY:0).
+   50% : Position intermédiaire (décalé de 6px vers le bas).
+   → Crée un effet de rebond lent et continu.
+*/
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(6px);}}
+
+/* 
+   TITRES DE SECTIONS (composant réutilisable)
+   
+   Utilisé dans CHAQUE section pour son en-tête.
+   Structure HTML : .sec-head > .eyebrow + h2 + .divider + p
+    */
+.sec-head{text-align:center;margin-bottom:52px;}
+
+/* Petite étiquette au-dessus du titre (ex: "À découvrir") */
+/* display:inline-block : Permet margin-bottom sur un élément inline. */
+.sec-head .eyebrow{display:inline-block;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+
+/* Titre principal h2 de section : Police Playfair, grande taille responsive */
+/* clamp(28px,4vw,44px) : Taille fluide entre 28px et 44px selon la largeur d'écran */
+.sec-head h2{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);color:var(--blue);}
+.sec-head h2 em{font-style:italic;}
+
+/*
+   SÉPARATEUR DÉCORATIF sous le titre
+   Deux lignes dorées de part et d'autre d'un symbole ✦.
+   display:flex;align-items:center : Aligne horizontalement les éléments.
+   justify-content:center : Centré.
+   gap:10px : Espace entre les éléments.
+*/
+.sec-head .divider{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;}
+.sec-head .divider span{width:60px;height:1px;background:var(--gold);opacity:.6;}
+.sec-head .divider i{color:var(--gold);font-size:12px;}
+.sec-head p{color:#777;font-size:13.5px;margin-top:14px;max-width:520px;margin-inline:auto;line-height:1.7;}
+
+/* 
+   SECTION ACTIVITÉS
+   
+   padding:80px 60px : 80px vertical, 60px horizontal.
+   background:#fff : Fond blanc (contraste avec sections crème).
+    */
+#activites{padding:80px 60px;background:#fff;}
+
+/*
+   BARRE DE FILTRES des activités
+   display:flex;flex-wrap:wrap : Boutons en ligne, retour à la ligne si besoin.
+   justify-content:center : Centrés.
+   margin-bottom:44px : Espace sous la barre.
+*/
+.filter-bar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:44px;}
+
+/*
+   BOUTON DE FILTRE
+   Bouton avec contour bleu, transparent au départ.
+   Au survol ou quand .active : fond bleu, texte blanc.
+   border-radius:30px : Forme arrondie (pilule).
+   transition:all .25s : Transition rapide (0.25s) pour le clic de filtre.
+*/
+.filter-btn{padding:8px 22px;border-radius:30px;border:2px solid var(--blue);background:transparent;color:var(--blue);font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .25s;text-transform:uppercase;}
+.filter-btn:hover,.filter-btn.active{background:var(--blue);color:#fff;}
+
+/*
+   GRILLE DE CARTES D'ACTIVITÉS
+   display:grid : Grille CSS.
+   grid-template-columns:repeat(auto-fill,minmax(290px,1fr)) :
+     Crée automatiquement autant de colonnes que possible
+     avec une largeur minimum de 290px et maximum de 1fr (espace disponible).
+     → Responsive sans media queries.
+   gap:28px : Espace entre les cartes.
+   max-width:1200px;margin:0 auto : Largeur max et centrage.
+*/
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:28px;max-width:1200px;margin:0 auto;}
+
+/*
+   CARTE D'ACTIVITÉ (.act-card)
+   border-radius:14px : Coins arrondis.
+   overflow:hidden : Masque les débordements (utile pour l'image arrondie).
+   box-shadow : Ombre douce pour l'effet de carte.
+   transition:transform .3s,box-shadow .3s : Animation de survol fluide.
+   cursor:pointer : Curseur main (indique que c'est cliquable).
+*/
+.act-card{border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.09);transition:transform .3s,box-shadow .3s;cursor:pointer;}
+
+/* Effet de survol : carte qui se lève et ombre plus prononcée */
+.act-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(13,59,110,.18);}
+
+/* Classe utilisée par le JavaScript pour masquer les cartes filtrées */
+.act-card.hidden{display:none;}
+
+/*
+   CONTENEUR DE L'IMAGE DE LA CARTE
+   position:relative : Pour positionner le badge dessus (absolute).
+   height:210px : Hauteur fixe pour uniformiser les cartes.
+   overflow:hidden : Coupe l'image si elle dépasse.
+*/
+.card-img-wrap{position:relative;height:210px;overflow:hidden;}
+
+/* Image : couvre tout l'espace, animation zoom au survol */
+.card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+.act-card:hover .card-img-wrap img{transform:scale(1.07);}
+
+/*
+   BADGE DE CATÉGORIE (ex: "Culture", "Nature")
+   position:absolute;top:14px;left:14px : En haut à gauche de l'image.
+   border-radius:20px : Forme pilule.
+   Couleurs différentes selon la catégorie (classes suivantes).
+*/
+.card-badge{position:absolute;top:14px;left:14px;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;}
+/* Couleurs des badges selon catégorie */
+.badge-culture{background:#0D3B6E;}    /* Bleu marine — Culture */
+.badge-nature{background:#1a7a3a;}     /* Vert — Nature */
+.badge-sport{background:#1A7FC1;}      /* Bleu clair — Sport */
+.badge-food{background:#C0392B;}       /* Rouge — Gastronomie */
+.badge-artisanat{background:#8B4513;}  /* Marron — Artisanat */
+
+/* Contenu texte de la carte */
+.card-body{padding:18px 20px 20px;}
+.card-body h3{font-family:'Playfair Display',serif;font-size:19px;margin-bottom:6px;color:var(--dark);}
+.card-body p{font-size:12.5px;color:#777;line-height:1.65;margin-bottom:14px;}
+
+/* Méta-informations (horaires, prix) : petites étiquettes crème */
+.card-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.card-meta span{font-size:11px;background:var(--cream);padding:3px 10px;border-radius:12px;color:var(--blue);font-weight:600;}
+
+/* Petit bouton "Savoir plus" dans chaque carte */
+.btn-sm{background:var(--blue);color:#fff;border:none;padding:9px 20px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.8px;transition:background .2s;}
+.btn-sm:hover{background:var(--blue-acc);}
+
+/* 
+   SECTION GALERIE PHOTOS
+   
+   Fond crème pour alterner avec le fond blanc de la section précédente.
+    */
+#galerie{padding:80px 60px;background:var(--cream);}
+
+/*
+   GRILLE DE LA GALERIE (Mosaïque)
+   grid-template-columns:repeat(3,1fr) : 3 colonnes égales.
+   Certains items utilisent grid-column:span 2 ou span 3
+   pour occuper plusieurs colonnes et créer l'effet mosaïque.
+*/
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:1100px;margin:0 auto;}
+
+/* Éléments de la galerie : overflow:hidden pour arrondir l'image */
+.gal-item{overflow:hidden;border-radius:10px;position:relative;cursor:pointer;}
+
+/* Disposition spéciale de chaque élément (mosaïque irrégulière) */
+.gal-item:nth-child(1){grid-column:span 2;height:300px;}  /* Grande image gauche */
+.gal-item:nth-child(2){height:300px;}                      /* Image droite */
+.gal-item:nth-child(3){height:240px;}
+.gal-item:nth-child(4){height:240px;}
+.gal-item:nth-child(5){height:240px;}
+.gal-item:nth-child(6){grid-column:span 3;height:260px;}  /* Image pleine largeur */
+.gal-item:nth-child(7){grid-column:span 2;height:260px;}  /* Image large */
+
+/* Image de galerie : couvre l'espace, zoom au survol */
+.gal-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s;}
+.gal-item:hover img{transform:scale(1.06);}
+
+/*
+   OVERLAY DE LA GALERIE (au survol)
+   Au départ : transparent (background rgba(...,0)).
+   Au survol : bleu semi-transparent + icône loupe apparaît.
+*/
+.gal-overlay{position:absolute;inset:0;background:rgba(13,59,110,0);display:flex;align-items:center;justify-content:center;transition:background .3s;}
+.gal-item:hover .gal-overlay{background:rgba(13,59,110,.35);}
+.gal-overlay svg{opacity:0;transition:opacity .3s;width:40px;height:40px;fill:#fff;}
+.gal-item:hover .gal-overlay svg{opacity:1;}
+
+/*
+   LIGHTBOX (Visionneuse plein écran)
+   display:none par défaut → devient display:flex avec la classe .open (JS).
+   position:fixed;inset:0 : Couvre tout l'écran.
+   background:rgba(0,0,0,.92) : Fond quasi-noir semi-transparent.
+   z-index:3000 : Au-dessus de tout (y compris la nav z-index:900).
+*/
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;align-items:center;justify-content:center;}
+.lightbox.open{display:flex;}
+.lb-inner{position:relative;max-width:88vw;max-height:88vh;}
+.lb-inner img{max-width:88vw;max-height:88vh;border-radius:8px;display:block;}
+
+/* Bouton de fermeture de la lightbox */
+.lb-close{position:absolute;top:-44px;right:0;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;opacity:.8;}
+
+/* Boutons navigation précédent/suivant de la lightbox */
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(13,59,110,.7);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.lb-nav:hover{background:var(--blue);}
+.lb-prev{left:-56px;}.lb-next{right:-56px;}  /* Positionnement à gauche et droite */
+
+/* Légende sous l'image dans la lightbox */
+.lb-caption{position:absolute;bottom:-36px;left:0;right:0;text-align:center;color:rgba(255,255,255,.7);font-size:12px;letter-spacing:1px;}
+
+/* 
+   SECTION RESTAURANTS & HÔTELS
+   
+   Fond bleu moyen pour créer un contraste avec les sections blanches/crème.
+   Les textes sont en blanc/or pour être lisibles sur fond sombre.
+    */
+#restaurants{padding:80px 60px;background:var(--blue-mid);}
+#restaurants .sec-head h2{color:#fff;}
+#restaurants .sec-head .eyebrow{color:var(--gold);}
+#restaurants .sec-head p{color:rgba(255,255,255,.65);}
+
+/* Barre de filtres sur fond sombre : style inversé (bouton blanc sur bleu) */
+.rh-filter-bar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:44px;}
+.rh-filter-btn{padding:7px 20px;border-radius:30px;border:2px solid rgba(255,255,255,.4);background:transparent;color:rgba(255,255,255,.85);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .25s;text-transform:uppercase;}
+.rh-filter-btn:hover,.rh-filter-btn.active{background:#fff;color:var(--blue);}
+
+/* Grille restaurants/hôtels : même principe que les activités */
+.rh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:26px;max-width:1200px;margin:0 auto;}
+
+/* Carte restaurant/hôtel : même style que les cartes d'activités */
+.rh-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.18);transition:transform .3s,box-shadow .3s;cursor:pointer;}
+.rh-card:hover{transform:translateY(-8px);box-shadow:0 18px 52px rgba(0,0,0,.25);}
+.rh-card.hidden{display:none;}
+
+/* Image de la carte restaurant/hôtel */
+.rh-card-img{position:relative;height:195px;overflow:hidden;}
+.rh-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+.rh-card:hover .rh-card-img img{transform:scale(1.07);}
+
+/* Badge restaurant (rouge) ou hôtel (bleu) */
+.rh-badge{position:absolute;top:12px;left:12px;padding:5px 12px;border-radius:16px;font-size:10px;font-weight:700;color:#fff;}
+.badge-resto{background:#C0392B;}  /* Rouge pour restaurant */
+.badge-hotel{background:#0D3B6E;} /* Bleu pour hôtel */
+
+/* Étoiles de notation : fond noir semi-transparent, texte doré */
+.stars{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.5);color:var(--gold);padding:4px 10px;border-radius:12px;font-size:11px;}
+
+/* Contenu texte de la carte restaurant/hôtel */
+.rh-body{padding:18px 20px 20px;}
+.rh-body .cat{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:5px;}
+.rh-body h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--dark);margin-bottom:7px;}
+.rh-body p{font-size:12.5px;color:#777;line-height:1.65;margin-bottom:12px;}
+.rh-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.rh-meta span{font-size:11px;background:var(--cream);padding:3px 10px;border-radius:12px;color:var(--blue);font-weight:600;}
+
+/* 
+   SECTION CARTE INTERACTIVE (Leaflet.js)
+  
+   Fond blanc. Disposition en deux colonnes : carte + liste latérale.
+   */
+#carte{padding:80px 60px;background:#fff;}
+
+/*
+   LAYOUT CARTE + LISTE
+   grid-template-columns:1fr 320px : Carte flexible (prend l'espace disponible)
+     et liste latérale à 320px de largeur fixe.
+   gap:28px : Espace entre la carte et la liste.
+*/
+.map-layout{display:grid;grid-template-columns:1fr 320px;gap:28px;max-width:1100px;margin:0 auto;}
+
+/*
+   CARTE LEAFLET (#map)
+   height:480px : Hauteur fixe nécessaire pour Leaflet.
+   border-radius:14px : Coins arrondis.
+   z-index:1 : Valeur minimale pour que les popups Leaflet s'affichent.
+   (Leaflet gère son propre z-index en interne)
+*/
+#map{height:480px;border-radius:14px;box-shadow:0 4px 30px rgba(0,0,0,.12);z-index:1;}
+
+/*
+   LISTE DES LIEUX (barre de droite)
+   overflow-y:auto : Défilement vertical si les éléments dépassent.
+   max-height:480px : Hauteur max = hauteur de la carte.
+   Scrollbar personnalisée : fine (4px) et dorée.
+*/
+.map-list{overflow-y:auto;max-height:480px;display:flex;flex-direction:column;gap:10px;}
+.map-list::-webkit-scrollbar{width:4px;}
+.map-list::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
+
+/* Élément de liste de lieu */
+/* border-left:4px solid transparent : Bord invisible par défaut */
+.map-item{background:var(--cream);border-radius:10px;padding:14px 16px;cursor:pointer;border-left:4px solid transparent;transition:all .2s;}
+/* Au survol ou quand actif : bord bleu visible + ombre légère */
+.map-item:hover,.map-item.active-place{border-left-color:var(--blue);background:#fff;box-shadow:0 2px 12px rgba(13,59,110,.1);}
+.map-item h4{font-size:13.5px;font-weight:700;color:var(--dark);margin-bottom:3px;}
+.map-item p{font-size:11.5px;color:#888;}
+
+/* Petit point coloré indicateur de type (culture, nature...) */
+.map-item .type-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+
+/* 
+   SECTION MÉTÉO & CONTACT
+   Fond crème. Grille 2 colonnes : météo à gauche, formulaire à droite.
+    */
+#contact{padding:80px 60px;background:var(--cream);}
+
+/* 
+   LAYOUT MÉTÉO + FORMULAIRE
+   grid-template-columns:1fr 1fr : Deux colonnes égales.
+   gap:48px : Espace généreux entre les deux colonnes.
+*/
+.mc-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;max-width:1000px;margin:0 auto;}
+
+/*
+   BOÎTE MÉTÉO
+   background:linear-gradient(...) : Dégradé diagonal bleu nuit → bleu océan.
+   border-radius:18px : Coins très arrondis.
+   box-shadow : Ombre bleue pour effet de profondeur.
+*/
+.meteo-box{background:linear-gradient(135deg,var(--blue-dark) 0%,var(--blue-mid) 50%,var(--ocean) 100%);border-radius:18px;padding:32px;color:#fff;box-shadow:0 8px 40px rgba(13,59,110,.35);}
+.meteo-city{font-size:12px;letter-spacing:3px;text-transform:uppercase;opacity:.7;margin-bottom:4px;}
+/* Grande température */
+.meteo-temp{font-family:'Playfair Display',serif;font-size:72px;font-weight:700;line-height:1;}
+.meteo-desc{font-size:16px;margin:6px 0 24px;opacity:.85;}
+
+/* Grille 2x2 des données météo (ressenti, humidité, vent, état mer) */
+.meteo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+/* Chaque item météo : fond blanc translucide sur le fond dégradé */
+.meteo-item{background:rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;}
+.meteo-item .label{font-size:10px;letter-spacing:1.5px;opacity:.65;text-transform:uppercase;margin-bottom:4px;}
+.meteo-item .val{font-size:18px;font-weight:700;}
+
+/*
+   FORMULAIRE DE CONTACT
+   Fond blanc avec ombre légère pour le détacher du fond crème.
+*/
+.contact-form{background:#fff;border-radius:18px;padding:36px;box-shadow:0 4px 30px rgba(0,0,0,.08);}
+.contact-form h3{font-family:'Playfair Display',serif;font-size:24px;color:var(--blue);margin-bottom:6px;}
+.contact-form .sub{font-size:13px;color:#888;margin-bottom:24px;}
+
+/* Groupe de champ de formulaire : label + input empilés verticalement */
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;margin-bottom:6px;}
+
+/* Styles des champs de formulaire (input, textarea, select) */
+/* background:#f0f6fc : Fond légèrement bleuté.             */
+/* border:1.5px solid #d0e4f0 : Bordure bleu très clair.   */
+/* Au focus : bordure devient bleue (var(--blue)).          */
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:11px 14px;border:1.5px solid #d0e4f0;border-radius:8px;font-family:'Raleway',sans-serif;font-size:13px;color:var(--dark);background:#f0f6fc;transition:border-color .2s;outline:none;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--blue);}
+/* Textarea : redimensionnable verticalement, hauteur min 110px */
+.form-group textarea{resize:vertical;min-height:110px;}
+
+/* .form-row : Deux champs côte à côte (prénom + nom) */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* Message de succès après envoi du formulaire (masqué par défaut) */
+/* Affiché via JS avec style.display='block' après validation */
+.form-success{display:none;background:#f0fdf4;border:1px solid #86efac;color:#166534;padding:14px;border-radius:8px;font-size:13px;margin-top:14px;}
+
+/*
+   FOOTER (Pied de page)
+   Fond bleu très foncé, texte blanc-gris.
+   Centré, avec logo, sous-titre et liens.
+    */
+footer{background:var(--blue-dark);color:rgba(255,255,255,.75);padding:50px 60px 30px;text-align:center;}
+.foot-logo{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;letter-spacing:5px;color:#fff;margin-bottom:4px;}
+.foot-sub{font-size:10px;letter-spacing:3px;opacity:.5;margin-bottom:28px;}
+.foot-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
+.foot-links a{color:rgba(255,255,255,.6);text-decoration:none;font-size:11px;letter-spacing:.5px;transition:color .2s;}
+.foot-links a:hover{color:#fff;}
+
+/* 
+   FENÊTRE MODALE (Modal)
+   
+   Popup qui s'affiche quand on clique sur une carte d'activité ou restaurant.
+   
+   .modal-overlay : Fond assombri derrière la fenêtre.
+   display:none par défaut → display:flex avec la classe .open (ajoutée par JS).
+   position:fixed;inset:0 : Couvre toute la fenêtre.
+   z-index:2000 : Dessus de tout sauf la lightbox (z-index:3000).
+   padding:20px : Évite que la modale touche les bords sur mobile.
+   
+   Cliquer sur l'overlay (mais PAS sur .modal) ferme la modale.
+   → Géré par l'attribut onclick="if(event.target===this)closeModal()"
+    */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:2000;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+
+/*
+   FENÊTRE MODALE elle-même
+   max-width:780px;width:100% : Largeur max avec adaptation mobile.
+   max-height:90vh;overflow-y:auto : Si le contenu dépasse, défilement vertical.
+   animation:modalIn : Apparition avec slide-up et fade-in.
+*/
+.modal{background:#fff;border-radius:18px;max-width:780px;width:100%;max-height:90vh;overflow-y:auto;position:relative;animation:modalIn .3s ease;}
+
+/* Animation d'entrée de la modale : slide depuis le bas + fondu */
+@keyframes modalIn{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+/* Bouton de fermeture (✕) en haut à droite de la modale */
+.modal-close{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.45);color:#fff;border:none;border-radius:50%;width:34px;height:34px;font-size:17px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.modal-close:hover{background:var(--blue);}
+
+/* Image en haut de la modale */
+.modal-img{width:100%;height:300px;object-fit:cover;display:block;}
+
+/* Corps de la modale : contenu textuel et grille de détails */
+.modal-body{padding:28px 30px 32px;}
+.modal-body .m-cat{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+.modal-body h2{font-family:'Playfair Display',serif;font-size:28px;color:var(--dark);margin-bottom:14px;}
+.modal-body .m-desc{font-size:13.5px;color:#555;line-height:1.78;margin-bottom:22px;}
+
+/* Grille de détails (horaires, prix, etc.) dans la modale */
+/* grid-template-columns:1fr 1fr : Deux colonnes égales */
+.modal-details{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:var(--cream);padding:20px;border-radius:12px;margin-bottom:20px;}
+.modal-detail .d-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:3px;}
+.modal-detail .d-val{font-size:13.5px;font-weight:600;color:var(--dark);}
+
+/* 
+   BARRE LATÉRALE FLOTTANTE (Sidebar)
+   
+   Trois boutons d'accès rapide flottant sur le côté droit :
+   - Retour en haut (↑)
+   - Carte (🗺)
+   - Contact (✉)
+   
+   position:fixed;right:0;top:50% : Centré verticalement, collé à droite.
+   transform:translateY(-50%) : Ajustement pour centrage parfait.
+   z-index:800 : Au-dessus du contenu mais sous la nav (900).
+    */
+.sidebar{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:800;display:flex;flex-direction:column;gap:4px;}
+/* Chaque bouton de la sidebar : carré bleu avec coins gauches arrondis */
+/* border-radius:4px 0 0 4px : Seulement côté gauche arrondi (effet "demi-onglet") */
+.s-btn{background:var(--blue);color:#fff;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:17px;border-radius:4px 0 0 4px;cursor:pointer;transition:background .2s;border:none;}
+.s-btn:hover{background:var(--blue-acc);}
+
+/* 
+   MEDIA QUERIES — RESPONSIVE DESIGN
+   
+   @media(max-width:900px) : S'applique uniquement si la largeur
+   de l'écran est inférieure ou égale à 900px (tablettes, mobiles).
+   
+   Adaptations mobiles :
+   - Nav : padding réduit, liens cachés (menu hamburger non implémenté)
+   - Sections : padding réduit (52px 18px)
+   - Grilles en 2 colonnes → 1 colonne (map-layout, mc-layout)
+   - Carte Leaflet : hauteur réduite (480 → 320px)
+   - Galerie : 2 colonnes au lieu de 3, items span remis à 1
+   - Modale : détails sur 1 colonne
+   - Lightbox nav : boutons rapprochés (-8px au lieu de -56px)
+   - Formulaire : deux champs côte à côte → un seul par ligne
+    */
+/* Bouton hamburger - caché par défaut sur desktop */
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:none;border:none;}
+.nav-hamburger span{display:block;width:24px;height:2px;background:var(--blue);border-radius:2px;transition:all .3s;}
+
+@media(max-width:900px){
+  nav{padding:0 16px;}
+  .nav-links{display:none;flex-direction:column;position:absolute;top:68px;left:0;right:0;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.1);padding:16px 0;z-index:999;}
+  .nav-links.open{display:flex;}
+  .nav-links a{padding:12px 24px;border-bottom:1px solid #d0e4f0;}
+  .nav-hamburger{display:flex;}
+  #activites,#galerie,#restaurants,#carte,#contact{padding:52px 18px;}
+  .map-layout,.mc-layout{grid-template-columns:1fr;}
+  #map{height:320px;}
+  .gallery-grid{grid-template-columns:1fr 1fr;}
+  .gal-item:nth-child(1),.gal-item:nth-child(6),.gal-item:nth-child(7){grid-column:span 1;height:200px;}
+  .modal-details{grid-template-columns:1fr;}
+  .lb-prev{left:-8px;}.lb-next{right:-8px;}
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<!-- 
+  <body> : Tout le contenu visible de la page est ici.
+  Contient dans l'ordre :
+  1. Top bar (bande d'info en haut)
+  2. Navigation (navbar sticky)
+  3. Section Hero (bannière)
+  4. Section Activités
+  5. Section Galerie
+  6. Lightbox (popup photo, masquée par défaut)
+  7. Section Restaurants & Hôtels
+  8. Section Carte interactive
+  9. Section Météo & Contact
+  10. Footer
+  11. Sidebar flottante
+  12. Modale (popup détail, masquée par défaut)
+  13. Scripts JavaScript
+-->
+
+<!-- 
+     TOP BAR — Bande d'information supérieure
+      -->
+<div class="top-bar"> Safi — Cité de l'Océan · Capitale de la Poterie Marocaine</div>
+
+<!-- 
+     NAVIGATION PRINCIPALE
+     - Logo (SVG + texte) à gauche
+     - Liens de navigation à droite
+     - position:sticky → reste visible en scrollant
+      -->
+<nav>
+  <a class="nav-logo" href="#">
+    <!-- 
+      LOGO SVG INLINE : Dessiné directement en HTML.
+      - Deux vagues (path) représentant l'océan.
+      - Un cercle (circle) représentant le soleil/la poterie.
+      - Une ligne verticale (line) sous le cercle.
+      SVG inline évite un fichier image externe et est scalable.
+      viewBox="0 0 60 60" : Espace de coordonnées du SVG (60x60 unités).
+    -->
+    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 38 Q15 28 25 38 Q35 48 45 38 Q55 28 58 32" fill="none" stroke="#0D3B6E" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M5 30 Q15 20 25 30 Q35 40 45 30 Q55 20 58 24" fill="none" stroke="#0D3B6E" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+      <circle cx="30" cy="18" r="7" fill="none" stroke="#C9A96E" stroke-width="2"/>
+      <line x1="30" y1="11" x2="30" y2="6" stroke="#C9A96E" stroke-width="2"/>
+    </svg>
+    <div class="logo-text"><div class="city">SAFI</div><div class="sub">Cité de l'Océan</div></div>
+  </a>
+
+  <!-- 
+    LIENS DE NAVIGATION
+    Chaque lien pointe vers une ancre interne (#id).
+    Le lien "Accueil" a la classe "active" par défaut au chargement.
+    La classe "active" est mise à jour dynamiquement par JavaScript
+    selon la section visible à l'écran (IntersectionObserver via scroll).
+    
+    Le dernier lien pointe vers un fichier externe : dashboard.html
+  -->
+  <ul class="nav-links">
+    <li><a href="#hero" class="active">Accueil</a></li>
+    <li><a href="#activites">Activités</a></li>
+    <li><a href="#galerie">Galerie</a></li>
+    <li><a href="#restaurants">Restaurants &amp; Hôtels</a></li>
+    <!-- &amp; = entité HTML pour le caractère "&" -->
+    <li><a href="#carte">Carte</a></li>
+    <li><a href="#contact">Météo &amp; Contact</a></li>
+    <li><a href="../index/dashboard.html">Portail touristique</a></li>
+  </ul>
+  <!-- Bouton hamburger mobile -->
+  <button class="nav-hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</nav>
+
+<!-- 
+     SECTION HERO — Bannière principale
+     id="hero" permet l'ancre de navigation.
+     Contient : image de fond, overlay, motif, vague SVG,
+     texte central (titre, sous-titre, boutons), indicateur scroll.
+      -->
+<section id="hero">
+  <!-- Image d'arrière-plan  chargée via CSS background-image -->
+  <div class="hero-img"></div>
+  <!-- Overlay dégradé sombre pour améliorer la lisibilité du texte -->
+  <div class="hero-overlay"></div>
+  <!-- Motif géométrique subtil (cercles et lignes SVG encodés en CSS) -->
+  <div class="hero-pattern"></div>
+
+  <!-- 
+    VAGUE SVG DÉCORATIVE en bas du hero
+    Crée une transition visuelle vers la section suivante.
+    viewBox="0 0 1440 120" : Large (1440px) et basse (120px).
+    preserveAspectRatio="none" : S'étire sur toute la largeur.
+    Deux paths superposés avec opacité différente pour un effet de profondeur.
+  -->
+  <svg class="hero-wave" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,120 L0,70 L180,20 L360,80 L540,30 L720,85 L900,18 L1080,72 L1260,28 L1440,60 L1440,120Z" fill="rgba(4,16,40,0.55)"/>
+    <path d="M0,120 L0,95 L240,65 L480,100 L720,55 L960,90 L1200,50 L1440,78 L1440,120Z" fill="rgba(4,16,40,0.7)"/>
+  </svg>
+
+  <!-- Contenu texte centré du hero -->
+  <div class="hero-content">
+    <!-- 
+      Titre "SAFI" : <em> rend "FI" en italique doré via CSS.
+      Taille responsive via clamp() dans le CSS.
+      Animation fadeDown au chargement (définie en CSS).
+    -->
+    <h1 class="hero-title">SA<em>FI</em></h1>
+    <p class="hero-sub">Cité de l'Océan — Capitale de la Poterie</p>
+
+    <!-- 
+      Boutons d'action :
+      onclick : Fait défiler en douceur jusqu'à la section cible.
+      document.getElementById('activites').scrollIntoView({behavior:'smooth'})
+        → Sélectionne l'élément par son id et demande le défilement fluide.
+    -->
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('activites').scrollIntoView({behavior:'smooth'})">Découvrir</button>
+      <button class="btn-outline" onclick="document.getElementById('galerie').scrollIntoView({behavior:'smooth'})">Voir la galerie</button>
+    </div>
+  </div>
+
+  <!-- Indicateur de défilement animé (rebond vertical via animation CSS "bob") -->
+  <div class="scroll-hint">
+    <span style="font-size:10px;letter-spacing:2px;">DÉFILER</span>
+    <!-- Flèche vers le bas dessinée en SVG -->
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</section>
+
+<!--
+     SECTION ACTIVITÉS TOURISTIQUES
+     - Barre de filtres (Tout, Culture, Nature, Gastronomie, Artisanat)
+     - Grille de 8 cartes d'activités
+     - Chaque carte est cliquable → ouvre une modale détaillée
+      -->
+<section id="activites">
+  <!-- En-tête de section réutilisable -->
+  <div class="sec-head">
+    <div class="eyebrow">À découvrir</div>
+    <h2>Activités <em>touristiques</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <p>Entre océan Atlantique, médina médiévale et poteries millénaires, Safi dévoile ses trésors authentiques.</p>
+  </div>
+
+  <!-- 
+    BARRE DE FILTRES
+    Chaque bouton appelle filterAct(catégorie, élément_bouton).
+    La fonction JS masque/affiche les cartes selon data-cat.
+    Le bouton "Tout" est actif par défaut (classe "active").
+  -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterAct('all',this)">Tout</button>
+    <button class="filter-btn" onclick="filterAct('culture',this)">Culture</button>
+    <button class="filter-btn" onclick="filterAct('nature',this)">Nature</button>
+    <button class="filter-btn" onclick="filterAct('food',this)">Gastronomie</button>
+    <button class="filter-btn" onclick="filterAct('artisanat',this)">Artisanat</button>
+  </div>
+
+  <!-- 
+    GRILLE DES CARTES D'ACTIVITÉS
+    id="actGrid" : Ciblé par JavaScript pour le filtrage.
+    Chaque carte a :
+    - data-cat : Catégorie utilisée par le filtre JS.
+    - onclick : Ouvre la modale correspondante via openModal('clé').
+    - onerror sur <img> : Si l'image ne charge pas, remplace par un dégradé CSS.
+  -->
+  <div class="cards-grid" id="actGrid">
+
+    <!-- CARTE 1 : Château de Mer (Catégorie : culture) -->
+    <div class="act-card" data-cat="culture" onclick="openModal('darBahar')">
+      <div class="card-img-wrap">
+        <img src="images/pc4.jpg" alt="Château de Mer Safi" onerror="this.style.background='linear-gradient(135deg,#0D3B6E,#1A7FC1)';this.style.height='210px'">
+        <span class="card-badge badge-culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <h3>Château de Mer — Dar el Bahar</h3>
+        <p>Forteresse portugaise du XVIe siècle construite sur un rocher face à l'Atlantique. Monument historique national abritant des collections archéologiques.</p>
+        <div class="card-meta"><span> 9h–18h</span><span> 20 MAD</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARTE 2 : Médina de Safi (Catégorie : culture) -->
+    <div class="act-card" data-cat="culture" onclick="openModal('medina')">
+      <div class="card-img-wrap">
+        <img src="images/pc6.jpg" alt="Médina de Safi" onerror="this.style.background='linear-gradient(135deg,#1a7a3a,#0D3B6E)';this.style.height='210px'">
+        <span class="card-badge badge-culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <h3>Médina de Safi</h3>
+        <p>L'une des médinas les mieux préservées du Maroc, entourée de remparts du XVe siècle. La Grande Mosquée du XIIe siècle et la Kechla en sont les joyaux.</p>
+        <div class="card-meta"><span> Toute la journée</span><span> Entrée libre</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARTE 3 : Colline des Potiers (Catégorie : artisanat) -->
+    <div class="act-card" data-cat="artisanat" onclick="openModal('poterie')">
+      <div class="card-img-wrap">
+        <img src="images/pc3.jpg" alt="Poterie de Safi" onerror="this.style.background='linear-gradient(135deg,#c9712a,#0D3B6E)';this.style.height='210px'">
+        <span class="card-badge badge-artisanat">Artisanat</span>
+      </div>
+      <div class="card-body">
+        <h3>Colline des Potiers — Kechla</h3>
+        <p>Safi est la capitale marocaine de la poterie avec plus de 300 ateliers actifs. La céramique bleue et verte safiote est exportée dans le monde entier.</p>
+        <div class="card-meta"><span> 8h–19h</span><span> Kechla</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARTE 4 : Surf (Catégorie : nature) -->
+    <div class="act-card" data-cat="nature" onclick="openModal('surf')">
+      <div class="card-img-wrap">
+        <img src="images/pc2.jpg" alt="Surf Safi" onerror="this.style.background='linear-gradient(135deg,#1A7FC1,#0D3B6E)';this.style.height='210px'">
+        <span class="card-badge badge-nature">Nature</span>
+      </div>
+      <div class="card-body">
+        <h3>Surf — La Vague de Safi</h3>
+        <p>La vague "Safi Right" est l'une des meilleures d'Afrique, pouvant atteindre 5 à 6 mètres. Safi accueille des compétitions internationales de surf chaque année.</p>
+        <div class="card-meta"><span> Toute l'année</span><span> Plage de Safi</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARTE 5 : Port de pêche (Catégorie : nature) -->
+    <div class="act-card" data-cat="nature" onclick="openModal('port')">
+      <div class="card-img-wrap">
+        <img src="images/pc5.jpg" alt="Port de Safi" onerror="this.style.background='linear-gradient(135deg,#0D3B6E,#1a7a3a)';this.style.height='210px'">
+        <span class="card-badge badge-nature">Nature</span>
+      </div>
+      <div class="card-body">
+        <h3>Port de Pêche de Safi</h3>
+        <p>Premier port sardinier du Maroc — les barques colorées rentrent chaque matin chargées de sardines fraîches. La criée à l'aube est un spectacle authentique.</p>
+        <div class="card-meta"><span> Dès 5h du matin</span><span> Accès libre</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARTE 6 : Sardines grillées (Catégorie : food/gastronomie) -->
+    <div class="act-card" data-cat="food" onclick="openModal('sardines')">
+      <div class="card-img-wrap">
+        <img src="images/pc9.jpg" alt="Sardines grillées Safi" onerror="this.style.background='linear-gradient(135deg,#C0392B,#c9712a)';this.style.height='210px'">
+        <span class="card-badge badge-food">Gastronomie</span>
+      </div>
+      <div class="card-body">
+        <h3>Sardines Grillées de Safi</h3>
+        <p>Safi produit plus de 50% des conserves de sardines du Maroc. Les déguster fraîches grillées sur le bord de mer, marinées à la chermoula, est une expérience unique.</p>
+        <div class="card-meta"><span> Spécialité locale</span><span> 30–80 MAD</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARTE 7 : Côte Atlantique (Catégorie : nature) -->
+    <div class="act-card" data-cat="nature" onclick="openModal('cote')">
+      <div class="card-img-wrap">
+        <img src="images/pc7.jpg" alt="Côte Atlantique Safi" onerror="this.style.background='linear-gradient(135deg,#1A7FC1,#082040)';this.style.height='210px'">
+        <span class="card-badge badge-nature">Nature</span>
+      </div>
+      <div class="card-body">
+        <h3>Côte Atlantique</h3>
+        <p>Des falaises de grès rouge aux plages sauvages, le littoral de Safi offre des paysages atlantiques spectaculaires. Le coucher de soleil depuis la corniche est inoubliable.</p>
+        <div class="card-meta"><span> Accès libre</span><span> Bord de mer</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- CARTE 8 : Art de la Céramique (Catégorie : artisanat) -->
+    <div class="act-card" data-cat="artisanat" onclick="openModal('ceramique')">
+      <div class="card-img-wrap">
+        <img src="images/pc8.jpg" alt="Art céramique Safi" onerror="this.style.background='linear-gradient(135deg,#4a3000,#c9a96e)';this.style.height='210px'">
+        <span class="card-badge badge-artisanat">Artisanat</span>
+      </div>
+      <div class="card-body">
+        <h3>Art de la Céramique Safiote</h3>
+        <p>Les maîtres potiers de Safi perpétuent un savoir-faire ancestral : façonnage au tour, décoration aux oxydes métalliques, cuisson au four à bois traditionnel.</p>
+        <div class="card-meta"><span> Ateliers disponibles</span><span> Quartier Kechla</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 
+     SECTION GALERIE PHOTOS
+     - Grille mosaïque de 7 images
+     - Clic sur image → ouvre la lightbox (plein écran)
+     - La lightbox permet navigation précédent/suivant
+      -->
+<section id="galerie">
+  <div class="sec-head">
+    <div class="eyebrow">En images</div>
+    <h2><em>Galerie</em> photos</h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <p>Cliquez sur une photo pour l'agrandir.</p>
+  </div>
+
+  <!-- 
+    GRILLE MOSAÏQUE
+    Les items ont des tailles différentes (span 1, 2, ou 3 colonnes)
+    pour créer un agencement visuel varié.
+    onclick="openLb(index)" : Ouvre la lightbox à l'index correspondant.
+    Le tableau lbSrcs en JS définit les sources et légendes dans l'ordre.
+  -->
+  <div class="gallery-grid">
+    <div class="gal-item" onclick="openLb(0)"><img src="images/pc1.jpg" alt="Coucher soleil Safi" onerror="this.style.background='linear-gradient(135deg,#0D3B6E,#c9712a)'"><div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
+    <div class="gal-item" onclick="openLb(1)"><img src="images/pc2.jpg" alt="Surf Safi" onerror="this.style.background='linear-gradient(135deg,#1A7FC1,#0D3B6E)'"><div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
+    <div class="gal-item" onclick="openLb(2)"><img src="images/pc3.jpg" alt="Poteries Safi" onerror="this.style.background='linear-gradient(135deg,#c9712a,#0D3B6E)'"><div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
+    <div class="gal-item" onclick="openLb(3)"><img src="images/pc4.jpg" alt="Château de Mer Safi" onerror="this.style.background='linear-gradient(135deg,#4a3000,#0D3B6E)'"><div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
+    <div class="gal-item" onclick="openLb(4)"><img src="images/pc5.jpg" alt="Port Safi" onerror="this.style.background='linear-gradient(135deg,#1a7a3a,#0D3B6E)'"><div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
+    <div class="gal-item" onclick="openLb(5)"><img src="images/pc6.jpg" alt="Médina Safi" onerror="this.style.background='linear-gradient(135deg,#082040,#1A7FC1)'"><div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
+    <div class="gal-item" onclick="openLb(6)"><img src="images/pc7.jpg" alt="Côte Safi" onerror="this.style.background='linear-gradient(135deg,#1A7FC1,#082040)'"><div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>
+  </div>
+</section>
+
+<!-- 
+     LIGHTBOX — Visionneuse plein écran
+     Masquée par défaut (display:none via CSS).
+     Ouverte/fermée par JavaScript via la classe "open".
+     
+     Structure :
+     - .lb-inner : Conteneur centré de l'image
+       - .lb-close : Bouton ✕ de fermeture
+       - .lb-prev : Bouton ‹ précédent
+       - #lbImg : L'image affichée
+       - .lb-next : Bouton › suivant
+       - #lbCap : Légende de l'image
+     
+     Cliquer en dehors de .lb-inner ferme la lightbox
+     (géré par addEventListener sur #lightbox en JS).
+     -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-inner">
+    <button class="lb-close" onclick="closeLb()">✕</button>
+    <button class="lb-nav lb-prev" onclick="navLb(-1)">‹</button>
+    <img id="lbImg" src="" alt="">
+    <button class="lb-nav lb-next" onclick="navLb(1)">›</button>
+    <div class="lb-caption" id="lbCap"></div>
+  </div>
+</div>
+
+<!-- 
+     SECTION RESTAURANTS & HÔTELS
+     - Fond bleu moyen (contraste)
+     - Barre de filtres (Tout, Restaurants, Hôtels)
+     - 7 cartes : 4 restaurants + 3 hôtels
+     - Chaque carte ouvre une modale au clic
+      -->
+<section id="restaurants">
+  <div class="sec-head">
+    <div class="eyebrow">Où manger &amp; dormir</div>
+    <h2>Restaurants &amp; <em>Hébergement</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <p style="color:rgba(255,255,255,.65)">Les meilleures adresses de Safi.</p>
+  </div>
+
+  <!-- 
+    FILTRES RESTAURANTS / HÔTELS
+    filterRH(cat, btn) : Même logique que filterAct mais pour data-rh.
+    Catégories : 'all', 'restaurant', 'hotel'
+  -->
+  <div class="rh-filter-bar">
+    <button class="rh-filter-btn active" onclick="filterRH('all',this)">Tout</button>
+    <button class="rh-filter-btn" onclick="filterRH('restaurant',this)">Restaurants</button>
+    <button class="rh-filter-btn" onclick="filterRH('hotel',this)">Hôtels</button>
+  </div>
+
+  <!-- 
+    GRILLE RESTAURANTS & HÔTELS
+    id="rhGrid" : Ciblé par JavaScript pour le filtrage.
+    data-rh="restaurant" ou data-rh="hotel" : Valeur utilisée par le filtre.
+  -->
+  <div class="rh-grid" id="rhGrid">
+
+    <!-- RESTAURANT 1 : Restaurant de la Mer (poissons) -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('restSardine')">
+      <div class="rh-card-img">
+        <img src="images/pc9.jpg" alt="Restaurant sardines Safi" onerror="this.style.background='linear-gradient(135deg,#C0392B,#c9712a)'">
+        <span class="rh-badge badge-resto">Restaurant</span><span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Spécialité Poissons</div>
+        <h3>Restaurant de la Mer</h3>
+        <p>Sardines fraîches grillées et fruits de mer directement du port de Safi chaque matin. Ambiance authentique de bord de mer.</p>
+        <div class="rh-meta"><span> 60–150 MAD</span><span> Bord de mer</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- RESTAURANT 2 : L'Océan (cuisine marocaine/internationale) -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('restOcean')">
+      <div class="rh-card-img">
+        <img src="images/pc10.jpg" alt="Restaurant gastronomique Safi" onerror="this.style.background='linear-gradient(135deg,#0D3B6E,#c9712a)'">
+        <span class="rh-badge badge-resto">Restaurant</span><span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Cuisine Marocaine &amp; Mer</div>
+        <h3>Restaurant L'Océan</h3>
+        <p>Cuisine marocaine et internationale avec vue sur l'Atlantique. Tajine de poisson au safran, brochettes de crevettes et loup de mer grillé.</p>
+        <div class="rh-meta"><span> 100–250 MAD</span><span> Safi centre</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- RESTAURANT 3 : Le Panorama (vue sur l'océan) -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('restPanorama')">
+      <div class="rh-card-img">
+        <img src="images/pc11.jpg" alt="Restaurant panoramique Safi" onerror="this.style.background='linear-gradient(135deg,#1A7FC1,#082040)'">
+        <span class="rh-badge badge-resto">Restaurant</span><span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Vue Panoramique Atlantique</div>
+        <h3>Le Panorama</h3>
+        <p>Restaurant moderne avec terrasse offrant une vue exceptionnelle sur l'océan Atlantique. Cuisine marocaine et poissons frais du jour.</p>
+        <div class="rh-meta"><span> 100–300 MAD</span><span> Safi bord de mer</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- RESTAURANT 4 : Chez Hosni (cuisine traditionnelle) -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('restHosni')">
+      <div class="rh-card-img">
+        <img src="images/pc12.jpg" alt="Restaurant Chez Hosni Safi" onerror="this.style.background='linear-gradient(135deg,#c9712a,#0D3B6E)'">
+        <span class="rh-badge badge-resto">Restaurant</span><span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Cuisine Marocaine Traditionnelle</div>
+        <h3>Restaurant Chez Hosni</h3>
+        <p>Restaurant familial authentique à Safi, réputé pour ses tajines, couscous et fruits de mer frais. Une adresse incontournable des habitants de Safi.</p>
+        <div class="rh-meta"><span> 50–150 MAD</span><span> Safi</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- HÔTEL 1 : Atlantique Panorama (3 étoiles, vue mer) -->
+    <div class="rh-card" data-rh="hotel" onclick="openModal('atlantique')">
+      <div class="rh-card-img">
+        <img src="images/pc13.jpg" alt="Hôtel Atlantique Panorama Safi" onerror="this.style.background='linear-gradient(135deg,#0D3B6E,#1A7FC1)'">
+        <span class="rh-badge badge-hotel">Hôtel</span><span class="stars">★★★☆☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Hôtel 3★ Vue Mer</div>
+        <h3>Hôtel Atlantique Panorama</h3>
+        <p>Hôtel 3 étoiles en bord de mer avec piscine extérieure vue Atlantique, restaurant, bar et chambres avec balcon face à l'océan.</p>
+        <div class="rh-meta"><span> 400–700 MAD/nuit</span><span> Bord de mer, Safi</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- HÔTEL 2 : Safir (4 étoiles, centre-ville) -->
+    <div class="rh-card" data-rh="hotel" onclick="openModal('safir')">
+      <div class="rh-card-img">
+        <img src="images/pc15.jpg" alt="Hôtel Safir Safi" onerror="this.style.background='linear-gradient(135deg,#1a7a3a,#0D3B6E)'">
+        <span class="rh-badge badge-hotel">Hôtel</span><span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Hôtel 4★</div>
+        <h3>Hôtel Safir Safi</h3>
+        <p>Hôtel 4 étoiles avec chambres spacieuses, restaurant gastronomique, piscine et salle de sport. Idéal pour séjours et séminaires professionnels.</p>
+        <div class="rh-meta"><span> 600–1200 MAD/nuit</span><span> Centre ville, Safi</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- HÔTEL 3 : Riad Asfi (traditionnel, médina) -->
+    <div class="rh-card" data-rh="hotel" onclick="openModal('riadAsfi')">
+      <div class="rh-card-img">
+        <img src="images/pc14.jpg" alt="Hotel Riad Asfi Safi" onerror="this.style.background='linear-gradient(135deg,#1a7a3a,#082040)'">
+        <span class="rh-badge badge-hotel">Hôtel</span><span class="stars">★★★☆☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Hôtel Traditionnel</div>
+        <h3>Hotel Riad Asfi</h3>
+        <p>Hôtel traditionnel dans la médina historique de Safi, décoré de zelliges et stuc artisanal. Patio avec fontaine, petit-déjeuner marocain inclus.</p>
+        <div class="rh-meta"><span> 300–600 MAD/nuit</span><span> Médina, Safi</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 
+     SECTION CARTE INTERACTIVE (Leaflet.js)
+     - Carte OpenStreetMap centrée sur Safi
+     - Marqueurs numérotés pour chaque lieu
+     - Liste latérale cliquable pour naviguer
+     - Popups au clic sur les marqueurs
+      -->
+<section id="carte">
+  <div class="sec-head">
+    <div class="eyebrow">Se repérer</div>
+    <h2>Carte <em>interactive</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <p>Cliquez sur un lieu pour voir les infos. Cliquez dans la liste pour centrer la carte.</p>
+  </div>
+
+  <div class="map-layout">
+    <!-- 
+      CONTENEUR DE LA CARTE LEAFLET
+      id="map" : Requis par Leaflet — la bibliothèque cherche cet élément
+      pour y injecter la carte interactive.
+      La carte est initialisée dans le JavaScript en bas de page.
+    -->
+    <div id="map"></div>
+
+    <!-- 
+      LISTE LATÉRALE DES LIEUX
+      id="mapList" : Les éléments sont générés dynamiquement par JavaScript.
+      Chaque élément cliquable centre la carte sur le lieu correspondant
+      et ouvre le popup Leaflet associé.
+    -->
+    <div class="map-list" id="mapList"></div>
+  </div>
+</section>
+
+<!-- 
+     SECTION MÉTÉO & CONTACT
+     - Boîte météo statique (données en dur, côté Safi)
+     - Formulaire de contact avec validation JavaScript
+      -->
+<section id="contact">
+  <div class="sec-head">
+    <div class="eyebrow">Infos pratiques</div>
+    <h2>Météo &amp; <em>Contact</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+  </div>
+
+  <div class="mc-layout">
+
+    <!-- BOÎTE MÉTÉO (données statiques illustratives) -->
+    <div class="meteo-box">
+      <div class="meteo-city"> Safi, Maroc — Côte Atlantique</div>
+      <!-- Température principale : grande taille via CSS -->
+      <div class="meteo-temp">22°C</div>
+      <div class="meteo-desc">Partiellement nuageux, brise océanique </div>
+      <!-- Grille 2x2 avec 4 indicateurs météo -->
+      <div class="meteo-grid">
+        <div class="meteo-item"><div class="label">Ressenti</div><div class="val">20°C</div></div>
+        <div class="meteo-item"><div class="label">Humidité</div><div class="val">72%</div></div>
+        <div class="meteo-item"><div class="label">Vent</div><div class="val">28 km/h</div></div>
+        <div class="meteo-item"><div class="label">État de la mer</div><div class="val">Agitée</div></div>
+      </div>
+    </div>
+
+    <!-- FORMULAIRE DE CONTACT -->
+    <div class="contact-form">
+      <h3>Nous contacter</h3>
+      <p class="sub">Une question sur Safi ? Écrivez-nous !</p>
+
+      <!-- Ligne avec deux champs côte à côte (CSS grid .form-row) -->
+      <div class="form-row">
+        <div class="form-group"><label>Prénom</label><input type="text" id="fPrenom" placeholder="Votre prénom"></div>
+        <div class="form-group"><label>Nom</label><input type="text" id="fNom" placeholder="Votre nom"></div>
+      </div>
+
+      <!-- Champ email (type="email" → validation HTML5 native) -->
+      <div class="form-group"><label>Email</label><input type="email" id="fEmail" placeholder="email@exemple.com"></div>
+
+      <!-- Menu déroulant pour le sujet -->
+      <div class="form-group">
+        <label>Sujet</label>
+        <select id="fSujet">
+          <option value="">Choisir un sujet…</option>
+          <option>Activités touristiques</option>
+          <option>Poterie &amp; Artisanat</option>
+          <option>Restaurants &amp; Hébergement</option>
+          <option>Surf &amp; Sports nautiques</option>
+          <option>Autre</option>
+        </select>
+      </div>
+
+      <!-- Zone de texte pour le message (redimensionnable verticalement) -->
+      <div class="form-group"><label>Message</label><textarea id="fMsg" placeholder="Votre message…"></textarea></div>
+
+      <!-- 
+        Bouton d'envoi : onclick appelle sendForm() en JavaScript.
+        style="width:100%" : Bouton pleine largeur.
+        La fonction JS valide les champs, affiche un message de succès
+        et réinitialise le formulaire.
+      -->
+      <button class="btn-primary" style="width:100%" onclick="sendForm()">Envoyer le message</button>
+
+      <!-- Message de confirmation (masqué, affiché par JS après envoi réussi) -->
+      <div class="form-success" id="formOk"> Message envoyé ! Merci, nous vous répondrons rapidement.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 
+     FOOTER — Pied de page
+     Logo répété + sous-titre + liens de navigation rapide.
+     -->
+<footer>
+  <div class="foot-logo">SAFI</div>
+  <div class="foot-sub">Cité de l'Océan · Capitale de la Poterie</div>
+  <div class="foot-links">
+    <a href="#hero">Accueil</a><a href="#activites">Activités</a>
+    <a href="#galerie">Galerie</a><a href="#restaurants">Restaurants</a>
+    <a href="#carte">Carte</a><a href="#contact">Contact</a>
+    <a href="../index/dashboard.html">Explorer le portail</a>
+  </div>
+</footer>
+
+<!-- 
+     SIDEBAR FLOTTANTE (boutons d'accès rapide)
+     Trois boutons positionnés au milieu du côté droit.
+     Chaque bouton appelle une action JavaScript inline :
+      -Retour en haut de page (window.scrollTo)
+      -Défilement vers la section #carte
+      -Défilement vers la section #contact
+     -->
+<div class="sidebar">
+  <button class="s-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+  <button class="s-btn" onclick="document.getElementById('carte').scrollIntoView({behavior:'smooth'})">🗺</button>
+  <button class="s-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">✉</button>
+</div>
+
+<!--
+     MODALE DE DÉTAIL (Popup)
+     Masquée par défaut, affichée au clic sur une carte.
+     
+     Structure :
+     - .modal-overlay : Fond sombre (fermeture au clic extérieur)
+       - .modal : Contenu de la modale
+         - .modal-close : Bouton ✕
+         - #mImg : Image du lieu/établissement
+         - .modal-body :
+           - #mCat : Catégorie (ex: "Monument Historique")
+           - #mTitle : Titre (ex: "Château de Mer")
+           - #mDesc2 : Description longue
+           - #mDets : Grille de détails (horaires, prix, etc.)
+     
+     Le contenu est injecté dynamiquement par openModal(key) en JavaScript.
+     La fonction cherche la clé dans l'objet modalData{}.
+      -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <img id="mImg" class="modal-img" src="" alt="">
+    <div class="modal-body">
+      <div id="mCat" class="m-cat"></div>
+      <h2 id="mTitle"></h2>
+      <p id="mDesc2" class="m-desc"></p>
+      <div class="modal-details" id="mDets"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 
+     BIBLIOTHÈQUE LEAFLET (JavaScript de la carte)
+     Chargement depuis le CDN unpkg (même version que le CSS).
+     Doit être chargé AVANT le code JS qui utilise Leaflet.
+      -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+/* 
+   JAVASCRIPT — Fonctionnalités interactives
+    */
+
+/* 
+   OBJET modalData — Données de toutes les modales
+   
+   Structure : objet JavaScript avec une clé par lieu/établissement.
+   Chaque entrée contient :
+   - img : Chemin de l'image (string)
+   - cat : Catégorie affichée en haut (string)
+   - title : Titre principal (string)
+   - desc : Description longue (string)
+   - dets : Tableau de paires [label, valeur] pour la grille de détails
+   
+   Utilisé par la fonction openModal(key) pour remplir la modale.
+    */
+const modalData={
+  darBahar:{img:'images/pc4.jpg',cat:' Monument Historique · Safi',title:'Château de Mer — Dar el Bahar',
+    desc:"Le Château de Mer (Dar el Bahar) est une forteresse portugaise construite au XVIe siècle sur un rocher face à l'Atlantique. Classé monument historique national, il fut utilisé comme prison par les sultans alaouites. Il abrite aujourd'hui un musée archéologique présentant des poteries et céramiques safiotes, des canons et objets de l'époque portugaise. La vue depuis ses remparts sur l'océan Atlantique est spectaculaire.",
+    dets:[['Construit','XVIe siècle — époque portugaise'],['Statut','Monument historique national'],['Entrée','20 MAD'],['Horaires','9h–18h (fermé le mardi)'],['Situation','Bord de mer, centre de Safi'],['À voir','Canons, collections archéo., vue mer']]},
+  medina:{img:'images/pc6.jpg',cat:' Médina Historique · Safi',title:'Médina de Safi',
+    desc:"La médina de Safi est l'une des mieux préservées du Maroc, entourée de remparts datant du XVe siècle. Elle abrite la Grande Mosquée de Safi construite au XIIe siècle, la Kechla (citadelle portugaise du XVIe siècle reconvertie en four de potiers), et le célèbre quartier des potiers. Les ruelles dévoilent une architecture arabo-andalouse authentique avec maisons à patio, fondouks et hammams traditionnels.",
+    dets:[['Remparts','XVe siècle'],['Grande Mosquée','XIIe siècle'],['Kechla','XVIe siècle'],['Quartier potiers','Colline Kechla'],['Accès','Entrée libre'],['Superficie','Environ 40 hectares']]},
+  poterie:{img:'images/pc3.jpg',cat:' Artisanat · Colline Kechla, Safi',title:'Colline des Potiers — Kechla',
+    desc:"Safi est reconnue comme la capitale marocaine de la poterie et l'un des plus grands centres de céramique d'Afrique. La colline Kechla regroupe plus de 300 ateliers actifs produisant la célèbre céramique bleue, verte et turquoise aux motifs géométriques caractéristiques. Les techniques ancestrales — façonnage au tour, émail naturel, cuisson au four à bois — sont transmises de père en fils depuis des siècles.",
+    dets:[['Ateliers','300+ potiers actifs'],['Spécialité','Céramique bleue, verte, turquoise'],['Horaires','8h–19h (tous les jours)'],['Cours','Ateliers initiation disponibles'],['Exportation','Europe, USA, monde entier'],['Localisation','Colline Kechla, Safi']]},
+  surf:{img:'images/pc2.jpg',cat:' Nature & Sport · Plage de Safi',title:"Surf — La Vague Légendaire de Safi",
+    desc:"Safi est mondialement reconnue dans le milieu du surf pour sa vague légendaire appelée 'Safi Right'. C'est l'un des meilleurs spots de surf de toute l'Afrique, avec des vagues pouvant atteindre 5 à 6 mètres lors des sessions hivernales. La ville accueille régulièrement des compétitions internationales. Des écoles de surf locales proposent des cours pour tous niveaux.",
+    dets:[['Niveau','Intermédiaire à Expert'],['Vague','Safi Right — droite puissante'],['Hauteur','Jusqu\'à 6 mètres en hiver'],['Saison','Octobre – Mars (meilleure période)'],['Écoles de surf','Plusieurs écoles locales'],['Compétitions','Événements internationaux annuels']]},
+  port:{img:'images/pc5.jpg',cat:' Port de Pêche · Safi',title:'Port de Pêche de Safi',
+    desc:"Le port de Safi est le premier port sardinier du Maroc et l'un des plus importants d'Afrique pour la pêche à la sardine. Chaque matin, les barques colorées des pêcheurs rentrent chargées de sardines, maquereaux et autres poissons frais. La criée du matin (dès 5h) est un spectacle vivant et authentique.",
+    dets:[['Spécialité','Sardine — 1er port sardinier du Maroc'],['Criée','5h–8h du matin'],['Flottille','Plusieurs centaines de bateaux'],['Industrie','50%+ des conserves de sardines du Maroc'],['Accès','Zone publique accessible'],['À faire','Acheter du poisson frais directement']]},
+  sardines:{img:'images/pc9.jpg',cat:' Gastronomie · Safi',title:'Sardines Grillées — Spécialité de Safi',
+    desc:"La sardine est l'emblème gastronomique de Safi, surnommée 'la capitale mondiale de la sardine'. La ville produit plus de 50% des conserves de sardines du Maroc. Les déguster fraîches grillées au charbon, marinées à la chermoula (mélange de coriandre, persil, ail, paprika et cumin), directement sur le bord de mer est une expérience gastronomique authentique et incontournable à Safi.",
+    dets:[['Spécialité','Sardines fraîches grillées au charbon'],['Marinade','Chermoula — herbes et épices'],['Prix','30 à 80 MAD la portion'],['Où','Restaurants du port et bord de mer'],['Production','50%+ des conserves nationales'],['Saison','Toute l\'année (pêche continue)']]},
+  cote:{img:'images/pc7.jpg',cat:' Nature · Côte Atlantique, Safi',title:'Côte Atlantique de Safi',
+    desc:"Le littoral de Safi s'étend sur plusieurs kilomètres de côte atlantique sauvage et spectaculaire. Les falaises de grès rouge plongent dans un océan puissant aux vagues impressionnantes. La grande plage de Safi, peu fréquentée et sauvage, est idéale pour les promenades au coucher du soleil.",
+    dets:[['Côte','Plusieurs km de littoral atlantique'],['Surf','Spot mondial de référence'],['Plage','Grande plage sauvage'],['Falaises','Grès rouge spectaculaire'],['Coucher soleil','Panorama exceptionnel'],['Accès','Libre et gratuit']]},
+  ceramique:{img:'images/pc8.jpg',cat:' Art & Artisanat · Safi',title:'Art de la Céramique Safiote',
+    desc:"La céramique de Safi est un art ancestral transmis depuis des siècles de maître à apprenti. Les potiers maîtrisent des techniques millénaires : façonnage au tour manuel, décoration aux oxydes métalliques naturels (cobalt pour le bleu, manganèse pour le brun, chrome pour le vert), cuisson au four à bois traditionnel.",
+    dets:[['Techniques','Tour, émail naturel, cuisson bois'],['Motifs','Géométriques et floraux arabesques'],['Couleurs','Bleu cobalt, vert, turquoise'],['Cours','Ateliers d\'initiation ouverts'],['Achat','Boutiques sur la colline Kechla'],['Exportation','France, Espagne, USA, monde entier']]},
+  restSardine:{img:'images/pc9.jpg',cat:' Restaurant · Bord de mer, Safi',title:'Restaurant de la Mer',
+    desc:"Incontournable pour goûter les sardines fraîches de Safi, ce restaurant du bord de mer propose des poissons directement issus du port chaque matin. Sardines grillées au charbon, maquereaux marinés, calamars frits et fruits de mer préparés à la minute dans une ambiance authentique de port de pêche.",
+    dets:[['Spécialité','Sardines grillées, fruits de mer'],['Prix moyen','60 – 150 MAD / personne'],['Horaires','11h – 22h'],['Localisation','Front de mer, Safi'],['Ambiance','Authentique, port de pêche'],['Note',' 4.3 / 5']]},
+  restOcean:{img:'images/pc10.jpg',cat:' Restaurant · Safi',title:"Restaurant L'Océan",
+    desc:"Restaurant panoramique proposant une cuisine marocaine et internationale de qualité. La carte met à l'honneur les produits de la mer locaux : tajine de poisson au safran, brochettes de crevettes, loup de mer grillé, couscous aux fruits de mer.",
+    dets:[['Spécialité','Tajine poisson, fruits de mer'],['Prix moyen','100 – 250 MAD / personne'],['Horaires','12h–15h · 19h–23h'],['Vue','Sur l\'Atlantique'],['Localisation','Bord de mer, Safi'],['Note',' 4.2 / 5']]},
+  restPanorama:{img:'images/pc11.jpg',cat:' Restaurant Panoramique · Safi',title:'Le Panorama',
+    desc:"Restaurant moderne perché offrant une vue exceptionnelle sur l'océan Atlantique. Cuisine marocaine et internationale soignée, poissons frais du jour, salades et desserts maison.",
+    dets:[['Spécialité','Poissons frais, cuisine moderne'],['Prix moyen','100 – 300 MAD / personne'],['Horaires','12h–23h'],['Vue','Panoramique Atlantique'],['Localisation','Safi bord de mer'],['Note',' 4.3 / 5']]},
+  restHosni:{img:'images/pc12.jpg',cat:' Restaurant Traditionnel · Safi',title:'Restaurant Chez Hosni',
+    desc:"Restaurant familial authentique très apprécié des habitants de Safi. Chez Hosni propose une cuisine marocaine généreuse et savoureuse : tajines aux légumes du terroir, couscous maison, crevettes sautées à la chermoula et fruits de mer frais. Une adresse locale incontournable pour découvrir la vraie cuisine de Safi.",
+    dets:[['Spécialité','Tajines, couscous, crevettes, fruits de mer'],['Prix moyen','50 – 150 MAD / personne'],['Horaires Dim–Jeu','11h00 – 23h00'],['Horaires Sam','11h00 – 23h00'],['Vendredi','Fermé'],['Localisation','Safi']]},
+  atlantique:{img:'images/pc13.jpg',cat:' Hôtel 3★ · Safi Bord de Mer',title:'Hôtel Atlantique Panorama',
+    desc:"L'Hôtel Atlantique Panorama est un établissement 3 étoiles idéalement situé en bord de mer à Safi, offrant une vue panoramique sur l'océan Atlantique. Il dispose d'une piscine extérieure, d'un restaurant servant cuisine marocaine et internationale, d'un bar et de chambres avec balcon face à l'océan.",
+    dets:[['Catégorie','Hôtel 3 étoiles'],['Prix','400 – 700 MAD / nuit'],['Piscine','Extérieure avec vue mer'],['Restaurant','Cuisine marocaine et internationale'],['Localisation','Bord de mer, Safi'],['Note','3.8 / 5']]},
+  safir:{img:'images/pc15.jpg',cat:' Hôtel 4★ · Centre ville, Safi',title:'Hôtel Safir Safi',
+    desc:"L'Hôtel Safir Safi est un établissement 4 étoiles offrant un hébergement de qualité au cœur de Safi. Il propose des chambres spacieuses et bien équipées, un restaurant gastronomique avec spécialités marocaines, une piscine, une salle de sport et des salles de réunion pour séminaires.",
+    dets:[['Catégorie','Hôtel 4 étoiles'],['Prix','600 – 1200 MAD / nuit'],['Équipements','Piscine, salle de sport, restaurant'],['Salles','Conférences & séminaires'],['Localisation','Centre ville, Safi'],['Note',' 4.1 / 5']]},
+  riadAsfi:{img:'images/pc14.jpg',cat:' Hôtel Traditionnel · Médina, Safi',title:'Hotel Riad Asfi',
+    desc:"L'Hotel Riad Asfi est un hôtel traditionnel niché dans la médina historique de Safi. Décoré de zelliges traditionnels, de stuc sculpté et de boiseries en cèdre, il offre une expérience d'hébergement typiquement marocaine au cœur de la ville ancienne. Patio avec fontaine centrale, petit-déjeuner marocain servi chaque matin.",
+    dets:[['Catégorie','Hôtel traditionnel'],['Prix','300 – 600 MAD / nuit'],['Style','Architecture médina traditionnelle'],['Petit-déjeuner','Marocain inclus'],['Localisation','Médina, Safi'],['Note',' 3.9 / 5']]}
+};
+
+/* 
+   FONCTION openModal(key)
+   
+   Paramètre : key — clé de l'objet modalData (ex: 'darBahar')
+   
+   Fonctionnement :
+   1. Récupère les données depuis modalData[key]
+   2. Injecte l'image, la catégorie, le titre, la description
+      dans les éléments HTML de la modale (#mImg, #mCat, etc.)
+   3. Génère le HTML de la grille de détails via Array.map()
+      Chaque paire [label, valeur] devient une div .modal-detail
+   4. Affiche la modale en ajoutant la classe "open" sur #modalOverlay
+   5. Bloque le défilement de la page (document.body.style.overflow='hidden')
+      pour éviter de défiler en arrière-plan.
+   
+   onerror sur l'image : Si l'image ne charge pas, applique un dégradé CSS
+   comme fallback visuel.
+   */
+function openModal(key){
+  const d=modalData[key];if(!d)return;
+  document.getElementById('mImg').src=d.img;
+  document.getElementById('mImg').onerror=function(){this.style.cssText='width:100%;height:220px;display:block;background:linear-gradient(135deg,#0D3B6E,#1A7FC1)';};
+  document.getElementById('mCat').textContent=d.cat;
+  document.getElementById('mTitle').textContent=d.title;
+  document.getElementById('mDesc2').textContent=d.desc;
+  document.getElementById('mDets').innerHTML=d.dets.map(([l,v])=>`<div class="modal-detail"><div class="d-label">${l}</div><div class="d-val">${v}</div></div>`).join('');
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+/* 
+   FONCTION closeModal()
+   
+   Ferme la modale en :
+   1. Retirant la classe "open" de #modalOverlay → display redevient "none"
+   2. Rétablissant le défilement de la page (overflow:'')
+    */
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');document.body.style.overflow='';}
+
+/* 
+   FERMETURE PAR TOUCHE ÉCHAP
+   Écoute l'événement 'keydown' sur tout le document.
+   Si la touche pressée est 'Escape', appelle closeModal().
+   Améliore l'accessibilité et l'expérience utilisateur.
+*/
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+/* 
+   FONCTION filterAct(cat, btn) — Filtre les activités
+   
+   Paramètres :
+   - cat : Catégorie à afficher ('all', 'culture', 'nature', etc.)
+   - btn : Le bouton cliqué (pour lui ajouter la classe 'active')
+   
+   Fonctionnement :
+   1. Sélectionne toutes les cartes dans #actGrid.
+   2. Pour chaque carte, compare data-cat avec le filtre demandé.
+      Si cat='all' → montre tout (condition toujours fausse → hidden:false)
+      Sinon → masque les cartes dont data-cat ≠ cat.
+   3. Retire la classe 'active' de tous les boutons de filtre.
+   4. Ajoute la classe 'active' sur le bouton cliqué (btn).
+    */
+function filterAct(cat,btn){
+  document.querySelectorAll('#actGrid .act-card').forEach(c=>{c.classList.toggle('hidden',cat!=='all'&&c.dataset.cat!==cat);});
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+}
+
+/* 
+   FONCTION filterRH(cat, btn) — Filtre restaurants/hôtels
+   
+   Même logique que filterAct() mais pour la section restaurants.
+   Utilise data-rh (valeurs: 'restaurant', 'hotel') au lieu de data-cat.
+    */
+function filterRH(cat,btn){
+  document.querySelectorAll('#rhGrid .rh-card').forEach(c=>{c.classList.toggle('hidden',cat!=='all'&&c.dataset.rh!==cat);});
+  document.querySelectorAll('.rh-filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+}
+
+/* 
+   TABLEAU lbSrcs — Sources et légendes de la galerie lightbox
+   
+   Tableau d'objets avec :
+   - src : Chemin de l'image
+   - cap : Légende affichée sous l'image dans la lightbox
+   
+   L'index correspond à l'argument passé à openLb(i).
+   */
+const lbSrcs=[
+  {src:'images/pc1.jpg',cap:"Safi — Coucher de soleil sur l'Atlantique"},
+  {src:'images/pc2.jpg',cap:'Surf — La vague légendaire de Safi'},
+  {src:'images/pc3.jpg',cap:'Poteries traditionnelles de Safi'},
+  {src:'images/pc4.jpg',cap:'Château de Mer (Dar el Bahar) — Forteresse portugaise XVIe s.'},
+  {src:'images/pc5.jpg',cap:'Port de pêche de Safi — Barques colorées'},
+  {src:'images/pc6.jpg',cap:'Médina historique de Safi'},
+  {src:'images/pc7.jpg',cap:"Côte Atlantique — Falaises de Safi"},
+];
+
+/* Variable globale pour suivre l'index de l'image actuellement affichée */
+let lbIdx=0;
+
+/* 
+   FONCTION openLb(i) — Ouvre la lightbox à l'index i
+   
+   1. Met à jour lbIdx (index courant).
+   2. Change le src de #lbImg avec l'image correspondante.
+   3. Met à jour la légende (#lbCap).
+   4. Affiche la lightbox (classe "open").
+   5. Bloque le défilement de la page.
+   */
+function openLb(i){lbIdx=i;document.getElementById('lbImg').src=lbSrcs[i].src;document.getElementById('lbCap').textContent=lbSrcs[i].cap;document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden';}
+
+/* 
+   FONCTION closeLb() — Ferme la lightbox
+   Retire "open" et rétablit le défilement.
+    */
+function closeLb(){document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';}
+
+/* 
+   FONCTION navLb(dir) — Navigation dans la lightbox
+   
+   dir : +1 (suivant) ou -1 (précédent)
+   
+   Calcul de l'index : (lbIdx + dir + total) % total
+   L'ajout de lbSrcs.length avant le modulo gère le cas
+   où lbIdx-1 = -1 (évite les index négatifs).
+   → Navigation circulaire : après la dernière image, revient à la première.
+    */
+function navLb(dir){lbIdx=(lbIdx+dir+lbSrcs.length)%lbSrcs.length;openLb(lbIdx);}
+
+/* Fermeture de la lightbox en cliquant sur le fond noir (hors de l'image) */
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLb();});
+
+/* 
+   INITIALISATION DE LA CARTE LEAFLET
+   
+   Exécutée après le chargement complet de la page (event 'load').
+   Utilise window.addEventListener pour s'assurer que le DOM est prêt
+   et que la bibliothèque Leaflet est chargée.
+   
+   Étapes :
+   1. L.map('map') : Crée la carte dans le div id="map".
+      .setView([lat, lng], zoom) : Centre sur Safi (32.299°N, 9.237°O)
+      avec un niveau de zoom de 14.
+   
+   2. L.tileLayer(...) : Charge les tuiles OpenStreetMap.
+      {s} = sous-domaine (a/b/c), {z} = zoom, {x}/{y} = position.
+      attribution : Mention obligatoire d'OpenStreetMap.
+      .addTo(leafletMap) : Ajoute la couche à la carte.
+   
+   3. Tableau places[] : Définit les 8 lieux à afficher.
+      Chaque lieu a : name, lat, lng, type, col (couleur), desc.
+   
+   4. Pour chaque lieu (forEach) :
+      a. L.divIcon : Crée un marqueur personnalisé avec un cercle
+         coloré numéroté en HTML.
+         iconSize:[28,28] et iconAnchor:[14,14] : Taille et point d'ancrage.
+      b. L.marker(...).addTo(leafletMap) : Ajoute le marqueur.
+      c. m.bindPopup(...) : Attache un popup au marqueur (affiché au clic).
+      d. Crée un élément .map-item dans la liste latérale.
+         onclick : Centre la carte, ouvre le popup, marque l'item actif.
+   */
+window.addEventListener('load',()=>{
+  const leafletMap=L.map('map').setView([32.299,-9.237],14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(leafletMap);
+
+  /* 8 lieux géolocalisés sur la carte de Safi */
+  const places=[
+    {name:'Château de Mer (Dar el Bahar)',lat:32.2994,lng:-9.2373,type:'culture',col:'#0D3B6E',desc:'Forteresse portugaise XVIe s. — monument historique'},
+    {name:'Médina de Safi',lat:32.3007,lng:-9.2338,type:'culture',col:'#0D3B6E',desc:'Médina médiévale — remparts XVe siècle'},
+    {name:'Colline des Potiers (Kechla)',lat:32.2985,lng:-9.2298,type:'artisanat',col:'#c9712a',desc:'300+ ateliers — céramique safiote'},
+    {name:'Port de Safi',lat:32.3089,lng:-9.2444,type:'nature',col:'#1a7a3a',desc:'1er port sardinier du Maroc'},
+    {name:'Plage & Spot de Surf',lat:32.2850,lng:-9.2560,type:'nature',col:'#1A7FC1',desc:'Vague mondiale — Safi Right'},
+    {name:'Hôtel Atlantique Panorama',lat:32.2970,lng:-9.2480,type:'hotel',col:'#1a3a5c',desc:'Hôtel 3★ vue mer'},
+    {name:'Hôtel Safir Safi',lat:32.3020,lng:-9.2350,type:'hotel',col:'#1a3a5c',desc:'Hôtel 4★ — centre ville'},
+    {name:'Hotel Riad Asfi',lat:32.3010,lng:-9.2330,type:'hotel',col:'#1a3a5c',desc:'Hôtel traditionnel — Médina'},
+  ];
+
+  /* Correspondance type → couleur pour les points de la liste latérale */
+  const typeCol={culture:'#0D3B6E',nature:'#1a7a3a',artisanat:'#c9712a',hotel:'#1a3a5c'};
+
+  const listEl=document.getElementById('mapList');
+
+  /* Création des marqueurs et des items de liste pour chaque lieu */
+  places.forEach((p,i)=>{
+    /* Marqueur personnalisé : cercle coloré avec numéro */
+    const icon=L.divIcon({className:'',html:`<div style="background:${p.col};width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;">${i+1}</div>`,iconSize:[28,28],iconAnchor:[14,14]});
+    const m=L.marker([p.lat,p.lng],{icon}).addTo(leafletMap);
+    m.bindPopup(`<strong>${p.name}</strong><br><small>${p.desc}</small>`);
+
+    /* Création d'un élément dans la liste latérale */
+    const item=document.createElement('div');item.className='map-item';
+    item.innerHTML=`<h4><span class="type-dot" style="background:${typeCol[p.type]||'#0D3B6E'}"></span>${i+1}. ${p.name}</h4><p>${p.desc}</p>`;
+    /* 
+       Au clic sur un item de liste :
+       1. setView([lat,lng], 16) : Centre et zoome sur le lieu (zoom 16).
+       2. m.openPopup() : Ouvre le popup du marqueur correspondant.
+       3. Retire "active-place" de tous les items, l'ajoute sur celui-ci.
+    */
+    item.onclick=()=>{leafletMap.setView([p.lat,p.lng],16);m.openPopup();document.querySelectorAll('.map-item').forEach(x=>x.classList.remove('active-place'));item.classList.add('active-place');};
+    listEl.appendChild(item);
+  });
+});
+
+/*
+   FONCTION sendForm() — Validation et envoi du formulaire
+   
+   Validation côté client (JavaScript, pas serveur) :
+   1. Récupère les valeurs des champs (trim() supprime les espaces).
+   2. Vérifie que prénom, email et message sont renseignés.
+      Si non → alert() + arrêt (return).
+   3. Valide le format email avec une regex basique :
+      /\S+@\S+\.\S+/ → "quelquechose@quelquechose.quelquechose"
+      Si invalide → alert() + arrêt.
+   4. Si tout est valide :
+      - Affiche le message de succès (#formOk) via style.display='block'.
+      - Réinitialise les champs texte (value='').
+      - Remet le select à l'option 0 (selectedIndex=0).
+   
+   Note : Ce formulaire ne communique pas avec un serveur.
+   Dans un projet réel, on utiliserait fetch() ou XMLHttpRequest
+   pour envoyer les données à un backend.
+    */
+function sendForm(){
+  const p=document.getElementById('fPrenom').value.trim();
+  const e=document.getElementById('fEmail').value.trim();
+  const m=document.getElementById('fMsg').value.trim();
+  if(!p||!e||!m){alert('Veuillez remplir les champs obligatoires (Prénom, Email, Message).');return;}
+  if(!/\S+@\S+\.\S+/.test(e)){alert('Adresse email invalide.');return;}
+  document.getElementById('formOk').style.display='block';
+  ['fPrenom','fNom','fEmail','fMsg'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fSujet').selectedIndex=0;
+}
+
+/* 
+   DÉTECTION DE LA SECTION ACTIVE (Navigation)
+   
+   Met à jour le lien actif dans la navbar selon la section
+   actuellement visible à l'écran pendant le défilement.
+   
+   window.addEventListener('scroll', ...) : Écoute le défilement.
+   {passive:true} : Optimisation performance — indique au navigateur
+     que l'écouteur ne va pas appeler preventDefault().
+   
+   Pour chaque section de la liste :
+   1. Récupère l'élément de section et le lien de nav correspondant.
+   2. Vérifie si la position de défilement (y = scrollY + 100px)
+      est dans la zone de la section (entre offsetTop et offsetTop+height).
+   3. Si oui : retire 'active' de tous les liens, ajoute 'active' sur le bon.
+   
+   Le +100px de décalage évite que le changement soit trop tardif
+   (la section devient "active" 100px avant d'atteindre le haut).
+    */
+const sections=['hero','activites','galerie','restaurants','carte','contact'];
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY+100;
+  sections.forEach(id=>{
+    const el=document.getElementById(id);const link=document.querySelector(`nav a[href="#${id}"]`);
+    if(!el||!link)return;
+    if(el.offsetTop<=y&&el.offsetTop+el.offsetHeight>y){document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));link.classList.add('active');}
+  });
+},{passive:true});
+/* ══ MENU HAMBURGER MOBILE ══ */
+function toggleNav(){
+  document.querySelector('.nav-links').classList.toggle('open');
+}
+document.querySelectorAll('.nav-links a').forEach(link=>{
+  link.addEventListener('click',()=>{
+    document.querySelector('.nav-links').classList.remove('open');
+  });
+});
+document.addEventListener('click',function(e){
+  const nav=document.querySelector('.nav-links');
+  const btn=document.getElementById('hamburger');
+  if(nav&&nav.classList.contains('open')&&!nav.contains(e.target)&&!btn.contains(e.target)){
+    nav.classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>

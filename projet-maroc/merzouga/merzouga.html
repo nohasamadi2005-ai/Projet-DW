@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merzouga – La Porte du Sahara</title>
+
+  <!-- Police Playfair Display : utilisée pour les titres et logos -->
+  <!-- Police Raleway : utilisée pour le texte courant -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Feuille de style Leaflet : nécessaire pour afficher la carte interactive -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+
+    /* ============================================================
+       VARIABLES GLOBALES DE COULEURS
+       Palette désert : or, sable, terracotta, crème
+       Modifiez ces valeurs pour changer toute la palette du site
+       ============================================================ */
+    :root {
+      --gold:       #C9963A;   /* Or principal (badges, titres) */
+      --gold-mid:   #B8842A;   /* Or moyen (fond section restaurants) */
+      --gold-dark:  #7A4A10;   /* Or foncé (navbar top, footer, boutons) */
+      --gold-acc:   #E0A84A;   /* Or accent (hover, hero-tag) */
+      --sand:       #F5E2B0;   /* Sable clair */
+      --cream:      #FAF3E0;   /* Fond crème (sections alternées) */
+      --white:      #FFFFFF;
+      --dark:       #1a0e00;   /* Texte principal très foncé */
+      --terracotta: #C0602B;   /* Terracotta (badges restaurant) */
+    }
+
+    /* Reset universel : supprime marges et paddings par défaut */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box; /* Le padding ne s'ajoute pas à la largeur */
+    }
+
+    /* Scroll fluide entre les sections au clic sur les liens */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Corps principal : police Raleway, fond crème, texte foncé */
+    body {
+      font-family: 'Raleway', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+      overflow-x: hidden; /* Empêche le scroll horizontal */
+    }
+
+    /* ============================================================
+       BARRE SUPERIEURE (bandeau d'information en haut de page)
+       ============================================================ */
+    .top-bar {
+      background: var(--gold-dark); /* Fond or foncé */
+      color: #fff;
+      text-align: center;
+      padding: 7px;
+      font-size: 12px;
+      letter-spacing: 1.5px; /* Lettres espacées pour un effet élégant */
+    }
+
+    /* ============================================================
+       BARRE DE NAVIGATION PRINCIPALE
+       sticky = reste visible en scrollant vers le bas
+       ============================================================ */
+    nav {
+      position: sticky;  /* Collée en haut de l'écran */
+      top: 0;
+      z-index: 900;      /* Au-dessus de tout le contenu de la page */
+      background: rgba(255, 255, 255, 0.97); /* Blanc presque opaque */
+      backdrop-filter: blur(12px); /* Effet flou derrière la navbar */
+      box-shadow: 0 2px 24px rgba(180, 120, 30, .15); /* Ombre dorée douce */
+      display: flex;
+      align-items: center;
+      justify-content: space-between; /* Logo à gauche, liens à droite */
+      padding: 0 48px;
+      height: 68px;
+    }
+
+    /* Conteneur du logo (icône SVG + texte) */
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none; /* Supprime le soulignement du lien */
+    }
+
+    /* Taille de l'icône SVG dans le logo */
+    .nav-logo svg {
+      width: 38px;
+      height: 38px;
+    }
+
+    /* Nom de la ville dans le logo */
+    .logo-text .city {
+      font-family: 'Playfair Display', serif;
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--gold-dark);
+      letter-spacing: 2px;
+    }
+
+    /* Sous-titre du logo (La Porte du Sahara) */
+    .logo-text .sub {
+      font-size: 9.5px;
+      color: #999;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* Liste des liens de navigation horizontaux */
+    .nav-links {
+      display: flex;
+      list-style: none; /* Supprime les puces */
+      gap: 0;
+      align-items: center;
+    }
+
+    /* Style de chaque lien de navigation */
+    .nav-links a {
+      display: block;
+      padding: 10px 14px;
+      text-decoration: none;
+      color: #333;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      transition: color .2s; /* Changement de couleur progressif au survol */
+      white-space: nowrap;   /* Empêche le retour à la ligne */
+    }
+
+    /* Couleur au survol */
+    .nav-links a:hover {
+      color: var(--gold-dark);
+    }
+
+    /* Lien actif : souligné doré (mis à jour par le JS lors du scroll) */
+    .nav-links a.active {
+      color: var(--gold-dark);
+      border-bottom: 2px solid var(--gold);
+    }
+
+    /* Bouton hamburger - caché par défaut sur desktop */
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; background: none; border: none; }
+    .nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--gold-dark); border-radius: 2px; transition: all .3s; }
+
+    /* ============================================================
+       SECTION HERO (première section plein écran)
+       ============================================================ */
+    #hero {
+      position: relative;
+      height: 100vh;       /* Hauteur = 100% de l'écran */
+      min-height: 580px;   /* Hauteur minimum sur petits écrans */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;    /* Cache ce qui dépasse */
+      background: #3a1a00; /* Couleur de fond si l'image ne charge pas */
+    }
+
+    /* Image de fond du hero (chargée via la propriété background en CSS) */
+    .hero-img {
+      position: absolute;
+      inset: 0; /* Couvre tout : top:0, right:0, bottom:0, left:0 */
+      background: url('images/MERZOUGAAA.png') center/cover no-repeat;
+      background-color: #c9963a; /* Couleur de secours si image absente */
+      opacity: .65;        /* Semi-transparente pour lisibilité du texte */
+      transition: opacity 1s;
+    }
+
+    /* Dégradé sombre par-dessus l'image pour améliorer la lisibilité du texte */
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(100, 55, 5, .45) 0%, rgba(30, 10, 0, .75) 100%);
+    }
+
+    /* Motif de dunes en filigrane (SVG encodé en base64 dans l'URL) */
+    .hero-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: .06; /* Très discret */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Cellipse cx='60' cy='60' rx='60' ry='30' fill='none' stroke='%23fff' stroke-width='1'/%3E%3Cellipse cx='0' cy='60' rx='60' ry='30' fill='none' stroke='%23fff' stroke-width='1'/%3E%3Cellipse cx='120' cy='60' rx='60' ry='30' fill='none' stroke='%23fff' stroke-width='1'/%3E%3C/svg%3E");
+    }
+
+    /* Contenu textuel centré du hero (au-dessus des overlays) */
+    .hero-content {
+      position: relative;
+      z-index: 2; /* Au-dessus de hero-img et hero-overlay */
+      text-align: center;
+      color: #fff;
+      padding: 0 24px;
+    }
+
+    /* Petit badge doré au-dessus du titre principal */
+    .hero-tag {
+      display: inline-block;
+      border: 1px solid rgba(201, 150, 58, .6);
+      color: var(--gold-acc);
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 6px 20px;
+      border-radius: 2px;
+      margin-bottom: 22px;
+      animation: fadeDown .9s ease both; /* Apparition animée depuis le haut */
+    }
+
+    /* Grand titre principal avec taille fluide selon la largeur de l'écran */
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(52px, 9vw, 110px); /* Min 52px, max 110px, fluide entre */
+      font-weight: 700;
+      letter-spacing: 6px;
+      line-height: 1;
+      text-shadow: 0 4px 40px rgba(0, 0, 0, .4); /* Ombre pour la lisibilité */
+      animation: fadeDown .9s .15s ease both; /* Délai de 0.15s */
+    }
+
+    /* Partie en italique du titre (ex : "UGA" dans MERZO-UGA) */
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-acc); /* Couleur or accent */
+    }
+
+    /* Sous-titre en lettres espacées sous le titre principal */
+    .hero-sub {
+      font-size: 15px;
+      letter-spacing: 4px;
+      opacity: .8;
+      text-transform: uppercase;
+      margin: 14px 0 38px;
+      animation: fadeDown .9s .3s ease both; /* Délai de 0.3s */
+    }
+
+    /* Groupe de boutons d'action (Découvrir / Voir la galerie) */
+    .hero-btns {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      animation: fadeDown .9s .45s ease both; /* Délai de 0.45s */
+    }
+
+    /* Bouton plein (action principale) */
+    .btn-primary {
+      background: var(--gold-dark);
+      color: #fff;
+      text-decoration: none;
+      padding: 14px 40px;
+      border-radius: 40px; /* Forme pilule */
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 4px 24px rgba(120, 70, 10, .5);
+      transition: all .3s;
+    }
+
+    /* Effet au survol : couleur plus claire + légère remontée */
+    .btn-primary:hover {
+      background: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    /* Bouton contour transparent (action secondaire) */
+    .btn-outline {
+      background: transparent;
+      color: #fff;
+      text-decoration: none;
+      padding: 14px 40px;
+      border-radius: 40px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, .5); /* Bordure blanche semi-transparente */
+      transition: all .3s;
+    }
+
+    /* Effet au survol : bordure blanche pleine + fond légèrement visible */
+    .btn-outline:hover {
+      border-color: #fff;
+      background: rgba(255, 255, 255, .1);
+    }
+
+    /* Vague SVG décorative placée en bas du hero */
+    .hero-wave {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      line-height: 0; /* Supprime l'espace sous le SVG inline */
+    }
+
+    /* Animation d'entrée depuis le haut avec fondu */
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-18px); /* Commence 18px au-dessus */
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0); /* Position finale normale */
+      }
+    }
+
+    /* Indicateur de scroll animé en bas du hero */
+    .scroll-hint {
+      position: absolute;
+      bottom: 38px;
+      left: 50%;
+      transform: translateX(-50%); /* Centrage horizontal */
+      color: rgba(255, 255, 255, .5);
+      font-size: 11px;
+      letter-spacing: 2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      animation: bob 2s ease-in-out infinite; /* Rebond en boucle */
+    }
+
+    /* Animation de rebond vertical pour l'indicateur de scroll */
+    @keyframes bob {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ============================================================
+       EN-TETE DE SECTION
+       Réutilisé dans toutes les sections (titre + eyebrow + divider)
+       ============================================================ */
+    .sec-head {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    /* Petit texte catégorie au-dessus du titre principal */
+    .sec-head .eyebrow {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    /* Titre principal de la section */
+    .sec-head h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 4vw, 44px);
+      color: var(--gold-dark);
+    }
+
+    /* Partie en italique du titre de section */
+    .sec-head h2 em {
+      font-style: italic;
+    }
+
+    /* Séparateur décoratif : ligne — losange — ligne */
+    .sec-head .divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    /* Les deux lignes horizontales du séparateur */
+    .sec-head .divider span {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      opacity: .6;
+    }
+
+    /* Le losange central du séparateur */
+    .sec-head .divider i {
+      color: var(--gold);
+      font-size: 12px;
+    }
+
+    /* Texte de description sous le titre de section */
+    .sec-head p {
+      color: #777;
+      font-size: 13.5px;
+      margin-top: 14px;
+      max-width: 520px;
+      margin-inline: auto; /* Centrage horizontal */
+      line-height: 1.7;
+    }
+
+    /* ============================================================
+       SECTION ACTIVITES
+       Grille de cartes filtrables par catégorie
+       ============================================================ */
+    #activites {
+      padding: 80px 60px;
+      background: #fff;
+    }
+
+    /* Barre de boutons de filtre (Tout / Aventure / Nature / etc.) */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap; /* Retour à la ligne sur mobile */
+      margin-bottom: 44px;
+    }
+
+    /* Style d'un bouton de filtre */
+    .filter-btn {
+      padding: 8px 22px;
+      border-radius: 30px;
+      border: 2px solid var(--gold-dark);
+      background: transparent;
+      color: var(--gold-dark);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all .25s;
+      text-transform: uppercase;
+    }
+
+    /* Bouton de filtre survolé ou actif : fond plein */
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--gold-dark);
+      color: #fff;
+    }
+
+    /* Grille responsive des cartes d'activité */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); /* Colonnes auto-ajustées */
+      gap: 28px;
+      max-width: 1200px;
+      margin: 0 auto; /* Centrage de la grille */
+    }
+
+    /* Carte individuelle d'activité */
+    .act-card {
+      border-radius: 14px;
+      overflow: hidden; /* Cache les coins de l'image */
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .09);
+      transition: transform .3s, box-shadow .3s;
+      cursor: pointer;
+    }
+
+    /* Effet de survol : légère remontée et ombre plus prononcée */
+    .act-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 48px rgba(180, 120, 30, .2);
+    }
+
+    /* Classe ajoutée par le JS pour masquer une carte lors du filtrage */
+    .act-card.hidden {
+      display: none;
+    }
+
+    /* Conteneur de l'image en haut de la carte */
+    .card-img-wrap {
+      position: relative;
+      height: 210px;
+      overflow: hidden;
+    }
+
+    /* Image de la carte : couvre tout le conteneur */
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;   /* Recadre sans déformer */
+      transition: transform .5s;
+    }
+
+    /* Zoom de l'image au survol de la carte */
+    .act-card:hover .card-img-wrap img {
+      transform: scale(1.07);
+    }
+
+    /* Badge de catégorie positionné en haut à gauche de l'image */
+    .card-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Couleurs des badges selon la catégorie */
+    .badge-aventure  { background: #7A4A10; }  /* Aventure : brun foncé */
+    .badge-nature    { background: #2a5c1a; }  /* Nature : vert foncé */
+    .badge-culture   { background: #1a3a5c; }  /* Culture : bleu foncé */
+    .badge-bien-etre { background: #5c1a4a; }  /* Bien-être : violet */
+    .badge-food      { background: var(--terracotta); } /* Food : terracotta */
+
+    /* Corps texte de la carte */
+    .card-body {
+      padding: 18px 20px 20px;
+    }
+
+    /* Titre de la carte */
+    .card-body h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 19px;
+      margin-bottom: 6px;
+      color: var(--dark);
+    }
+
+    /* Description courte de la carte */
+    .card-body p {
+      font-size: 12.5px;
+      color: #777;
+      line-height: 1.65;
+      margin-bottom: 14px;
+    }
+
+    /* Petits tags d'info (horaires, prix) */
+    .card-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    /* Style d'un tag d'info */
+    .card-meta span {
+      font-size: 11px;
+      background: var(--cream);
+      padding: 3px 10px;
+      border-radius: 12px;
+      color: var(--gold-dark);
+      font-weight: 600;
+    }
+
+    /* Petit bouton en bas de carte (ouvre la modale) */
+    .btn-sm {
+      background: var(--gold-dark);
+      color: #fff;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .8px;
+      transition: background .2s;
+    }
+
+    /* Couleur plus claire au survol */
+    .btn-sm:hover {
+      background: var(--gold);
+    }
+
+    /* ============================================================
+       SECTION GALERIE PHOTOS
+       Grille masonry sur 12 colonnes avec lightbox au clic
+       ============================================================ */
+    #galerie {
+      padding: 80px 60px;
+      background: var(--cream);
+    }
+
+    /* Grille sur 12 colonnes avec lignes de 55px */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-auto-rows: 55px; /* Hauteur d'une unité de grille */
+      gap: 10px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Conteneur d'une photo de galerie */
+    .gal-item {
+      overflow: hidden;
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    /* Photo 1 : grande image paysage sur 8 colonnes, 5 rangées */
+    .gal-item:nth-child(1) { grid-column: 1 / span 8; grid-row: 1 / span 5; }
+
+    /* Photo 2 : image paysage sur 4 colonnes, 5 rangées */
+    .gal-item:nth-child(2) { grid-column: 9 / span 4; grid-row: 1 / span 5; }
+
+    /* Photo 3 : portrait sur 3 colonnes, 6 rangées */
+    .gal-item:nth-child(3) { grid-column: 1 / span 3; grid-row: 6 / span 6; }
+
+    /* Photo 4 : portrait sur 3 colonnes, 6 rangées (côte à côte avec 3) */
+    .gal-item:nth-child(4) { grid-column: 4 / span 3; grid-row: 6 / span 6; }
+
+    /* Photo 5 : paysage 16:9 sur 6 colonnes, 4 rangées */
+    .gal-item:nth-child(5) { grid-column: 7 / span 6; grid-row: 6 / span 4; }
+
+    /* Photo 6 : image sous la photo 5, même largeur */
+    .gal-item:nth-child(6) { grid-column: 7 / span 6; grid-row: 10 / span 8; }
+
+    /* Photo 7 : grande image portrait finale */
+    .gal-item:nth-child(7) { grid-column: 1 / span 6; grid-row: 12 / span 7; }
+
+    /* Image qui remplit son conteneur sans déformation */
+    .gal-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .5s;
+    }
+
+    /* Zoom de l'image au survol */
+    .gal-item:hover img {
+      transform: scale(1.06);
+    }
+
+    /* Overlay doré semi-transparent au survol */
+    .gal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(120, 70, 10, 0); /* Invisible par défaut */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .3s;
+    }
+
+    /* Overlay visible au survol */
+    .gal-item:hover .gal-overlay {
+      background: rgba(120, 70, 10, .35);
+    }
+
+    /* Icône agrandir (invisible par défaut) */
+    .gal-overlay svg {
+      opacity: 0;
+      transition: opacity .3s;
+      width: 40px;
+      height: 40px;
+      fill: #fff;
+    }
+
+    /* Icône visible au survol */
+    .gal-item:hover .gal-overlay svg {
+      opacity: 1;
+    }
+
+    /* ============================================================
+       LIGHTBOX (visionneuse plein écran)
+       S'ouvre au clic sur une photo de la galerie
+       ============================================================ */
+    /* Fond noir par défaut masqué */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .92);
+      z-index: 3000; /* Au-dessus de tout */
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Classe ajoutée par le JS pour afficher la lightbox */
+    .lightbox.open {
+      display: flex;
+    }
+
+    /* Conteneur de l'image et des boutons de navigation */
+    .lb-inner {
+      position: relative;
+      max-width: 88vw;
+      max-height: 88vh;
+    }
+
+    /* Image affichée dans la lightbox */
+    .lb-inner img {
+      max-width: 88vw;
+      max-height: 88vh;
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* Bouton fermer (croix) en haut à droite */
+    .lb-close {
+      position: absolute;
+      top: -44px;
+      right: 0;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      opacity: .8;
+    }
+
+    .lb-close:hover { opacity: 1; }
+
+    /* Boutons navigation gauche/droite */
+    .lb-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(120, 70, 10, .7);
+      border: none;
+      color: #fff;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s;
+    }
+
+    .lb-nav:hover  { background: var(--gold-dark); }
+    .lb-prev       { left: -56px; }  /* Flèche gauche */
+    .lb-next       { right: -56px; } /* Flèche droite */
+
+    /* Légende de la photo affichée sous l'image */
+    .lb-caption {
+      position: absolute;
+      bottom: -36px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: rgba(255, 255, 255, .7);
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    /* ============================================================
+       SECTION RESTAURANTS ET HEBERGEMENT
+       Fond or moyen, cartes blanches filtrables
+       ============================================================ */
+    #restaurants {
+      padding: 80px 60px;
+      background: var(--gold-mid); /* Fond doré */
+    }
+
+    /* Adaptation des couleurs pour fond doré */
+    #restaurants .sec-head h2      { color: #fff; }
+    #restaurants .sec-head .eyebrow { color: var(--sand); }
+    #restaurants .sec-head p        { color: rgba(255, 255, 255, .65); }
+
+    /* Barre de filtres (Tout / Restaurants / Hôtels / Bivouacs) */
+    .rh-filter-bar {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 44px;
+    }
+
+    /* Bouton de filtre sur fond doré */
+    .rh-filter-btn {
+      padding: 7px 20px;
+      border-radius: 30px;
+      border: 2px solid rgba(255, 255, 255, .4);
+      background: transparent;
+      color: rgba(255, 255, 255, .85);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all .25s;
+      text-transform: uppercase;
+    }
+
+    /* Bouton actif ou survolé : fond blanc, texte doré */
+    .rh-filter-btn:hover,
+    .rh-filter-btn.active {
+      background: #fff;
+      color: var(--gold-dark);
+    }
+
+    /* Grille responsive des cartes restaurant/hébergement */
+    .rh-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 26px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Carte individuelle restaurant/hébergement */
+    .rh-card {
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .18);
+      transition: transform .3s, box-shadow .3s;
+      cursor: pointer;
+    }
+
+    .rh-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 18px 52px rgba(0, 0, 0, .25);
+    }
+
+    /* Masqué par le JS lors du filtrage */
+    .rh-card.hidden { display: none; }
+
+    /* Zone image de la carte restaurant */
+    .rh-card-img {
+      position: relative;
+      height: 195px;
+      overflow: hidden;
+    }
+
+    .rh-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .5s;
+    }
+
+    .rh-card:hover .rh-card-img img { transform: scale(1.07); }
+
+    /* Badge de type (Restaurant / Hôtel / Bivouac) */
+    .rh-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 5px 12px;
+      border-radius: 16px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Couleurs des badges selon le type */
+    .badge-resto   { background: var(--terracotta); }
+    .badge-hotel   { background: #1a3a5c; }
+    .badge-bivouac { background: #2a5c1a; }
+
+    /* Étoiles de notation en haut à droite de l'image */
+    .stars {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, .5);
+      color: var(--gold-acc);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+    }
+
+    /* Corps texte de la carte restaurant */
+    .rh-body { padding: 18px 20px 20px; }
+
+    /* Catégorie de l'établissement */
+    .rh-body .cat {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .rh-body h3 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--dark); margin-bottom: 7px; }
+    .rh-body p  { font-size: 12.5px; color: #777; line-height: 1.65; margin-bottom: 12px; }
+
+    /* Tags d'info (prix, localisation) */
+    .rh-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .rh-meta span { font-size: 11px; background: var(--cream); padding: 3px 10px; border-radius: 12px; color: var(--gold-dark); font-weight: 600; }
+
+    /* ============================================================
+       SECTION CARTE INTERACTIVE (Leaflet.js)
+       ============================================================ */
+    #carte { padding: 80px 60px; background: #fff; }
+
+    /* Disposition : carte à gauche, liste de lieux à droite */
+    .map-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px; /* Carte flexible + liste fixe 320px */
+      gap: 28px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Conteneur de la carte Leaflet */
+    #map {
+      height: 480px;
+      border-radius: 14px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, .12);
+      z-index: 1; /* Doit être inférieur à la navbar (z-index 900) */
+    }
+
+    /* Liste des lieux cliquables à droite */
+    .map-list {
+      overflow-y: auto; /* Scroll vertical si trop de lieux */
+      max-height: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Personnalisation de la scrollbar */
+    .map-list::-webkit-scrollbar       { width: 4px; }
+    .map-list::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+    /* Élément de la liste des lieux */
+    .map-item {
+      background: var(--cream);
+      border-radius: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      border-left: 4px solid transparent; /* Bordure invisible par défaut */
+      transition: all .2s;
+    }
+
+    /* État actif : bordure dorée et fond blanc */
+    .map-item:hover,
+    .map-item.active-place {
+      border-left-color: var(--gold-dark);
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(120, 70, 10, .12);
+    }
+
+    .map-item h4 { font-size: 13.5px; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+    .map-item p  { font-size: 11.5px; color: #888; }
+
+    /* Pastille colorée indiquant le type de lieu */
+    .map-item .type-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    /* ============================================================
+       SECTION METEO ET FORMULAIRE DE CONTACT
+       ============================================================ */
+    #contact { padding: 80px 60px; background: var(--cream); }
+
+    /* Deux colonnes : météo à gauche, formulaire à droite */
+    .mc-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Bloc météo avec dégradé doré */
+    .meteo-box {
+      background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-mid) 60%, #e08830 100%);
+      border-radius: 18px;
+      padding: 32px;
+      color: #fff;
+      box-shadow: 0 8px 40px rgba(120, 70, 10, .35);
+    }
+
+    /* Nom de la ville dans le bloc météo */
+    .meteo-city { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; opacity: .7; margin-bottom: 4px; }
+
+    /* Température affichée en grand */
+    .meteo-temp { font-family: 'Playfair Display', serif; font-size: 72px; font-weight: 700; line-height: 1; }
+
+    /* Description météo (ex: Ensoleillé) */
+    .meteo-desc { font-size: 16px; margin: 6px 0 24px; opacity: .85; }
+
+    /* Grille 2x2 des indicateurs (ressenti, humidité, vent, couverture) */
+    .meteo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* Chaque indicateur météo */
+    .meteo-item { background: rgba(255, 255, 255, .12); border-radius: 10px; padding: 12px 14px; }
+    .meteo-item .label { font-size: 10px; letter-spacing: 1.5px; opacity: .65; text-transform: uppercase; margin-bottom: 4px; }
+    .meteo-item .val   { font-size: 18px; font-weight: 700; }
+
+    /* Formulaire de contact */
+    .contact-form { background: #fff; border-radius: 18px; padding: 36px; box-shadow: 0 4px 30px rgba(0, 0, 0, .08); }
+    .contact-form h3  { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--gold-dark); margin-bottom: 6px; }
+    .contact-form .sub { font-size: 13px; color: #888; margin-bottom: 24px; }
+
+    /* Groupe label + champ de saisie */
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #555; margin-bottom: 6px; }
+
+    /* Style des champs de saisie */
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #e0d8c8;
+      border-radius: 8px;
+      font-family: 'Raleway', sans-serif;
+      font-size: 13px;
+      color: var(--dark);
+      background: #faf4e8;
+      transition: border-color .2s;
+      outline: none;
+    }
+
+    /* Bordure dorée au focus (quand le champ est sélectionné) */
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus { border-color: var(--gold-dark); }
+
+    /* Zone de texte redimensionnable verticalement */
+    .form-group textarea { resize: vertical; min-height: 110px; }
+
+    /* Deux champs côte à côte (prénom + nom) */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* Message de succès affiché après envoi */
+    .form-success { display: none; background: #f0fdf4; border: 1px solid #86efac; color: #166534; padding: 14px; border-radius: 8px; font-size: 13px; margin-top: 14px; }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    footer { background: var(--gold-dark); color: rgba(255, 255, 255, .75); padding: 50px 60px 30px; text-align: center; }
+    .foot-logo { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; letter-spacing: 5px; color: #fff; margin-bottom: 4px; }
+    .foot-sub  { font-size: 10px; letter-spacing: 3px; opacity: .5; margin-bottom: 28px; }
+    .foot-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+    .foot-links a { color: rgba(255, 255, 255, .6); text-decoration: none; font-size: 11px; letter-spacing: .5px; transition: color .2s; }
+    .foot-links a:hover { color: #fff; }
+
+    /* ============================================================
+       FENETRE MODALE (popup détail au clic sur une carte)
+       ============================================================ */
+    /* Fond sombre semi-transparent derrière la modale */
+    .modal-overlay {
+      display: none; /* Masquée par défaut */
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .78);
+      z-index: 2000; /* Au-dessus du contenu, sous la lightbox (3000) */
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Classe ajoutée par le JS pour afficher la modale */
+    .modal-overlay.open { display: flex; }
+
+    /* Fenêtre blanche de la modale */
+    .modal {
+      background: #fff;
+      border-radius: 18px;
+      max-width: 780px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto; /* Scroll interne si contenu long */
+      position: relative;
+      animation: modalIn .3s ease; /* Animation d'apparition */
+    }
+
+    /* Animation d'apparition : glisse du bas avec fondu */
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Bouton fermer (croix) positionné en haut à droite */
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(0, 0, 0, .45);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      font-size: 17px;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s;
+    }
+
+    .modal-close:hover { background: var(--gold-dark); }
+
+    /* Image en haut de la modale */
+    .modal-img { width: 100%; height: 300px; object-fit: cover; display: block; }
+
+    /* Corps de la modale */
+    .modal-body { padding: 28px 30px 32px; }
+
+    /* Catégorie en petit texte doré */
+    .modal-body .m-cat { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; }
+
+    /* Titre principal de la modale */
+    .modal-body h2 { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--dark); margin-bottom: 14px; }
+
+    /* Description longue */
+    .modal-body .m-desc { font-size: 13.5px; color: #555; line-height: 1.78; margin-bottom: 22px; }
+
+    /* Grille de détails (horaires, prix, conseils...) */
+    .modal-details { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: var(--cream); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+    .modal-detail .d-label { font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #999; margin-bottom: 3px; }
+    .modal-detail .d-val   { font-size: 13.5px; font-weight: 600; color: var(--dark); }
+
+    /* ============================================================
+       BARRE LATERALE FLOTTANTE (raccourcis de navigation rapide)
+       ============================================================ */
+    .sidebar {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%); /* Centrage vertical */
+      z-index: 800;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* Bouton de la barre latérale */
+    .s-btn {
+      background: var(--gold-dark);
+      color: #fff;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      border-radius: 4px 0 0 4px; /* Arrondi côté gauche uniquement */
+      cursor: pointer;
+      transition: background .2s;
+      border: none;
+    }
+
+    .s-btn:hover { background: var(--gold); }
+
+    /* ============================================================
+       RESPONSIVE MOBILE (écrans de moins de 900px)
+       ============================================================ */
+    @media(max-width:900px) {
+
+      /* Navigation : espacement réduit */
+      nav { padding: 0 16px; }
+
+      /* Liens de navigation : menu déroulant sur mobile */
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 68px; left: 0; right: 0; background: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.1); padding: 16px 0; z-index: 999; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 12px 24px; border-bottom: 1px solid #f0e8d8; }
+      .nav-hamburger { display: flex; } /* Bouton hamburger visible sur mobile */
+
+      /* Padding réduit pour toutes les sections */
+      #activites, #galerie, #restaurants, #carte, #contact { padding: 52px 18px; }
+
+      /* Colonnes simples sur mobile */
+      .map-layout, .mc-layout { grid-template-columns: 1fr; }
+
+      /* Carte plus petite sur mobile */
+      #map { height: 320px; }
+
+      /* Galerie sur 6 colonnes au lieu de 12 */
+      .gallery-grid { grid-template-columns: repeat(6, 1fr); grid-auto-rows: 50px; }
+
+      /* Repositionnement des photos de galerie sur mobile */
+      .gal-item:nth-child(1) { grid-column: span 6; grid-row: span 4; }
+      .gal-item:nth-child(2) { grid-column: span 6; grid-row: span 3; }
+      .gal-item:nth-child(3) { grid-column: span 3; grid-row: span 4; }
+      .gal-item:nth-child(4) { grid-column: span 3; grid-row: span 4; }
+      .gal-item:nth-child(5) { grid-column: span 6; grid-row: span 3; }
+      .gal-item:nth-child(6) { grid-column: span 3; grid-row: span 3; }
+      .gal-item:nth-child(7) { grid-column: span 3; grid-row: span 3; }
+
+      /* Grille de détails modale sur une seule colonne */
+      .modal-details { grid-template-columns: 1fr; }
+
+      /* Flèches lightbox rapprochées sur mobile */
+      .lb-prev { left: -8px; }
+      .lb-next { right: -8px; }
+
+      /* Formulaire sur une seule colonne */
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Bandeau d'information en haut de page -->
+  <div class="top-bar">Merzouga — La Porte du Sahara · Erg Chebbi</div>
+
+  <!-- Barre de navigation principale (collante) -->
+  <nav>
+    <a class="nav-logo" href="#">
+      <!-- Logo SVG : silhouette de dune avec soleil -->
+      <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+        <!-- Ligne de dune stylisée -->
+        <path d="M5,45 Q15,15 30,25 Q45,35 55,10 L55,50 L5,50 Z" fill="none" stroke="#C9963A" stroke-width="2.2" />
+        <!-- Point représentant le soleil -->
+        <circle cx="30" cy="18" r="5" fill="#C9963A" opacity=".7" />
+      </svg>
+      <div class="logo-text">
+        <div class="city">MERZOUGA</div>
+        <div class="sub">La Porte du Sahara</div>
+      </div>
+    </a>
+
+    <!-- Liens de navigation — la classe "active" est mise à jour par le JS au scroll -->
+    <ul class="nav-links">
+      <li><a href="#hero" class="active">Accueil</a></li>
+      <li><a href="#activites">Activités</a></li>
+      <li><a href="#galerie">Galerie</a></li>
+      <li><a href="#restaurants">Restaurants & Hébergement</a></li>
+      <li><a href="#carte">Carte</a></li>
+      <li><a href="#contact">Météo & Contact</a></li>
+      <!-- Lien vers la page d'accueil du portail touristique commun -->
+      <li><a href="../index/dashboard.html">Portail touristique</a></li>
+    </ul>
+    <!-- Bouton hamburger mobile -->
+    <button class="nav-hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+
+  <!-- Section Hero : image plein écran avec titre et boutons -->
+  <section id="hero">
+    <div class="hero-img"></div>      <!-- Image de fond chargée en CSS -->
+    <div class="hero-overlay"></div>  <!-- Dégradé sombre pour lisibilité -->
+    <div class="hero-pattern"></div>  <!-- Motif de dunes en filigrane -->
+
+    <!-- Vague SVG décorative en bas du hero -->
+    <svg class="hero-wave" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,120 L0,80 Q120,20 240,65 Q360,110 480,50 Q600,0 720,60 Q840,110 960,40 Q1080,0 1200,55 Q1320,100 1440,45 L1440,120Z" fill="rgba(30,10,0,0.55)" />
+      <path d="M0,120 L0,100 Q180,60 360,90 Q540,115 720,75 Q900,40 1080,85 Q1260,115 1440,80 L1440,120Z" fill="rgba(30,10,0,0.7)" />
+    </svg>
+
+    <div class="hero-content">
+      <!-- Titre principal avec la partie "UGA" en italique doré -->
+      <h1 class="hero-title">MERZO<em>UGA</em></h1>
+      <p class="hero-sub">La Porte du Sahara — Dunes d'Or</p>
+      <div class="hero-btns">
+        <!-- Bouton qui scrolle vers la section activités -->
+        <button class="btn-primary" onclick="document.getElementById('activites').scrollIntoView({behavior:'smooth'})">Découvrir</button>
+        <!-- Bouton qui scrolle vers la galerie photos -->
+        <button class="btn-outline" onclick="document.getElementById('galerie').scrollIntoView({behavior:'smooth'})">Voir la galerie</button>
+      </div>
+    </div>
+
+    <!-- Indicateur animé invitant l'utilisateur à défiler -->
+    <div class="scroll-hint">
+      <span style="font-size:10px;letter-spacing:2px;">DÉFILER</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12l7 7 7-7" />
+      </svg>
+    </div>
+  </section>
+
+  <!-- Section Activités : cartes filtrables par catégorie -->
+  <section id="activites">
+    <div class="sec-head">
+      <div class="eyebrow">À découvrir</div>
+      <h2>Activités <em>touristiques</em></h2>
+      <div class="divider"><span></span><i>✦</i><span></span></div>
+      <p>Des dunes de l'Erg Chebbi aux gorges du Ziz, Merzouga dévoile un Sahara sauvage et inoubliable.</p>
+    </div>
+
+    <!-- Boutons de filtre : onclick appelle filterAct() défini dans le JS -->
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterAct('all',this)">Tout</button>
+      <button class="filter-btn" onclick="filterAct('aventure',this)">Aventure</button>
+      <button class="filter-btn" onclick="filterAct('nature',this)">Nature</button>
+      <button class="filter-btn" onclick="filterAct('culture',this)">Culture</button>
+      <button class="filter-btn" onclick="filterAct('bien-etre',this)">Bien-être</button>
+    </div>
+
+    <!-- Grille des cartes d'activité : data-cat = catégorie utilisée par le filtre -->
+    <div class="cards-grid" id="actGrid">
+
+      <!-- Carte Balade en dromadaire : catégorie aventure -->
+      <div class="act-card" data-cat="aventure" onclick="openModal('dromedaire')">
+        <div class="card-img-wrap">
+          <img src="images/balade en dromadaire.png" alt="Balade en dromadaire"
+            onerror="this.style.background='linear-gradient(135deg,#c9963a,#7a4a10)';this.style.height='210px'">
+          <span class="card-badge badge-aventure">Aventure</span>
+        </div>
+        <div class="card-body">
+          <h3>Balade en dromadaire</h3>
+          <p>Traversez les majestueuses dunes de l'Erg Chebbi à dos de dromadaire, comme les caravanes d'antan sur la Route de l'Or.</p>
+          <div class="card-meta"><span>Coucher du soleil</span><span>150–400 MAD</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Carte Nuit en bivouac : catégorie aventure -->
+      <div class="act-card" data-cat="aventure" onclick="openModal('bivouac')">
+        <div class="card-img-wrap">
+          <img src="images/bivouac sous les etoiles.jpg" alt="Nuit en bivouac"
+            onerror="this.style.background='linear-gradient(135deg,#1a1a3a,#7a4a10)';this.style.height='210px'">
+          <span class="card-badge badge-aventure">Aventure</span>
+        </div>
+        <div class="card-body">
+          <h3>Nuit en bivouac</h3>
+          <p>Dormez sous les étoiles dans un camp berbère au coeur des dunes. Musique Gnawa, thé à la menthe et ciel étoilé infini.</p>
+          <div class="card-meta"><span>1 nuit</span><span>300–800 MAD</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Carte Quad et Buggy : catégorie aventure -->
+      <div class="act-card" data-cat="aventure" onclick="openModal('quad')">
+        <div class="card-img-wrap">
+          <img src="images/quad.jpg" alt="Quad dans les dunes"
+            onerror="this.style.background='linear-gradient(135deg,#c0602b,#c9963a)';this.style.height='210px'">
+          <span class="card-badge badge-aventure">Aventure</span>
+        </div>
+        <div class="card-body">
+          <h3>Quad & Buggy dans les dunes</h3>
+          <p>Dévaler les dunes de sable doré à bord d'un quad ou d'un buggy — adrénaline garantie sur les pentes de l'Erg Chebbi.</p>
+          <div class="card-meta"><span>1h–3h</span><span>250–600 MAD</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Carte Erg Chebbi : catégorie nature -->
+      <div class="act-card" data-cat="nature" onclick="openModal('ergchebbi')">
+        <div class="card-img-wrap">
+          <img src="images/erg chebbi.png" alt="Erg Chebbi"
+            onerror="this.style.background='linear-gradient(135deg,#c9963a,#e08830)';this.style.height='210px'">
+          <span class="card-badge badge-nature">Nature</span>
+        </div>
+        <div class="card-body">
+          <h3>Erg Chebbi — L'immensité dorée</h3>
+          <p>Un vaste champ de dunes atteignant 150 mètres de hauteur — l'un des plus grands ergs du Maroc. Lever de soleil depuis le sommet.</p>
+          <div class="card-meta"><span>Lever de soleil</span><span>Gratuit</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Carte Bain de sable : catégorie bien-être -->
+      <div class="act-card" data-cat="bien-etre" onclick="openModal('bain_sable')">
+        <div class="card-img-wrap">
+          <img src="images/bain de sable.png" alt="Bain de sable"
+            onerror="this.style.background='linear-gradient(135deg,#5c3a1a,#c9963a)';this.style.height='210px'">
+          <span class="card-badge badge-bien-etre">Bien-être</span>
+        </div>
+        <div class="card-body">
+          <h3>Bain de sable thérapeutique</h3>
+          <p>Tradition berbère ancestrale : s'ensevelir dans le sable brûlant pour soulager rhumatismes et douleurs articulaires. Pratiqué en été.</p>
+          <div class="card-meta"><span>Juillet–Août</span><span>100–200 MAD</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Carte Sandboard : catégorie aventure -->
+      <div class="act-card" data-cat="aventure" onclick="openModal('sandboard')">
+        <div class="card-img-wrap">
+          <img src="images/sandboarding.png" alt="Sandboard sur les dunes"
+            onerror="this.style.background='linear-gradient(135deg,#c9963a,#c0602b)';this.style.height='210px'">
+          <span class="card-badge badge-aventure">Aventure</span>
+        </div>
+        <div class="card-body">
+          <h3>Sandboard sur les dunes</h3>
+          <p>Glissez à toute vitesse sur les pentes vertigineuses de l'Erg Chebbi sur une planche — le surf du désert, accessible à tous dès 8 ans.</p>
+          <div class="card-meta"><span>Dès 8 ans</span><span>80–150 MAD</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Carte Lac Dayet Srji : catégorie nature -->
+      <div class="act-card" data-cat="nature" onclick="openModal('dayet_srji')">
+        <div class="card-img-wrap">
+          <img src="images/dayet srji.jpg" alt="Lac Dayet Srji"
+            onerror="this.style.background='linear-gradient(135deg,#1a4a5c,#c9963a)';this.style.height='210px'">
+          <span class="card-badge badge-nature">Nature</span>
+        </div>
+        <div class="card-body">
+          <h3>Lac Dayet Srji & flamants roses</h3>
+          <p>Un lac salé aux portes du désert qui accueille des centaines de flamants roses en saison hivernale — un spectacle rare et inattendu au Sahara.</p>
+          <div class="card-meta"><span>Nov–Mars</span><span>2 km de Merzouga</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Carte Lever de soleil : catégorie nature -->
+      <div class="act-card" data-cat="nature" onclick="openModal('lever_soleil')">
+        <div class="card-img-wrap">
+          <img src="images/sunrise.jpg" alt="Lever de soleil sur l'Erg Chebbi"
+            onerror="this.style.background='linear-gradient(135deg,#c0602b,#c9963a)';this.style.height='210px'">
+          <span class="card-badge badge-nature">Nature</span>
+        </div>
+        <div class="card-body">
+          <h3>Lever de soleil sur les dunes</h3>
+          <p>L'expérience la plus célébrée de Merzouga — gravir la crête d'une grande dune à l'aube pour assister au soleil embrasant l'Erg en or et vermillon.</p>
+          <div class="card-meta"><span>5h30–6h30</span><span>Incontournable</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Carte Village de Khamlia : catégorie culture -->
+      <div class="act-card" data-cat="culture" onclick="openModal('khamlia')">
+        <div class="card-img-wrap">
+          <img src="images/khamlia.png" alt="Village de Khamlia"
+            onerror="this.style.background='linear-gradient(135deg,#3a1a00,#c9963a)';this.style.height='210px'">
+          <span class="card-badge badge-culture">Culture</span>
+        </div>
+        <div class="card-body">
+          <h3>Village berbère de Khamlia</h3>
+          <p>Visitez ce petit village gnawa à 7 km de Merzouga, fondé par des descendants d'esclaves subsahariens — musique Gnawa envoûtante et accueil berbère authentique.</p>
+          <div class="card-meta"><span>Musique Gnawa</span><span>7 km de Merzouga</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Section Galerie : grille de 7 photos avec lightbox au clic -->
+  <section id="galerie">
+    <div class="sec-head">
+      <div class="eyebrow">En images</div>
+      <h2><em>Galerie</em> photos</h2>
+      <div class="divider"><span></span><i>✦</i><span></span></div>
+      <p>Cliquez sur une photo pour l'agrandir.</p>
+    </div>
+
+    <!-- Chaque gal-item appelle openLb(index) pour ouvrir la lightbox à la photo correspondante -->
+    <div class="gallery-grid">
+      <div class="gal-item" onclick="openLb(0)">
+        <img src="images/merzouga1.jpg" alt="Dunes de l'Erg Chebbi au coucher du soleil" onerror="this.style.background='linear-gradient(135deg,#c9963a,#e08830)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg></div>
+      </div>
+      <div class="gal-item" onclick="openLb(1)">
+        <img src="images/merzouga2.png" alt="Bivouac" onerror="this.style.background='linear-gradient(135deg,#1a1a3a,#7a4a10)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg></div>
+      </div>
+      <div class="gal-item" onclick="openLb(2)">
+        <img src="images/merzouga3.png" alt="Dromadaires dans les dunes" onerror="this.style.background='linear-gradient(135deg,#c0602b,#c9963a)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg></div>
+      </div>
+      <div class="gal-item" onclick="openLb(3)">
+        <img src="images/merzouga4.jpg" alt="Lever de soleil sur l'Erg Chebbi" onerror="this.style.background='linear-gradient(135deg,#c9963a,#7a4a10)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg></div>
+      </div>
+      <div class="gal-item" onclick="openLb(4)">
+        <img src="images/merzouga5.png" alt="Ksar en pisé, Tafilalet" onerror="this.style.background='linear-gradient(135deg,#4a3000,#c9963a)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg></div>
+      </div>
+      <div class="gal-item" onclick="openLb(5)">
+        <img src="images/merzouga6.png" alt="Camp nomade avec tentes berbères" onerror="this.style.background='linear-gradient(135deg,#2a5c1a,#7a4a10)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg></div>
+      </div>
+      <div class="gal-item" onclick="openLb(6)">
+        <img src="images/merzouga7.jpg" alt="Ciel étoilé au-dessus du désert" onerror="this.style.background='linear-gradient(135deg,#0a0a2a,#7a4a10)'">
+        <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox : visionneuse plein écran ouverte au clic sur une photo -->
+  <div class="lightbox" id="lightbox">
+    <div class="lb-inner">
+      <button class="lb-close" onclick="closeLb()">X</button>             <!-- Fermer -->
+      <button class="lb-nav lb-prev" onclick="navLb(-1)">&#8249;</button>  <!-- Photo précédente -->
+      <img id="lbImg" src="" alt="">                                        <!-- Image affichée -->
+      <button class="lb-nav lb-next" onclick="navLb(1)">&#8250;</button>   <!-- Photo suivante -->
+      <div class="lb-caption" id="lbCap"></div>                            <!-- Légende -->
+    </div>
+  </div>
+
+  <!-- Section Restaurants et Hébergement : cartes filtrables -->
+  <section id="restaurants">
+    <div class="sec-head">
+      <div class="eyebrow">Où manger & dormir</div>
+      <h2>Restaurants & <em>Hébergement</em></h2>
+      <div class="divider"><span></span><i>✦</i><span></span></div>
+      <p style="color:rgba(255,255,255,.65)">Les meilleures adresses au pied des dunes.</p>
+    </div>
+
+    <!-- Filtres : tout / restaurants / hôtels / bivouacs -->
+    <div class="rh-filter-bar">
+      <button class="rh-filter-btn active" onclick="filterRH('all',this)">Tout</button>
+      <button class="rh-filter-btn" onclick="filterRH('restaurant',this)">Restaurants</button>
+      <button class="rh-filter-btn" onclick="filterRH('hotel',this)">Hôtels</button>
+      <button class="rh-filter-btn" onclick="filterRH('bivouac',this)">Bivouacs</button>
+    </div>
+
+    <!-- Grille des cartes : data-rh = type utilisé par le filtre JS -->
+    <div class="rh-grid" id="rhGrid">
+
+      <!-- Restaurant Chez Julia -->
+      <div class="rh-card" data-rh="restaurant" onclick="openModal('resto_auberge')">
+        <div class="rh-card-img">
+          <img src="images/chez julia.png" alt="Restaurant Chez Julia" onerror="this.style.background='linear-gradient(135deg,#c0602b,#c9963a)'">
+          <span class="rh-badge badge-resto">Restaurant</span>
+          <span class="stars">★★★★☆</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Cuisine Berbère Traditionnelle</div>
+          <h3>Restaurant Chez Julia</h3>
+          <p>Cuisine maison berbère généreuse — tajine d'agneau au cumin, couscous aux légumes du jardin et pain kesra sorti du four. Terrasse avec vue sur les dunes.</p>
+          <div class="rh-meta"><span>60–120 MAD</span><span>Merzouga Centre</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Restaurant Café Nora (village Khamlia) -->
+      <div class="rh-card" data-rh="restaurant" onclick="openModal('resto_sahara')">
+        <div class="rh-card-img">
+          <img src="images/Nora.png" alt="Restaurant Café NORA" onerror="this.style.background='linear-gradient(135deg,#4a3000,#c9963a)'">
+          <span class="rh-badge badge-resto">Café & Restaurant</span>
+          <span class="stars">★★★★☆</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Café & Restaurant au village Khamlia</div>
+          <h3>Restaurant & Café NORA</h3>
+          <p>Le café emblématique de Merzouga. Thé à la menthe à la flamme, galettes berbères et harira chaude servis face aux premières dunes de l'Erg.</p>
+          <div class="rh-meta"><span>20–80 MAD</span><span>Face à l'Erg</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Restaurant Kasbah Tombouctou (gastronomique) -->
+      <div class="rh-card" data-rh="restaurant" onclick="openModal('resto_kasbah')">
+        <div class="rh-card-img">
+          <img src="images/restaurant kasbah.png" alt="Restaurant Kasbah Tombouctou" onerror="this.style.background='linear-gradient(135deg,#7a4a10,#c9963a)'">
+          <span class="rh-badge badge-resto">Restaurant</span>
+          <span class="stars">★★★★★</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Gastronomique Saharien</div>
+          <h3>Restaurant Kasbah Tombouctou</h3>
+          <p>Table raffinée dans une kasbah de pisé rouge. Méchoui de l'Atlas, pastilla au pigeon et desserts aux dattes Medjoul dans un décor authentique.</p>
+          <div class="rh-meta"><span>150–350 MAD</span><span>Route de l'Erg</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Bivouac Luxury Desert Camp -->
+      <div class="rh-card" data-rh="bivouac" onclick="openModal('bivouac_luxury')">
+        <div class="rh-card-img">
+          <img src="images/Bivouac Luxury Desert Camp.png" alt="Bivouac Luxury Sahara" onerror="this.style.background='linear-gradient(135deg,#2a5c1a,#c9963a)'">
+          <span class="rh-badge badge-bivouac">Bivouac Luxe</span>
+          <span class="stars">★★★★★</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Bivouac Prestige</div>
+          <h3>Bivouac Luxury Desert Camp</h3>
+          <p>Tentes berbères prestige avec lits moelleux, salle de bain privée et électricité solaire. Dîner aux flambeaux, musique Gnawa et ciel étoilé époustouflant.</p>
+          <div class="rh-meta"><span>800–1800 MAD/nuit</span><span>Erg Chebbi</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Bivouac Nomade Authentique -->
+      <div class="rh-card" data-rh="bivouac" onclick="openModal('bivouac_nomad')">
+        <div class="rh-card-img">
+          <img src="images/Bivouac Nomad.png" alt="Bivouac Nomade" onerror="this.style.background='linear-gradient(135deg,#1a1a3a,#7a4a10)'">
+          <span class="rh-badge badge-bivouac">Bivouac</span>
+          <span class="stars">★★★★☆</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Expérience Nomade</div>
+          <h3>Bivouac Nomade Authentique</h3>
+          <p>Nuit en tente traditionnelle haima au coeur des dunes. Repas berbère autour du feu, contes du désert et lever du soleil depuis les crêtes de sable.</p>
+          <div class="rh-meta"><span>300–600 MAD/nuit</span><span>Dunes de Merzouga</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Hôtel Kasbah Tombouctou (palace 5 étoiles) -->
+      <div class="rh-card" data-rh="hotel" onclick="openModal('kasbah_tombouctou')">
+        <div class="rh-card-img">
+          <img src="images/Kasbah Tombouctou.png" alt="Kasbah Tombouctou" onerror="this.style.background='linear-gradient(135deg,#7a4a10,#c9963a)'">
+          <span class="rh-badge badge-hotel">Hôtel Kasbah</span>
+          <span class="stars">★★★★★</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Kasbah de Luxe</div>
+          <h3>Kasbah Tombouctou</h3>
+          <p>Palace du désert construit en pisé rouge face à l'Erg Chebbi. Piscine débordante sur les dunes, spa aux soins de l'argan et chambres ornées de mosaïques berbères.</p>
+          <div class="rh-meta"><span>1500–4000 MAD/nuit</span><span>Face à l'Erg</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+      <!-- Auberge Dunes d'Or (auberge familiale) -->
+      <div class="rh-card" data-rh="hotel" onclick="openModal('auberge_dunes')">
+        <div class="rh-card-img">
+          <img src="images/les dunes d'or.png" alt="Auberge Dunes d'Or" onerror="this.style.background='linear-gradient(135deg,#c9963a,#4a3000)'">
+          <span class="rh-badge badge-hotel">Auberge</span>
+          <span class="stars">★★★★☆</span>
+        </div>
+        <div class="rh-body">
+          <div class="cat">Auberge Vue Dunes</div>
+          <h3>Auberge Dunes d'Or</h3>
+          <p>Charmante auberge familiale à l'architecture traditionnelle en pisé. Piscine, terrasse panoramique sur les dunes et organisation d'excursions au Sahara.</p>
+          <div class="rh-meta"><span>400–900 MAD/nuit</span><span>Merzouga</span></div>
+          <button class="btn-sm">Savoir plus</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Section Carte interactive : Leaflet.js avec liste de lieux -->
+  <section id="carte">
+    <div class="sec-head">
+      <div class="eyebrow">Se repérer</div>
+      <h2>Carte <em>interactive</em></h2>
+      <div class="divider"><span></span><i>✦</i><span></span></div>
+      <p>Cliquez sur un lieu pour voir les infos. Cliquez dans la liste pour centrer la carte.</p>
+    </div>
+    <div class="map-layout">
+      <!-- Conteneur de la carte Leaflet (rempli automatiquement par le JS) -->
+      <div id="map"></div>
+      <!-- Liste des lieux cliquables générée dynamiquement par le JS -->
+      <div class="map-list" id="mapList"></div>
+    </div>
+  </section>
+
+  <!-- Section Météo et formulaire de contact -->
+  <section id="contact">
+    <div class="sec-head">
+      <div class="eyebrow">Infos pratiques</div>
+      <h2>Météo & <em>Contact</em></h2>
+      <div class="divider"><span></span><i>✦</i><span></span></div>
+    </div>
+    <div class="mc-layout">
+
+      <!-- Bloc météo : valeurs injectées par loadMeteo() dans le JS -->
+      <div class="meteo-box" id="meteoBox">
+        <div class="meteo-city">Merzouga, Maroc</div>
+        <div class="meteo-temp" id="mTemp">--</div>       <!-- Température -->
+        <div class="meteo-desc" id="mDesc">Chargement...</div> <!-- Description -->
+        <div class="meteo-grid">
+          <div class="meteo-item"><div class="label">Ressenti</div><div class="val" id="mFeel">--</div></div>
+          <div class="meteo-item"><div class="label">Humidité</div><div class="val" id="mHum">--</div></div>
+          <div class="meteo-item"><div class="label">Vent</div><div class="val" id="mWind">--</div></div>
+          <div class="meteo-item"><div class="label">Couverture</div><div class="val" id="mCloud">--</div></div>
+        </div>
+      </div>
+
+      <!-- Formulaire de contact : validé et traité par sendForm() dans le JS -->
+      <div class="contact-form">
+        <h3>Nous contacter</h3>
+        <p class="sub">Une question sur Merzouga ? Écrivez-nous !</p>
+        <div class="form-row">
+          <div class="form-group"><label>Prénom</label><input type="text" id="fPrenom" placeholder="Votre prénom"></div>
+          <div class="form-group"><label>Nom</label><input type="text" id="fNom" placeholder="Votre nom"></div>
+        </div>
+        <div class="form-group"><label>Email</label><input type="email" id="fEmail" placeholder="email@exemple.com"></div>
+        <div class="form-group">
+          <label>Sujet</label>
+          <select id="fSujet">
+            <option value="">Choisir un sujet...</option>
+            <option>Excursions & Activités</option>
+            <option>Bivouac & Hébergement</option>
+            <option>Infos pratiques</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Message</label><textarea id="fMsg" placeholder="Votre message..."></textarea></div>
+        <button class="btn-primary" style="width:100%;justify-content:center" onclick="sendForm()">Envoyer le message</button>
+        <!-- Message affiché après envoi réussi du formulaire -->
+        <div class="form-success" id="formOk">Message envoyé ! Merci, nous vous répondrons rapidement.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer avec liens de navigation et lien vers le portail -->
+  <footer>
+    <div class="foot-logo">MERZOUGA</div>
+    <div class="foot-sub">La Porte du Sahara · Erg Chebbi</div>
+    <div class="foot-links">
+      <a href="#hero">Accueil</a>
+      <a href="#activites">Activités</a>
+      <a href="#galerie">Galerie</a>
+      <a href="#restaurants">Restaurants</a>
+      <a href="#carte">Carte</a>
+      <a href="#contact">Contact</a>
+      <!-- Lien vers la page d'accueil commune du portail touristique -->
+      <a href="../index/dashboard.html">Explorer le portail</a>
+    </div>
+  </footer>
+
+  <!-- Barre latérale flottante : raccourcis vers haut / carte / contact -->
+  <div class="sidebar">
+    <button class="s-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Haut de page">&#8593;</button>
+    <button class="s-btn" onclick="document.getElementById('carte').scrollIntoView({behavior:'smooth'})" title="Carte">&#128506;</button>
+    <button class="s-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" title="Contact">&#9993;</button>
+  </div>
+
+  <!-- Fenêtre modale : affichée au clic sur une carte activité ou restaurant -->
+  <!-- Le clic sur le fond sombre (modal-overlay) ferme la modale -->
+  <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">X</button>
+      <img id="mImg" class="modal-img" src="" alt="">   <!-- Image chargée par openModal() -->
+      <div class="modal-body">
+        <div id="mCat" class="m-cat"></div>             <!-- Catégorie (ex: Aventure · Erg Chebbi) -->
+        <h2 id="mTitle"></h2>                           <!-- Titre de l'activité ou établissement -->
+        <p id="mDesc2" class="m-desc"></p>              <!-- Description longue -->
+        <div class="modal-details" id="mDets"></div>    <!-- Grille de détails générée par le JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Bibliothèque JavaScript Leaflet pour la carte interactive -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+
+    /* ============================================================
+       DONNEES DES MODALES
+       Chaque clé correspond à un attribut onclick="openModal('clé')"
+       Structure de chaque entrée :
+         img  : chemin de l'image
+         cat  : catégorie affichée en petit texte doré
+         title: titre principal de la modale
+         desc : description longue
+         dets : tableau de paires [label, valeur] pour la grille de détails
+       ============================================================ */
+    const modalData = {
+
+      /* Activités */
+      dromedaire: {
+        img: 'images/balade en dromadaire.png',
+        cat: 'Aventure · Erg Chebbi, Merzouga',
+        title: 'Balade en dromadaire dans l\'Erg Chebbi',
+        desc: 'La balade en dromadaire reste l\'expérience la plus emblématique de Merzouga. En montant sur ces ships du désert, vous rejoignez les traces des caravanes transsahariennes qui, pendant des siècles, traversaient l\'Erg Chebbi chargées d\'or, de sel et d\'épices. Le moment magique : gravir une grande dune au coucher du soleil pour voir l\'horizon se teinter d\'or et de rose.',
+        dets: [
+          ['Durée',          '1h, 2h ou nuit complète'],
+          ['Prix',           '150 à 800 MAD selon durée'],
+          ['Meilleur moment','Coucher de soleil (16h–18h)'],
+          ['Départ',         'Bord des dunes, Merzouga'],
+          ['Guide',          'Accompagnateur berbère inclus'],
+          ['Conseil',        'Prévoir couvre-chef et crème solaire']
+        ]
+      },
+
+      bivouac: {
+        img: 'images/bivouac sous les etoiles.jpg',
+        cat: 'Aventure · Erg Chebbi',
+        title: 'Nuit en bivouac sous les étoiles',
+        desc: 'Passer une nuit sous les étoiles au coeur du Sahara est une expérience transformative. Après une balade au coucher du soleil, vous rejoignez un camp berbère au milieu des dunes. Un dîner autour du feu, de la musique Gnawa jouée sous le ciel infini du désert, puis une nuit dans une tente haima.',
+        dets: [
+          ['Formule',   '1 nuit (arrivée soir, départ matin)'],
+          ['Prix',      '300 à 1800 MAD selon confort'],
+          ['Inclus',    'Dromadaire A/R + dîner + petit-déjeuner'],
+          ['Musique',   'Soirée Gnawa (musique berbère)'],
+          ['Confort',   'Basique à luxe (plusieurs camps)'],
+          ['Réservation','Conseillée à l\'avance']
+        ]
+      },
+
+      quad: {
+        img: 'images/quad.jpg',
+        cat: 'Aventure · Erg Chebbi',
+        title: 'Quad & Buggy dans les dunes',
+        desc: 'Pour les amateurs de sensations fortes, dévaler les pentes de l\'Erg Chebbi à bord d\'un quad ou d\'un buggy est une expérience inoubliable. Les moniteurs locaux vous guident sur les meilleures crêtes et dans les couloirs entre les dunes.',
+        dets: [
+          ['Durée',       '1h à demi-journée'],
+          ['Prix',        '250 à 600 MAD / engin'],
+          ['Âge minimum', '16 ans (quad), 14 ans (buggy passager)'],
+          ['Matériel',    'Casque et lunettes fournis'],
+          ['Accompagnement','Guide moniteur inclus'],
+          ['Note',        '4.7 / 5']
+        ]
+      },
+
+      ergchebbi: {
+        img: 'images/erg chebbi.png',
+        cat: 'Nature · Merzouga',
+        title: 'Erg Chebbi — L\'immensité dorée',
+        desc: 'L\'Erg Chebbi est le joyau naturel de la région. Ses dunes de sable fin doré s\'élèvent jusqu\'à 150 mètres de hauteur sur une superficie d\'environ 50 km². À l\'aube, les premières lueurs transforment le sable en or pur. À midi, le sable vibre sous la chaleur.',
+        dets: [
+          ['Hauteur',        'Jusqu\'à 150 mètres'],
+          ['Superficie',     '~50 km²'],
+          ['Accès',          'Libre depuis les hôtels en bordure'],
+          ['Meilleure saison','Oct–Avr (températures agréables)'],
+          ['À éviter',       'Juillet–Août midi (jusqu\'à 45°C)'],
+          ['Conseil',        'Lever à 5h30 pour le lever de soleil']
+        ]
+      },
+
+      bain_sable: {
+        img: 'images/bain de sable.png',
+        cat: 'Bien-être · Merzouga',
+        title: 'Bain de sable thérapeutique',
+        desc: 'Le bain de sable chaud est une pratique thérapeutique berbère ancestrale, unique à la région de Merzouga. En été, quand le sable de l\'Erg atteint 60 à 70°C en surface, les habitants et curistes s\'y font ensevelir jusqu\'au cou pendant une vingtaine de minutes.',
+        dets: [
+          ['Saison',      'Juillet–Août (sable très chaud)'],
+          ['Prix',        '100 à 200 MAD / session'],
+          ['Durée',       '20 à 40 minutes'],
+          ['Indications', 'Rhumatismes, arthrose, sciatique'],
+          ['Précautions', 'Contre-indiqué aux cardiaques'],
+          ['Heure idéale','Tôt le matin ou 16h–17h']
+        ]
+      },
+
+      sandboard: {
+        img: 'images/sandboarding.png',
+        cat: 'Aventure · Erg Chebbi, Merzouga',
+        title: 'Sandboard sur les dunes de l\'Erg Chebbi',
+        desc: 'Le sandboard est l\'une des activités les plus fun et accessibles de Merzouga. Sur une planche spéciale ou un simple plateau, vous descendez en glissant les pentes vertigineuses des grandes dunes — parfois à plus de 40 km/h ! Accessible à tous dès 8 ans.',
+        dets: [
+          ['Prix',           '80 à 150 MAD / planche (location)'],
+          ['Durée',          '1h à 2h selon envie'],
+          ['Âge minimum',    '8 ans'],
+          ['Niveau requis',  'Aucun — débutants bienvenus'],
+          ['Meilleur moment','Matin tôt ou fin d\'après-midi'],
+          ['Conseil',        'Combiner avec balade en dromadaire au coucher du soleil']
+        ]
+      },
+
+      dayet_srji: {
+        img: 'images/dayet srji.jpg',
+        cat: 'Nature · Merzouga',
+        title: 'Lac Dayet Srji & flamants roses',
+        desc: 'À seulement 2 km au sud de Merzouga, le lac salé Dayet Srji est l\'une des surprises les plus inattendues du désert marocain. Chaque année entre novembre et mars, des centaines de flamants roses viennent s\'y nourrir et se reposer, formant un spectacle saisissant contrastant avec le sable ocre des dunes.',
+        dets: [
+          ['Distance',        '2 km au sud de Merzouga'],
+          ['Meilleure saison','Novembre à Mars (flamants roses)'],
+          ['Accès',           'À pied, vélo ou 4x4'],
+          ['Faune',           'Flamants roses, canards, hérons'],
+          ['Entrée',          'Libre'],
+          ['Conseil',         'Jumelles recommandées — approche silencieuse']
+        ]
+      },
+
+      lever_soleil: {
+        img: 'images/sunrise.jpg',
+        cat: 'Nature · Erg Chebbi, Merzouga',
+        title: 'Lever de soleil sur les dunes — L\'expérience ultime',
+        desc: 'Le lever de soleil sur l\'Erg Chebbi est unanimement considéré comme l\'expérience la plus magique de Merzouga. Chaque matin vers 5h30, les guides guident les voyageurs jusqu\'au sommet d\'une grande dune à la lueur des étoiles. Puis le ciel passe du bleu nuit au violet, à l\'orange, au doré, et les dunes s\'embrasent.',
+        dets: [
+          ['Heure de départ','5h00–5h30 selon saison'],
+          ['Durée',          '1h30 (montée + spectacle)'],
+          ['Accès',          'À pied depuis les hôtels en bord de dunes'],
+          ['Guide',          'Recommandé pour trouver la meilleure dune'],
+          ['Ce qu\'il faut', 'Vêtements chauds (fraîcheur à l\'aube)'],
+          ['Conseil',        'Dormir en bivouac la veille pour l\'expérience complète']
+        ]
+      },
+
+      khamlia: {
+        img: 'images/khamlia.png',
+        cat: 'Culture · Village de Khamlia',
+        title: 'Village gnawa de Khamlia',
+        desc: 'À seulement 7 km au nord de Merzouga, le petit village de Khamlia est un trésor culturel méconnu. Fondé par des descendants d\'esclaves subsahariens, ses habitants perpétuent une culture gnawa d\'une richesse exceptionnelle avec guembri, crotales et chants polyphoniques.',
+        dets: [
+          ['Distance',  '7 km de Merzouga (15 min)'],
+          ['À faire',   'Concert de musique Gnawa'],
+          ['Instruments','Guembri, qraqeb, tambour'],
+          ['Durée',     '1h à 2h'],
+          ['Donation',  'Libre, directement aux musiciens'],
+          ['Conseil',   'Combiner avec visite du lac Dayet Srji']
+        ]
+      },
+
+      /* Restaurants */
+      resto_auberge: {
+        img: 'images/chez julia.png',
+        cat: 'Restaurant · Merzouga',
+        title: 'Restaurant de l\'Auberge Chez Julia',
+        desc: 'Adresse incontournable pour goûter une cuisine berbère familiale et généreuse à Merzouga. La patronne prépare chaque jour tajines d\'agneau, couscous aux légumes, soupe harira et galettes kesra croustillantes sorties du four à bois.',
+        dets: [
+          ['Prix moyen', '60 à 120 MAD / personne'],
+          ['Horaires',   '8h–22h (tous les jours)'],
+          ['Spécialité', 'Tajine d\'agneau, kesra, harira'],
+          ['Cadre',      'Terrasse vue dunes'],
+          ['Ambiance',   'Familiale et authentique'],
+          ['Note',       '4.6 / 5']
+        ]
+      },
+
+      resto_sahara: {
+        img: 'images/Nora.png',
+        cat: 'Café & Restaurant · Khamlia',
+        title: 'Restaurant & Café NORA',
+        desc: 'Restaurant Cafe Nora est situé au village Khamlia, à 7 km de Merzouga, à côté de l\'association des musiciens Gnaoua. Cuisine simple et authentique à petit prix.',
+        dets: [
+          ['Prix moyen','20 à 80 MAD / personne'],
+          ['Horaires',  '7h–21h (tous les jours)'],
+          ['Spécialité','Thé à la menthe, galettes, harira'],
+          ['Vue',       'Face à l\'Erg Chebbi'],
+          ['Ambiance',  'Simple, authentique, voyage'],
+          ['Note',      '4.5 / 5']
+        ]
+      },
+
+      resto_kasbah: {
+        img: 'images/restaurant kasbah.png',
+        cat: 'Restaurant Gastronomique · Merzouga',
+        title: 'Restaurant Kasbah Tombouctou',
+        desc: 'La table la plus raffinée de Merzouga. Installé dans une majestueuse kasbah de pisé rouge face à l\'Erg Chebbi, ce restaurant propose une cuisine saharienne de haute tenue : méchoui de l\'Atlas, pastilla au pigeon et desserts aux dattes Medjoul caramélisées.',
+        dets: [
+          ['Prix moyen',  '150 à 350 MAD / personne'],
+          ['Horaires',    '12h–15h · 19h–23h'],
+          ['Réservation', 'Recommandée en haute saison'],
+          ['Spécialité',  'Méchoui, pastilla, tajine de kefta'],
+          ['Cadre',       'Kasbah en pisé, vue dunes'],
+          ['Note',        '4.8 / 5']
+        ]
+      },
+
+      /* Bivouacs */
+      bivouac_luxury: {
+        img: 'images/Bivouac Luxury Desert Camp.png',
+        cat: 'Bivouac Luxe · Erg Chebbi',
+        title: 'Bivouac Luxury Desert Camp',
+        desc: 'Le summum de l\'expérience désert à Merzouga. Ces tentes berbères grand luxe, implantées au coeur des dunes, proposent lits king size, salle de bain privée avec douche solaire et électricité par panneaux solaires. Dîner aux flambeaux et soirée Gnawa live.',
+        dets: [
+          ['Prix',      '800 à 1800 MAD / nuit / tente'],
+          ['Capacité',  '4 à 12 tentes selon camp'],
+          ['Inclus',    'Dromadaire A/R + dîner + petit-déjeuner'],
+          ['Confort',   'Lit, douche, électricité solaire'],
+          ['Musique',   'Soirée Gnawa live'],
+          ['Note',      '4.9 / 5']
+        ]
+      },
+
+      bivouac_nomad: {
+        img: 'images/Bivouac Nomad.png',
+        cat: 'Bivouac · Erg Chebbi',
+        title: 'Bivouac Nomade Authentique',
+        desc: 'Pour une expérience Sahara vraiment authentique et accessible, le bivouac nomade traditionnel est la formule idéale. Tentes haima traditionnelles, repas collectif autour du feu de bois, histoires de désert contées par le guide berbère et ciel saturé d\'étoiles.',
+        dets: [
+          ['Prix',       '300 à 600 MAD / nuit / personne'],
+          ['Tentes',     'Haima traditionnelle (2–4 pers.)'],
+          ['Inclus',     'Dromadaire A/R + dîner + petit-déjeuner'],
+          ['Equipements','Matelas, couvertures berbères'],
+          ['Soirée',     'Musique et contes autour du feu'],
+          ['Note',       '4.7 / 5']
+        ]
+      },
+
+      /* Hôtels */
+      kasbah_tombouctou: {
+        img: 'images/Kasbah Tombouctou.png',
+        cat: 'Hôtel Kasbah · Merzouga',
+        title: 'Kasbah Tombouctou',
+        desc: 'La Kasbah Tombouctou est le palace emblématique de Merzouga. Bâtie en pisé rouge traditionnel face aux grandes dunes, elle allie l\'architecture des ksour du Sud marocain au confort d\'un hôtel de luxe. Piscine à débordement, spa à l\'argan et hammam traditionnel.',
+        dets: [
+          ['Catégorie','Kasbah Hôtel 5 étoiles'],
+          ['Prix',     '1500 à 4000 MAD / nuit'],
+          ['Piscine',  'Débordante face aux dunes'],
+          ['Spa',      'Soins argan, hammam, massages'],
+          ['Restaurant','Gastronomique saharien'],
+          ['Note',     '4.9 / 5']
+        ]
+      },
+
+      auberge_dunes: {
+        img: 'images/les dunes d\'or.png',
+        cat: 'Auberge · Merzouga',
+        title: 'Auberge Dunes d\'Or',
+        desc: 'L\'Auberge Dunes d\'Or est l\'adresse idéale pour un séjour confortable à prix sage à Merzouga. Construite en pisé traditionnel avec décoration berbère soignée, 15 chambres et suites climatisées. Piscine, terrasse panoramique et organisation de toutes les activités locales.',
+        dets: [
+          ['Catégorie', 'Auberge 3–4 étoiles'],
+          ['Prix',      '400 à 900 MAD / nuit'],
+          ['Chambres',  '15 chambres et suites'],
+          ['Services',  'Piscine, terrasse vue dunes'],
+          ['Excursions','Organisées sur place'],
+          ['Note',      '4.6 / 5']
+        ]
+      }
+    };
+
+    /* ============================================================
+       FONCTION openModal(key)
+       Ouvre la modale et injecte les données de modalData[key]
+       ============================================================ */
+    function openModal(key) {
+      const d = modalData[key];
+      if (!d) return; /* Sécurité : si la clé n'existe pas, ne rien faire */
+
+      /* Injection de l'image (avec fallback couleur si image manquante) */
+      document.getElementById('mImg').src = d.img;
+      document.getElementById('mImg').onerror = function () {
+        this.style.cssText = 'width:100%;height:220px;display:block;background:linear-gradient(135deg,#7a4a10,#c9963a)';
+      };
+
+      /* Injection des textes dans les éléments HTML correspondants */
+      document.getElementById('mCat').textContent   = d.cat;
+      document.getElementById('mTitle').textContent = d.title;
+      document.getElementById('mDesc2').textContent = d.desc;
+
+      /* Génération dynamique de la grille de détails (tableau de [label, valeur]) */
+      document.getElementById('mDets').innerHTML = d.dets.map(([l, v]) =>
+        `<div class="modal-detail"><div class="d-label">${l}</div><div class="d-val">${v}</div></div>`
+      ).join('');
+
+      /* Affichage de la modale et blocage du scroll de fond */
+      document.getElementById('modalOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    /* Fermeture de la modale et réactivation du scroll */
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    /* Fermeture de la modale via la touche Echap */
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    /* ============================================================
+       FILTRAGE DES CARTES ACTIVITES
+       Masque ou affiche les cartes selon la catégorie choisie
+       ============================================================ */
+    function filterAct(cat, btn) {
+      document.querySelectorAll('#actGrid .act-card').forEach(c => {
+        /* Si "all" : tout afficher. Sinon : masquer si catégorie différente */
+        c.classList.toggle('hidden', cat !== 'all' && c.dataset.cat !== cat);
+      });
+      /* Mise à jour visuelle du bouton actif */
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    /* ============================================================
+       FILTRAGE DES CARTES RESTAURANTS / HEBERGEMENT
+       Même logique que filterAct mais pour l'attribut data-rh
+       ============================================================ */
+    function filterRH(cat, btn) {
+      document.querySelectorAll('#rhGrid .rh-card').forEach(c => {
+        c.classList.toggle('hidden', cat !== 'all' && c.dataset.rh !== cat);
+      });
+      document.querySelectorAll('.rh-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    /* ============================================================
+       LIGHTBOX : visionneuse plein écran pour la galerie
+       lbSrcs = tableau des 7 images avec leur légende
+       ============================================================ */
+    const lbSrcs = [
+      { src: 'images/merzouga1.jpg', cap: 'Erg Chebbi — Dunes d\'or au coucher du soleil' },
+      { src: 'images/merzouga2.png', cap: 'Bivouac au coeur des dunes' },
+      { src: 'images/merzouga3.png', cap: 'Dromadaires en file sur les dunes' },
+      { src: 'images/merzouga4.jpg', cap: 'Lever de soleil depuis le sommet des dunes' },
+      { src: 'images/merzouga5.png', cap: 'Ksar en pisé du Tafilalet' },
+      { src: 'images/merzouga6.png', cap: 'Camp nomade — tentes haima traditionnelles' },
+      { src: 'images/merzouga7.jpg', cap: 'Ciel étoilé du Sahara — pollution zéro' },
+    ];
+
+    let lbIdx = 0; /* Index de la photo actuellement affichée dans la lightbox */
+
+    /* Ouvre la lightbox sur la photo d'index i */
+    function openLb(i) {
+      lbIdx = i;
+      document.getElementById('lbImg').src           = lbSrcs[i].src;
+      document.getElementById('lbCap').textContent   = lbSrcs[i].cap;
+      document.getElementById('lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden'; /* Bloque le scroll de fond */
+    }
+
+    /* Ferme la lightbox */
+    function closeLb() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = ''; /* Réactive le scroll */
+    }
+
+    /* Navigation gauche (dir=-1) ou droite (dir=+1) dans la lightbox */
+    function navLb(dir) {
+      lbIdx = (lbIdx + dir + lbSrcs.length) % lbSrcs.length; /* Boucle en fin de tableau */
+      openLb(lbIdx);
+    }
+
+    /* Fermeture de la lightbox au clic sur le fond noir */
+    document.getElementById('lightbox').addEventListener('click', function (e) {
+      if (e.target === this) closeLb();
+    });
+
+    /* ============================================================
+       CARTE INTERACTIVE LEAFLET
+       Initialisée au chargement complet de la page (window.load)
+       ============================================================ */
+
+    /* Tableau des lieux à afficher sur la carte avec leurs coordonnées */
+    const places = [
+      { name: 'Erg Chebbi — Grandes Dunes', lat: 31.0997, lng: -3.9723, type: 'nature',  col: '#C9963A', desc: 'Dunes atteignant 150 m · Erg principal' },
+      { name: 'Village de Merzouga',         lat: 31.0982, lng: -3.9759, type: 'culture', col: '#7A4A10', desc: 'Coeur du village, accès aux dunes' },
+      { name: 'Lac Dayet Srji',              lat: 31.0850, lng: -3.9650, type: 'nature',  col: '#2a5c1a', desc: 'Lac salé — flamants roses en saison' },
+      { name: 'Kasbah Tombouctou',           lat: 31.0960, lng: -3.9740, type: 'hotel',   col: '#4a3000', desc: 'Palace face aux dunes' },
+      { name: 'Mines de sel de Mfis',        lat: 31.2200, lng: -4.1800, type: 'culture', col: '#5c1a4a', desc: 'Mines artisanales ancestrales' },
+      { name: 'Bivouac Zone Erg',            lat: 31.1100, lng: -3.9600, type: 'bivouac', col: '#2a5c1a', desc: 'Zone des camps nomades' },
+    ];
+
+    let leafletMap, leafletMarkers = []; /* Variables globales pour la carte et les marqueurs */
+
+    window.addEventListener('load', () => {
+      /* Création de la carte Leaflet centrée sur Merzouga */
+      leafletMap = L.map('map').setView([31.0997, -3.975], 13);
+
+      /* Ajout des tuiles OpenStreetMap */
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'OpenStreetMap'
+      }).addTo(leafletMap);
+
+      const listEl  = document.getElementById('mapList');
+      /* Couleurs des pastilles selon le type de lieu */
+      const typeCol = { nature: '#2a5c1a', culture: '#7A4A10', hotel: '#1a3a5c', bivouac: '#5c1a4a' };
+
+      /* Création d'un marqueur et d'un élément de liste pour chaque lieu */
+      places.forEach((p, i) => {
+        /* Marqueur personnalisé : cercle coloré avec numéro */
+        const icon = L.divIcon({
+          className: '',
+          html: `<div style="background:${p.col};width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;">${i + 1}</div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14] /* Point d'ancrage au centre du cercle */
+        });
+
+        /* Ajout du marqueur à la carte avec popup d'information */
+        const m = L.marker([p.lat, p.lng], { icon }).addTo(leafletMap);
+        m.bindPopup(`<strong>${p.name}</strong><br><small>${p.desc}</small>`);
+        leafletMarkers.push(m);
+
+        /* Création de l'élément correspondant dans la liste à droite */
+        const item = document.createElement('div');
+        item.className = 'map-item';
+        item.innerHTML = `<h4><span class="type-dot" style="background:${typeCol[p.type] || p.col}"></span>${i + 1}. ${p.name}</h4><p>${p.desc}</p>`;
+
+        /* Clic sur la liste : centrer la carte sur le lieu et ouvrir sa popup */
+        item.onclick = () => {
+          leafletMap.setView([p.lat, p.lng], 15);
+          m.openPopup();
+          /* Réinitialise tous les éléments puis active celui cliqué */
+          document.querySelectorAll('.map-item').forEach(x => x.classList.remove('active-place'));
+          item.classList.add('active-place');
+        };
+        listEl.appendChild(item);
+      });
+    });
+
+    /* ============================================================
+       METEO
+       Données statiques affichées dans le bloc météo
+       (Pour des données réelles, remplacer par un appel à une API météo)
+       ============================================================ */
+    function loadMeteo() {
+      document.getElementById('mTemp').textContent  = '38°C';
+      document.getElementById('mDesc').textContent  = 'Ensoleillé, ciel dégagé';
+      document.getElementById('mFeel').textContent  = '36°C';
+      document.getElementById('mHum').textContent   = '12%';
+      document.getElementById('mWind').textContent  = '22 km/h';
+      document.getElementById('mCloud').textContent = '0%';
+    }
+    loadMeteo(); /* Appelée immédiatement au chargement de la page */
+
+    /* ============================================================
+       FORMULAIRE DE CONTACT
+       Validation des champs avant affichage du message de succès
+       ============================================================ */
+    function sendForm() {
+      const p = document.getElementById('fPrenom').value.trim();
+      const e = document.getElementById('fEmail').value.trim();
+      const m = document.getElementById('fMsg').value.trim();
+
+      /* Vérification que les champs obligatoires sont remplis */
+      if (!p || !e || !m) {
+        alert('Veuillez remplir les champs obligatoires (Prénom, Email, Message).');
+        return;
+      }
+
+      /* Vérification du format de l'adresse email avec une expression régulière */
+      if (!/\S+@\S+\.\S+/.test(e)) {
+        alert('Adresse email invalide.');
+        return;
+      }
+
+      /* Affichage du message de succès */
+      document.getElementById('formOk').style.display = 'block';
+
+      /* Réinitialisation des champs du formulaire */
+      ['fPrenom', 'fNom', 'fEmail', 'fMsg'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('fSujet').selectedIndex = 0;
+    }
+
+    /* ============================================================
+       NAVIGATION ACTIVE AU SCROLL
+       Met à jour le lien actif dans la navbar selon la section visible
+       ============================================================ */
+    const sections = ['hero', 'activites', 'galerie', 'restaurants', 'carte', 'contact'];
+
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY + 100; /* Décalage pour activer un peu avant d'arriver */
+
+      sections.forEach(id => {
+        const el   = document.getElementById(id);
+        if (!el) return;
+        const link = document.querySelector(`nav a[href="#${id}"]`);
+        if (!link) return;
+
+        /* Si la section est dans la zone visible : activer son lien de navigation */
+        if (el.offsetTop <= y && el.offsetTop + el.offsetHeight > y) {
+          document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+          link.classList.add('active');
+        }
+      });
+    }, { passive: true }); /* passive:true améliore les performances du scroll */
+
+    /* ══ MENU HAMBURGER MOBILE ══ */
+    function toggleNav(){
+      document.querySelector('.nav-links').classList.toggle('open');
+    }
+    document.querySelectorAll('.nav-links a').forEach(link=>{
+      link.addEventListener('click',()=>{
+        document.querySelector('.nav-links').classList.remove('open');
+      });
+    });
+    document.addEventListener('click',function(e){
+      const nav=document.querySelector('.nav-links');
+      const btn=document.getElementById('hamburger');
+      if(nav&&nav.classList.contains('open')&&!nav.contains(e.target)&&!btn.contains(e.target)){
+        nav.classList.remove('open');
+      }
+    });
+  </script>
+</body>
+
+</html>

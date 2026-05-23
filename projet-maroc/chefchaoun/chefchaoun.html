@@ -1,0 +1,1917 @@
+<!DOCTYPE html>
+<!-- DOCTYPE : déclare que ce document est en HTML5 -->
+<html lang="fr">
+<!-- la langue de la page est le français -->
+<head>
+<!-- La section head contient les informations de configuration de la page, invisibles par l'utilisateur -->
+<meta charset="UTF-8">
+<!-- utiliser l'encodage UTF-8 pour afficher les accents et caractères spéciaux -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Sur mobile, la page s'adapte à la largeur de l'écran avec un zoom initial de 1 -->
+<title>Chefchaouen - La Perle Bleue</title>
+<!-- Le titre affiché dans l'onglet du navigateur -->
+
+<!-- Google Fonts : Playfair Display pour les titres élégants + Raleway pour le texte -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Leaflet.js CSS : styles de la bibliothèque de carte interactive -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+  /* ═══════════════════════════════════════════
+     DÉBUT DU CSS
+═══════════════════════════════════════════ */
+/* =====================================================
+   CHEFCHAOUEN - Feuille de style principale
+===================================================== */
+
+/* ═══ VARIABLES CSS GLOBALES ═══ */
+/* :root cible l'élément racine du document (la balise html),
+ déclare des variables CSS réutilisables partout dans la feuille de style */
+:root {
+  --blue:      #1B3A6B;   /* Variable : couleur bleue principale, inspire les murs de Chefchaouen */
+  --blue-mid:  #1E4080;   /* Variable : bleu intermédiaire pour les fonds de sections */
+  --blue-dark: #0d1f3c;   /* Variable : bleu très foncé pour topbar et footer */
+  --blue-acc:  #2563EB;   /* Variable : bleu accent vif pour les effets hover */
+  --gold:      #C9A96E;   /* Variable : couleur dorée pour les accents décoratifs et étoiles */
+  --sand:      #EEF2F7;   /* Variable : bleu très pâle pour les fonds */
+  --cream:     #F4F7FB;   /* Variable : crème bleutée pour les sections alternées */
+  --white:     #FFFFFF;   /* Variable : blanc pur */
+  --dark:      #0a1020;   /* Variable : presque noir pour le texte principal */
+}
+
+/* ═══ RESET GLOBAL ═══ */
+/* Le sélecteur * cible tous les éléments de la page.
+   margin:0 et padding:0 supprime les espacements par défaut du navigateur.
+   box-sizing:border-box fait que les bordures et paddings sont inclus dans la largeur totale */
+*{margin:0;padding:0;box-sizing:border-box;}
+/* Quand on clique sur un lien ancre (#section), le défilement est fluide et animé */
+html{scroll-behavior:smooth;}
+/* Le corps de la page utilise la police Raleway, fond crème bleutée, texte quasi-noir.
+   overflow-x:hidden empêche le défilement horizontal indésirable */
+body{font-family:'Raleway',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;}
+
+/* ═══ TOP BAR ═══ */
+/* Barre supérieure avec fond bleu très foncé, texte blanc centré, petite taille et espacement entre les lettres */
+.top-bar{background:var(--blue-dark);color:#fff;text-align:center;padding:7px;font-size:12px;letter-spacing:1.5px;}
+
+/* ═══ NAVBAR ═══ */
+/* Styles pour la barre de navigation principale */
+nav{
+  position:sticky;top:0;z-index:900;
+  /* sticky: la nav reste collée en haut quand on défile. z-index:900 la met au-dessus des autres éléments */
+  background:rgba(255,255,255,0.97);
+  /* Fond blanc presque opaque (97%) pour laisser légèrement transparaître le contenu derrière */
+  backdrop-filter:blur(12px);
+  /* Effet de flou sur ce qu'il y a derrière la navbar (effet verre dépoli) */
+  box-shadow:0 2px 24px rgba(27,58,107,.13);
+  /* Ombre portée légère sous la navbar pour la détacher du contenu */
+  display:flex;align-items:center;justify-content:space-between;
+  /* Flexbox : les enfants s'alignent horizontalement, centrés verticalement, et espacés aux extrémités */
+  padding:0 48px;height:68px;
+  /* Espacement intérieur gauche/droite de 48px, hauteur fixe de 68px */
+}
+/* Le logo (SVG + texte) affiché en ligne avec 10px d'espace entre eux, sans soulignement de lien */
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+/* Le SVG du logo fait 38x38 pixels */
+.nav-logo svg{width:38px;height:38px;}
+/* Le nom de la ville dans le logo : grande police serif en gras, couleur bleue, lettres espacées */
+.logo-text .city{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--blue);letter-spacing:2px;}
+/* Le sous-titre du logo : très petite taille, gris clair, majuscules, lettres espacées */
+.logo-text .sub{font-size:9.5px;color:#999;letter-spacing:2px;text-transform:uppercase;}
+/* La liste des liens de navigation affichée horizontalement, sans puces, éléments alignés */
+.nav-links{display:flex;list-style:none;gap:0;align-items:center;}
+.nav-links a{
+  display:block;padding:10px 14px;
+  /* Chaque lien s'affiche en bloc pour avoir une zone cliquable plus grande */
+  text-decoration:none;color:#333;
+  /* Pas de soulignement, couleur gris foncé */
+  font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  /* Petite taille, gras, espacement entre lettres, tout en majuscules */
+  transition:color .2s;white-space:nowrap;
+  /* Changement de couleur animé sur 0.2s au survol. nowrap empêche le texte de passer à la ligne */
+}
+/* Au survol d'un lien, la couleur passe au bleu */
+.nav-links a:hover{color:var(--blue);}
+/* Le lien de la section active est bleu et souligné par une bordure bleue de 2px */
+.nav-links a.active{color:var(--blue);border-bottom:2px solid var(--blue);}
+
+/* ═══ SECTION 1 – HERO ═══ */
+/* Section plein écran avec image de fond et titre principal */
+#hero{
+  position:relative;height:100vh;min-height:580px;
+  /* Hauteur égale à 100% de la fenêtre visible, minimum 580px pour les petits écrans */
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  /* Centrage parfait du contenu horizontalement et verticalement, débordement caché */
+  background:#0d1f3c;
+  /* Fond bleu foncé de secours si l'image ne charge pas */
+}
+.hero-img{
+  position:absolute;inset:0;
+  /* L'image occupe tout l'espace du parent (inset:0 = top/right/bottom/left = 0) */
+  background:url('images/hero-chefchaoun.jpg') center/cover no-repeat;
+  /* Image centrée, couvre tout l'espace sans se répéter */
+  background-color:#1B3A6B;
+  /* Couleur de fallback si l'image ne charge pas */
+  opacity:.62;transition:opacity 1s;
+  /* L'image est légèrement transparente pour laisser voir les overlays dessous */
+}
+/* Overlay qui couvre tout le hero */
+.hero-overlay{
+  position:absolute;inset:0;
+  /* Dégradé sombre de haut en bas : plus transparent en haut, plus opaque en bas */
+  background:linear-gradient(to bottom,rgba(13,31,60,.45) 0%,rgba(5,12,28,.75) 100%);
+}
+/* Motif décoratif en arrière-plan, très transparent (7%) pour rester subtil */
+.hero-pattern{
+  position:absolute;inset:0;opacity:.07;
+  /* SVG encodé en base64 inline : une étoile blanche répétée en motif de fond */
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpolygon points='40,5 55,20 75,20 62,33 68,52 40,42 12,52 18,33 5,20 25,20' fill='none' stroke='%23fff' stroke-width='1.2'/%3E%3C/svg%3E");
+}
+/* Le contenu du hero (titre, boutons) est au-dessus des overlays (z-index:2), centré, blanc */
+.hero-content{position:relative;z-index:2;text-align:center;color:#fff;padding:0 24px;}
+/* Badge inline avec bordure dorée semi-transparente */
+.hero-tag{
+  display:inline-block;border:1px solid rgba(201,169,110,.6);
+  /* Texte doré, petit, espacé et en majuscules */
+  color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  /* Espacement interne, coins légèrement arrondis, marge en bas */
+  padding:6px 20px;border-radius:2px;margin-bottom:22px;
+  /* Animation d'apparition de haut en bas sur 0.9s */
+  animation:fadeDown .9s ease both;
+}
+.hero-title{
+  font-family:'Playfair Display',serif;
+  /* Police élégante avec sérifs pour le grand titre */
+  font-size:clamp(44px,8vw,100px);
+  /* Taille fluide : minimum 44px, préférence 8% de la fenêtre, maximum 100px */
+  font-weight:700;letter-spacing:6px;line-height:1;
+  /* Lettres très espacées, hauteur de ligne égale à la taille de la police */
+  text-shadow:0 4px 40px rgba(0,0,0,.4);
+  /* Ombre portée sous le texte pour le rendre lisible sur l'image */
+  animation:fadeDown .9s .15s ease both;
+  /* Même animation mais avec 0.15s de délai pour décaler l'apparition */
+}
+/* La partie en italique du titre est dorée */
+.hero-title em{font-style:italic;color:var(--gold);}
+/* Sous-titre : lettres espacées, légèrement transparent, en majuscules. Animation avec 0.3s de délai */
+.hero-sub{
+  font-size:15px;letter-spacing:4px;opacity:.8;text-transform:uppercase;
+  margin:14px 0 38px;animation:fadeDown .9s .3s ease both;
+}
+/* Les deux boutons du hero côte à côte, centrés, avec animation retardée de 0.45s */
+.hero-btns{display:flex;gap:14px;justify-content:center;animation:fadeDown .9s .45s ease both;}
+/* Bouton bleu avec texte blanc */
+.btn-primary{
+  background:var(--blue);color:#fff;text-decoration:none;
+  /* Espacement généreux, forme ovale (border-radius élevé), police petite et grasse */
+  padding:14px 40px;border-radius:40px;font-size:12px;font-weight:700;
+  /* Lettres espacées, majuscules, curseur pointeur, pas de bordure native */
+  letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:none;
+  /* Ombre bleue sous le bouton, transitions animées sur 0.3s */
+  box-shadow:0 4px 24px rgba(27,58,107,.5);transition:all .3s;
+}
+/* Au survol : bleu plus clair, et le bouton monte légèrement de 2px */
+.btn-primary:hover{background:var(--blue-acc);transform:translateY(-2px);}
+/* Bouton transparent avec texte blanc */
+.btn-outline{
+  background:transparent;color:#fff;text-decoration:none;
+  /* Même forme que btn-primary */
+  padding:14px 40px;border-radius:40px;font-size:12px;font-weight:700;
+  /* Lettres espacées, majuscules, curseur pointeur */
+  letter-spacing:2px;text-transform:uppercase;cursor:pointer;
+  /* Bordure blanche semi-transparente, transitions animées */
+  border:2px solid rgba(255,255,255,.5);transition:all .3s;
+}
+/* Au survol : bordure blanche pleine, fond blanc très transparent */
+.btn-outline:hover{border-color:#fff;background:rgba(255,255,255,.1);}
+/* SVG en forme de vague placé en bas du hero, couvrant toute la largeur */
+.hero-wave{position:absolute;bottom:0;left:0;right:0;line-height:0;}
+/* Animation : l'élément part invisible et décalé de 18px vers le haut,
+   puis arrive à sa position normale et complètement visible */
+@keyframes fadeDown{from{opacity:0;transform:translateY(-18px);}to{opacity:1;transform:translateY(0);}}
+/* Indicateur centré en bas du hero, décalé de 50% puis recentré */
+.scroll-hint{
+  position:absolute;bottom:38px;left:50%;transform:translateX(-50%);
+  /* Texte blanc semi-transparent */
+  color:rgba(255,255,255,.5);font-size:11px;letter-spacing:2px;
+  /* Icône et texte empilés verticalement et centrés */
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  /* Animation de rebond en boucle infinie */
+  animation:bob 2s ease-in-out infinite;
+}
+/* Animation bob : l'élément descend de 6px à mi-chemin puis revient.
+   Le translateX(-50%) est maintenu à chaque étape pour rester centré */
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(6px);}}
+
+/* ═══ EN-TÊTES DE SECTIONS ═══ */
+/* Styles communs à tous les titres de sections */
+/* En-tête centré avec grande marge en bas */
+.sec-head{text-align:center;margin-bottom:52px;}
+/* Petit texte au-dessus du titre, affiché en bloc inline, doré, majuscules */
+.sec-head .eyebrow{
+  display:inline-block;font-size:10px;font-weight:700;letter-spacing:3px;
+  text-transform:uppercase;color:var(--gold);margin-bottom:10px;
+}
+/* Titre principal en Playfair Display, taille fluide, couleur bleue */
+.sec-head h2{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);color:var(--blue);}
+/* Le texte en italique dans le titre h2 */
+.sec-head h2 em{font-style:italic;}
+/* Séparateur décoratif : deux traits et une icône, centrés horizontalement */
+.sec-head .divider{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;}
+/* Chaque trait du séparateur : 60px de large, 1px de haut, couleur dorée, semi-transparent */
+.sec-head .divider span{width:60px;height:1px;background:var(--gold);opacity:.6;}
+/* L'icône centrale du séparateur en doré */
+.sec-head .divider i{color:var(--gold);font-size:12px;}
+/* Paragraphe de description sous le titre : gris, centré, largeur max 520px, interligne confortable */
+.sec-head p{color:#777;font-size:13.5px;margin-top:14px;max-width:520px;margin-inline:auto;line-height:1.7;}
+
+/* ═══ SECTION 2 – ACTIVITÉS ═══ */
+/* Section blanche avec grands espacements internes (80px haut/bas, 60px gauche/droite) */
+#activites{padding:80px 60px;background:#fff;}
+/* Barre de filtres : boutons côte à côte, centrés, qui passent à la ligne si nécessaire */
+.filter-bar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:44px;}
+/* Bouton de filtre ovale avec bordure bleue */
+.filter-btn{
+  padding:8px 22px;border-radius:30px;border:2px solid var(--blue);
+  /* Fond transparent, texte bleu, police petite et grasse */
+  background:transparent;color:var(--blue);font-size:12px;font-weight:700;
+  /* Lettres légèrement espacées, curseur pointeur, transitions rapides, majuscules */
+  letter-spacing:1px;cursor:pointer;transition:all .25s;text-transform:uppercase;
+}
+/* Au survol ou quand actif : fond bleu et texte blanc (inversion des couleurs) */
+.filter-btn:hover,.filter-btn.active{background:var(--blue);color:#fff;}
+/* Grille responsive : les colonnes font au moins 290px et se répartissent automatiquement */
+.cards-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+  /* Espace de 28px entre les cartes, largeur max 1200px, centré */
+  gap:28px;max-width:1200px;margin:0 auto;
+}
+/* Carte avec coins arrondis, débordement caché pour l'effet zoom de l'image */
+.act-card{
+  border-radius:14px;overflow:hidden;background:#fff;
+  /* Ombre légère sous la carte */
+  box-shadow:0 4px 24px rgba(0,0,0,.09);
+  /* Transitions animées pour le survol, curseur pointeur */
+  transition:transform .3s,box-shadow .3s;cursor:pointer;
+}
+/* Au survol : la carte monte de 8px et l'ombre devient plus prononcée et bleue */
+.act-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(27,58,107,.18);}
+/* Les cartes filtrées sont complètement cachées */
+.act-card.hidden{display:none;}
+/* Conteneur de l'image : hauteur fixe 210px, débordement caché pour l'effet zoom */
+.card-img-wrap{position:relative;height:210px;overflow:hidden;}
+/* L'image remplit tout le conteneur sans se déformer (object-fit:cover), transition zoom */
+.card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+/* Au survol de la carte, l'image zoome légèrement (107% de sa taille) */
+.act-card:hover .card-img-wrap img{transform:scale(1.07);}
+/* Badge flottant en haut à gauche de l'image */
+.card-badge{position:absolute;top:14px;left:14px;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;color:#fff;}
+/* Couleurs des badges selon la catégorie */
+.badge-culture{background:#1a3a5c;}   /* Badge bleu marine pour les activités culturelles */
+.badge-sport{background:#1a5c3a;}     /* Badge vert pour les activités sportives */
+.badge-nature{background:#2d5016;}    /* Badge vert olive pour les activités nature */
+.badge-food{background:#8b1a1a;}      /* Badge rouge foncé pour la nourriture */
+.badge-bienetre{background:#5c1a5c;}  /* Badge violet pour les activités bien-être */
+/* Espacement interne du contenu textuel de la carte */
+.card-body{padding:18px 20px 20px;}
+/* Titre de la carte en Playfair Display, 19px, foncé */
+.card-body h3{font-family:'Playfair Display',serif;font-size:19px;margin-bottom:6px;color:var(--dark);}
+/* Description de la carte : petite, grise, interligne confortable */
+.card-body p{font-size:12.5px;color:#777;line-height:1.65;margin-bottom:14px;}
+/* Ligne d'infos (durée, lieu) : éléments côte à côte, passent à la ligne si besoin */
+.card-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+/* Chaque info-tag : fond crème bleutée, coins arrondis, texte bleu */
+.card-meta span{font-size:11px;background:var(--cream);padding:3px 10px;border-radius:12px;color:var(--blue);font-weight:600;}
+/* Petit bouton bleu avec texte blanc, sans bordure */
+.btn-sm{
+  background:var(--blue);color:#fff;border:none;
+  /* Forme ovale, police petite et grasse */
+  padding:9px 20px;border-radius:20px;font-size:11px;font-weight:700;
+  /* Curseur pointeur, lettres légèrement espacées, transition de couleur */
+  cursor:pointer;letter-spacing:.8px;transition:background .2s;
+}
+/* Au survol : bleu plus clair */
+.btn-sm:hover{background:var(--blue-acc);}
+
+/* ═══ SECTION 3 – GALERIE ═══ */
+/* Section fond crème bleutée avec grands espacements */
+#galerie{padding:80px 60px;background:var(--cream);}
+/* Grille de 3 colonnes de largeur égale */
+.gallery-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  /* Petits espaces entre photos, largeur max 1100px, centré */
+  gap:10px;max-width:1100px;margin:0 auto;
+}
+/* Chaque photo : coins arrondis, débordement caché pour zoom, position relative pour l'overlay */
+.gal-item{overflow:hidden;border-radius:10px;position:relative;cursor:pointer;}
+/* La 1ère photo occupe 2 colonnes sur 3, hauteur 300px */
+.gal-item:nth-child(1){grid-column:span 2;height:300px;}
+/* La 2ème photo : 1 colonne, hauteur 300px */
+.gal-item:nth-child(2){height:300px;}
+/* La 3ème photo : 1 colonne, hauteur 240px */
+.gal-item:nth-child(3){height:240px;}
+/* La 4ème photo : 1 colonne, hauteur 240px */
+.gal-item:nth-child(4){height:240px;}
+/* La 5ème photo : 1 colonne, hauteur 240px */
+.gal-item:nth-child(5){grid-column:span 1;height:240px;}
+/* La 6ème photo occupe toute la largeur (3 colonnes), hauteur 260px */
+.gal-item:nth-child(6){grid-column:span 3;height:260px;}
+/* La 7ème photo occupe 2 colonnes, hauteur 260px */
+.gal-item:nth-child(7){grid-column:span 2;height:260px;}
+/* L'image remplit tout son conteneur, transition de zoom animée */
+.gal-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s;}
+/* Au survol : léger zoom de l'image */
+.gal-item:hover img{transform:scale(1.06);}
+/* Overlay bleu transparent par défaut, couvre toute la photo */
+.gal-overlay{
+  position:absolute;inset:0;background:rgba(27,58,107,0);
+  /* L'icône est centrée, la transition est animée */
+  display:flex;align-items:center;justify-content:center;transition:background .3s;
+}
+/* Au survol : l'overlay devient bleu semi-transparent */
+.gal-item:hover .gal-overlay{background:rgba(27,58,107,.35);}
+/* L'icône SVG est invisible par défaut, 40x40px, blanche */
+.gal-overlay svg{opacity:0;transition:opacity .3s;width:40px;height:40px;fill:#fff;}
+/* Au survol : l'icône devient visible */
+.gal-item:hover .gal-overlay svg{opacity:1;}
+
+/* ═══ LIGHTBOX ═══ */
+/* Styles pour la visionneuse d'image en plein écran */
+/* Cachée par défaut, en position fixe couvrant tout l'écran, fond noir semi-opaque */
+.lightbox{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);
+  /* Au-dessus de tout (z-index élevé), contenu centré */
+  z-index:3000;align-items:center;justify-content:center;
+}
+/* Quand la classe open est ajoutée, la lightbox s'affiche en flexbox */
+.lightbox.open{display:flex;}
+/* Conteneur de l'image : max 88% de la largeur et hauteur de la fenêtre */
+.lb-inner{position:relative;max-width:88vw;max-height:88vh;}
+/* L'image s'adapte à la lightbox, coins légèrement arrondis */
+.lb-inner img{max-width:88vw;max-height:88vh;border-radius:8px;display:block;}
+/* Bouton fermer en haut à droite de l'image, blanc, légèrement transparent */
+.lb-close{position:absolute;top:-44px;right:0;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;opacity:.8;}
+/* Au survol : le bouton fermer devient complètement opaque */
+.lb-close:hover{opacity:1;}
+/* Boutons précédent/suivant centrés verticalement par rapport à l'image */
+.lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  /* Fond bleu semi-transparent, texte blanc */
+  background:rgba(27,58,107,.7);border:none;color:#fff;
+  /* Forme circulaire de 44px, grande flèche */
+  width:44px;height:44px;border-radius:50%;font-size:20px;cursor:pointer;
+  /* Contenu centré, transition de couleur */
+  display:flex;align-items:center;justify-content:center;transition:background .2s;
+}
+/* Au survol : fond bleu plein */
+.lb-nav:hover{background:var(--blue);}
+/* Bouton précédent positionné à gauche de l'image */
+.lb-prev{left:-56px;}
+/* Bouton suivant positionné à droite de l'image */
+.lb-next{right:-56px;}
+/* Légende positionnée sous l'image */
+.lb-caption{
+  position:absolute;bottom:-36px;left:0;right:0;
+  /* Texte blanc semi-transparent, petit, lettres espacées */
+  text-align:center;color:rgba(255,255,255,.7);font-size:12px;letter-spacing:1px;
+}
+
+/* ═══ SECTION 4 – RESTAURANTS & HÉBERGEMENT ═══ */
+/* Section fond bleu moyen pour contraste avec la section précédente */
+#restaurants{padding:80px 60px;background:var(--blue-mid);}
+/* Dans cette section, le titre est blanc (car fond bleu) */
+#restaurants .sec-head h2{color:#fff;}
+/* Le sous-titre reste doré */
+#restaurants .sec-head .eyebrow{color:var(--gold);}
+/* Le paragraphe est blanc à 65% d'opacité */
+#restaurants .sec-head p{color:rgba(255,255,255,.65);}
+/* Barre de filtres identique à celle des activités mais adaptée pour fond bleu */
+.rh-filter-bar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:44px;}
+/* Bouton ovale avec bordure blanche semi-transparente */
+.rh-filter-btn{
+  padding:7px 20px;border-radius:30px;border:2px solid rgba(255,255,255,.4);
+  /* Fond transparent, texte blanc légèrement transparent */
+  background:transparent;color:rgba(255,255,255,.85);font-size:11px;font-weight:700;
+  /* Lettres espacées, transitions rapides, majuscules */
+  letter-spacing:1px;cursor:pointer;transition:all .25s;text-transform:uppercase;
+}
+/* Au survol ou actif : fond blanc et texte bleu (inversion pour fond bleu) */
+.rh-filter-btn:hover,.rh-filter-btn.active{background:#fff;color:var(--blue);}
+/* Grille responsive : colonnes d'au moins 300px */
+.rh-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  /* Espace de 26px entre cartes, largeur max 1200px, centré */
+  gap:26px;max-width:1200px;margin:0 auto;
+}
+/* Carte blanche avec coins arrondis */
+.rh-card{
+  background:#fff;border-radius:14px;overflow:hidden;
+  /* Ombre plus prononcée que les cartes d'activités (fond sombre derrière) */
+  box-shadow:0 4px 24px rgba(0,0,0,.18);
+  /* Transitions pour le survol */
+  transition:transform .3s,box-shadow .3s;cursor:pointer;
+}
+/* Au survol : monte de 8px, ombre encore plus prononcée */
+.rh-card:hover{transform:translateY(-8px);box-shadow:0 18px 52px rgba(0,0,0,.25);}
+/* Les cartes filtrées sont cachées */
+.rh-card.hidden{display:none;}
+/* Conteneur image de la carte resto/hôtel : 195px de hauteur */
+.rh-card-img{position:relative;height:195px;overflow:hidden;}
+/* Image remplit son conteneur, transition de zoom */
+.rh-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+/* Au survol de la carte : zoom léger sur l'image */
+.rh-card:hover .rh-card-img img{transform:scale(1.07);}
+/* Badge type (restaurant/hôtel/riad) en haut à gauche de l'image */
+.rh-badge{position:absolute;top:12px;left:12px;padding:5px 12px;border-radius:16px;font-size:10px;font-weight:700;color:#fff;}
+/* Couleurs spécifiques par type d'établissement */
+.badge-resto{background:#8b1a1a;}  /* Badge rouge foncé pour les restaurants */
+.badge-hotel{background:#1a3a5c;} /* Badge bleu foncé pour les hôtels */
+.badge-riad{background:#1a5c3a;}  /* Badge vert foncé pour les riads */
+/* Étoiles de notation en haut à droite : fond noir semi-transparent, étoiles dorées */
+.stars{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.5);color:var(--gold);padding:4px 10px;border-radius:12px;font-size:11px;}
+/* Espacement interne du contenu textuel */
+.rh-body{padding:18px 20px 20px;}
+/* Catégorie affichée au-dessus du nom : très petite, dorée, espacée, majuscules */
+.rh-body .cat{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:5px;}
+/* Nom de l'établissement en Playfair Display */
+.rh-body h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--dark);margin-bottom:7px;}
+/* Description courte : petite taille, grise, interligne confortable */
+.rh-body p{font-size:12.5px;color:#777;line-height:1.65;margin-bottom:12px;}
+/* Tags infos (prix, lieu) côte à côte */
+.rh-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+/* Chaque tag : fond crème bleutée, coins arrondis, texte bleu */
+.rh-meta span{font-size:11px;background:var(--cream);padding:3px 10px;border-radius:12px;color:var(--blue);font-weight:600;}
+
+/* ═══ SECTION 5 – CARTE ═══ */
+/* Section blanche avec grands espacements */
+#carte{padding:80px 60px;background:#fff;}
+/* Mise en page deux colonnes : la carte prend le reste, la liste fait 320px fixe */
+.map-layout{display:grid;grid-template-columns:1fr 320px;gap:28px;max-width:1100px;margin:0 auto;}
+/* La carte Leaflet : 480px de haut, coins arrondis, ombre légère, z-index:1 pour Leaflet */
+#map{height:480px;border-radius:14px;box-shadow:0 4px 30px rgba(0,0,0,.12);z-index:1;}
+/* Liste des lieux : défilement vertical si trop long, même hauteur que la carte */
+.map-list{overflow-y:auto;max-height:480px;display:flex;flex-direction:column;gap:10px;}
+/* Scrollbar personnalisée : très fine (4px) pour webkit (Chrome, Safari) */
+.map-list::-webkit-scrollbar{width:4px;}
+/* La poignée de la scrollbar est dorée et légèrement arrondie */
+.map-list::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
+/* Chaque élément de la liste : fond crème bleutée, coins arrondis, curseur pointeur */
+.map-item{
+  background:var(--cream);border-radius:10px;padding:14px 16px;cursor:pointer;
+  /* Bordure gauche transparente qui sera colorée quand actif */
+  border-left:4px solid transparent;transition:all .2s;
+}
+/* Au survol ou sélectionné : bordure gauche bleue, fond blanc, légère ombre bleue */
+.map-item:hover,.map-item.active-place{border-left-color:var(--blue);background:#fff;box-shadow:0 2px 12px rgba(27,58,107,.1);}
+/* Nom du lieu dans la liste */
+.map-item h4{font-size:13.5px;font-weight:700;color:var(--dark);margin-bottom:3px;}
+/* Description courte dans la liste */
+.map-item p{font-size:11.5px;color:#888;}
+/* Petit cercle coloré indiquant le type de lieu (culture, nature, hôtel) */
+.map-item .type-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+
+/* ═══ SECTION 6 – MÉTÉO & CONTACT ═══ */
+/* Section fond crème bleutée */
+#contact{padding:80px 60px;background:var(--cream);}
+/* Mise en page deux colonnes égales pour la météo et le formulaire */
+.mc-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;max-width:1000px;margin:0 auto;}
+/* Fond dégradé bleu diagonal (coin haut-gauche vers coin bas-droit) */
+.meteo-box{
+  background:linear-gradient(135deg,var(--blue-dark) 0%,var(--blue-mid) 60%,#2563EB 100%);
+  /* Coins très arrondis, espacement généreux, texte blanc */
+  border-radius:18px;padding:32px;color:#fff;
+  /* Ombre bleue prononcée sous la carte météo */
+  box-shadow:0 8px 40px rgba(27,58,107,.35);
+}
+/* Nom de la ville en petit, lettres espacées, légèrement transparent */
+.meteo-city{font-size:12px;letter-spacing:3px;text-transform:uppercase;opacity:.7;margin-bottom:4px;}
+/* Température affichée très grande en Playfair Display */
+.meteo-temp{font-family:'Playfair Display',serif;font-size:72px;font-weight:700;line-height:1;}
+/* Description météo (ex: "Partiellement nuageux") légèrement transparente */
+.meteo-desc{font-size:16px;margin:6px 0 24px;opacity:.85;}
+/* Grille 2x2 pour les 4 infos météo (ressenti, humidité, vent, couverture) */
+.meteo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+/* Chaque case météo : fond blanc très transparent pour l'effet verre */
+.meteo-item{background:rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;}
+/* Label (ex: HUMIDITÉ) très petit, espaces entre lettres, majuscules, transparent */
+.meteo-item .label{font-size:10px;letter-spacing:1.5px;opacity:.65;text-transform:uppercase;margin-bottom:4px;}
+/* Valeur météo affichée en grand et gras */
+.meteo-item .val{font-size:18px;font-weight:700;}
+
+/* ═══ FORMULAIRE DE CONTACT ═══ */
+/* Formulaire de contact : fond blanc, coins arrondis, espacement généreux, ombre légère */
+.contact-form{background:#fff;border-radius:18px;padding:36px;box-shadow:0 4px 30px rgba(0,0,0,.08);}
+/* Titre du formulaire en bleu */
+.contact-form h3{font-family:'Playfair Display',serif;font-size:24px;color:var(--blue);margin-bottom:6px;}
+/* Sous-titre du formulaire en gris */
+.contact-form .sub{font-size:13px;color:#888;margin-bottom:24px;}
+/* Chaque champ du formulaire a une marge en bas de 16px */
+.form-group{margin-bottom:16px;}
+/* Label au-dessus de chaque champ : affiché en bloc, petit, gras, majuscules */
+.form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;margin-bottom:6px;}
+/* Champs de formulaire : largeur pleine, espacement interne, bordure légère arrondie */
+.form-group input,.form-group textarea,.form-group select{
+  width:100%;padding:11px 14px;border:1.5px solid #dde3ee;border-radius:8px;
+  /* Police cohérente avec le reste de la page */
+  font-family:'Raleway',sans-serif;font-size:13px;color:var(--dark);
+  /* Fond légèrement teinté bleu, transition pour le focus, pas de contour natif */
+  background:#f4f7fb;transition:border-color .2s;outline:none;
+}
+/* Quand un champ est sélectionné (focus), sa bordure devient bleue */
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--blue);}
+/* Le textarea peut être redimensionné uniquement verticalement, hauteur minimum 110px */
+.form-group textarea{resize:vertical;min-height:110px;}
+/* Ligne avec deux champs côte à côte (prénom/nom) */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+/* Message de succès caché par défaut, fond vert très clair, bordure verte */
+.form-success{
+  display:none;background:#f0fdf4;border:1px solid #86efac;
+  /* Texte vert foncé, espacement, coins arrondis */
+  color:#166534;padding:14px;border-radius:8px;font-size:13px;margin-top:14px;
+}
+
+/* ═══ FOOTER ═══ */
+/* Fond bleu très foncé, texte blanc à 75% d'opacité */
+footer{
+  background:var(--blue-dark);color:rgba(255,255,255,.75);
+  /* Grands espacements, centré */
+  padding:50px 60px 30px;text-align:center;
+}
+/* Le nom CHEFCHAOUEN dans le footer en grand et espacé */
+.foot-logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;letter-spacing:5px;color:#fff;margin-bottom:4px;}
+/* Le sous-titre en footer, très petit et semi-transparent */
+.foot-sub{font-size:10px;letter-spacing:3px;opacity:.5;margin-bottom:28px;}
+/* Les liens du footer côte à côte, centrés, passent à la ligne si nécessaire */
+.foot-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
+/* Liens footer : blanc semi-transparent, pas de soulignement, transition de couleur */
+.foot-links a{color:rgba(255,255,255,.6);text-decoration:none;font-size:11px;letter-spacing:.5px;transition:color .2s;}
+/* Au survol : liens blancs complets */
+.foot-links a:hover{color:#fff;}
+
+/* ═══ MODAL ═══ */
+/* Styles pour la fenêtre modale (popup de détail) */
+/* Fond semi-noir couvrant tout l'écran, caché par défaut */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);
+  /* Au-dessus de tout sauf lightbox, contenu centré, marge pour petits écrans */
+  z-index:2000;align-items:center;justify-content:center;padding:20px;
+}
+/* Quand la classe open est ajoutée, la modale s'affiche en flexbox */
+.modal-overlay.open{display:flex;}
+/* La modale blanche : largeur max 780px, prend toute la largeur disponible */
+.modal{
+  background:#fff;border-radius:18px;max-width:780px;width:100%;
+  /* Hauteur max 90% de la fenêtre, défilement interne si le contenu est trop long */
+  max-height:90vh;overflow-y:auto;position:relative;
+  /* Animation d'apparition de bas en haut sur 0.3s */
+  animation:modalIn .3s ease;
+}
+/* L'animation modalIn : la modale part invisible et décalée de 24px vers le bas, puis remonte */
+@keyframes modalIn{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+/* Bouton fermer en haut à droite de la modale, fond noir semi-transparent */
+.modal-close{
+  position:absolute;top:14px;right:14px;background:rgba(0,0,0,.45);
+  /* Texte blanc, forme circulaire de 34px */
+  color:#fff;border:none;border-radius:50%;width:34px;height:34px;
+  /* Icône centrée dans le cercle, au-dessus de l'image */
+  font-size:17px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;
+  /* Transition pour le survol */
+  transition:background .2s;
+}
+/* Au survol : fond bleu */
+.modal-close:hover{background:var(--blue);}
+/* Image en tête de modale : pleine largeur, hauteur fixe 300px, sans se déformer */
+.modal-img{width:100%;height:300px;object-fit:cover;display:block;}
+/* Zone de texte de la modale avec grands espacements */
+.modal-body{padding:28px 30px 32px;}
+/* Catégorie affichée en doré au-dessus du titre */
+.modal-body .m-cat{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+/* Titre de la modale en grand */
+.modal-body h2{font-family:'Playfair Display',serif;font-size:28px;color:var(--dark);margin-bottom:14px;}
+/* Description détaillée : taille lisible, gris moyen, grand interligne */
+.modal-body .m-desc{font-size:13.5px;color:#555;line-height:1.78;margin-bottom:22px;}
+/* Grille 2 colonnes pour les informations pratiques */
+.modal-details{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  /* Fond crème bleutée, espacement interne, coins arrondis */
+  background:var(--cream);padding:20px;border-radius:12px;margin-bottom:20px;
+}
+/* Label d'information (ex: HORAIRES) très petit et gris */
+.modal-detail .d-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:3px;}
+/* Valeur de l'information en gras et foncé */
+.modal-detail .d-val{font-size:13.5px;font-weight:600;color:var(--dark);}
+
+/* ═══ SIDEBAR ═══ */
+/* Boutons flottants sur le côté droit de la page */
+/* La sidebar reste visible au scroll, centrée verticalement, au-dessus du contenu */
+.sidebar{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:800;display:flex;flex-direction:column;gap:4px;}
+/* Bouton carré de 42px, fond bleu, icône blanche */
+.s-btn{
+  background:var(--blue);color:#fff;width:42px;height:42px;
+  /* Contenu centré */
+  display:flex;align-items:center;justify-content:center;
+  /* Coins arrondis seulement à gauche (collé au bord droit de l'écran) */
+  font-size:17px;border-radius:4px 0 0 4px;
+  /* Curseur pointeur, transition de couleur, pas de bordure native */
+  cursor:pointer;transition:background .2s;border:none;
+}
+/* Au survol : bleu plus clair */
+.s-btn:hover{background:var(--blue-acc);}
+
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+.hamburger span{display:block;width:24px;height:2px;background:var(--blue);border-radius:2px;transition:all .3s;}
+
+/* ═══ RESPONSIVE TABLETTE (max 900px) ═══ */
+/* Ces styles s'appliquent uniquement quand la fenêtre fait 900px ou moins */
+@media(max-width:900px){
+  nav{padding:0 16px;position:relative;}
+  .nav-links{display:none;}
+  .nav-links.open{display:flex;flex-direction:column;position:absolute;top:68px;left:0;right:0;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:10px 0;z-index:999;}
+  .nav-links.open li a{padding:12px 24px;font-size:13px;border-bottom:1px solid #f0f4fb;display:block;}
+  .hamburger{display:flex;}
+  #activites,#galerie,#restaurants,#carte,#contact{padding:52px 18px;}
+  /* Réduction des espacements des sections */
+  .map-layout,.mc-layout{grid-template-columns:1fr;}
+  /* La carte et la météo passent en une seule colonne */
+  #map{height:320px;}
+  /* La carte est moins haute sur tablette */
+  .gallery-grid{grid-template-columns:1fr 1fr;}
+  /* La galerie passe de 3 à 2 colonnes */
+  .gal-item:nth-child(1),.gal-item:nth-child(6),.gal-item:nth-child(7){grid-column:span 1;height:200px;}
+  /* Les photos qui s'étiraient sont ramenées à 1 colonne */
+  .modal-details{grid-template-columns:1fr;}
+  /* Les détails de la modale passent en une seule colonne */
+  .lb-prev{left:-8px;}
+  /* Les boutons lightbox sont plus près de l'image sur tablette */
+  .lb-next{right:-8px;}
+  /* Idem pour le bouton suivant */
+  .form-row{grid-template-columns:1fr;}
+  /* Prénom et nom passent en colonnes empilées sur tablette */
+}
+
+
+/* ═══════════════════════════════
+   RESPONSIVE MOBILE (max 480px)
+═══════════════════════════════ */
+/* Styles spécifiques aux petits écrans de smartphones */
+@media(max-width:480px){
+
+  /* Le hamburger est affiché */
+  .hamburger { display: flex; }
+
+  /* Les liens de nav sont cachés */
+  .nav-links { display: none; }
+  nav { padding: 0 14px; height: 56px; position: relative; }
+  /* Navbar plus basse (56px) sur mobile */
+  .logo-text .city { font-size: 13px; }
+  /* Le nom de la ville dans le logo est réduit */
+
+  /* Quand le menu est ouvert, il s'affiche (force avec !important) */
+  .nav-links.open {
+    display: flex !important;
+    flex-direction: column;
+    /* Les liens sont empilés verticalement */
+    position: absolute;
+    /* Le menu se positionne sous la navbar */
+    top: 56px; left: 0; right: 0;
+    /* Le menu commence juste sous la navbar et prend toute la largeur */
+    background: #fff;
+    /* Fond blanc */
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    /* Ombre sous le menu déroulant */
+    padding: 10px 0;
+    /* Espacement interne */
+    z-index: 999;
+    /* Au-dessus du contenu de la page */
+  }
+  .nav-links.open li a {
+    padding: 12px 24px;
+    /* Chaque lien mobile a plus d'espace pour être facile à taper */
+    font-size: 13px;
+    /* Un peu plus grand que la nav desktop */
+    border-bottom: 1px solid #f0f4fb;
+    /* Séparateur léger entre les liens */
+    display: block;
+    /* Prend toute la largeur disponible */
+  }
+
+  /* Titre réduit sur mobile */
+  .hero-title { font-size: 34px; letter-spacing: 2px; }
+  /* Sous-titre réduit */
+  .hero-sub { font-size: 11px; margin-bottom: 20px; }
+  /* Les boutons s'empilent verticalement sur mobile */
+  .hero-btns { flex-direction: column; align-items: center; gap: 10px; }
+  /* Boutons plus petits, largeur fixe, centrés */
+  .btn-primary, .btn-outline {
+    padding: 12px 28px;
+    font-size: 11px;
+    width: 200px;
+    text-align: center;
+  }
+  /* Le badge du hero est réduit */
+  .hero-tag { font-size: 9px; padding: 5px 14px; }
+
+  /* Très peu de marges horizontales sur mobile */
+  #activites, #galerie, #restaurants,
+  #carte, #contact { padding: 40px 14px; }
+  /* Titres de sections réduits */
+  .sec-head h2 { font-size: 22px; }
+  /* Textes réduits */
+  .sec-head p { font-size: 12px; }
+
+  /* Moins d'espace entre les boutons de filtre */
+  .filter-bar, .rh-filter-bar { gap: 6px; }
+  /* Boutons de filtre réduits */
+  .filter-btn, .rh-filter-btn { padding: 6px 12px; font-size: 10px; }
+
+  /* Une seule carte par ligne sur mobile */
+  .cards-grid { grid-template-columns: 1fr; gap: 16px; }
+  /* Idem pour restaurants/hôtels */
+  .rh-grid { grid-template-columns: 1fr; gap: 16px; }
+
+  /* Galerie : 2 colonnes sur mobile */
+  .gallery-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+  /* Toutes les photos font 1 colonne, 140px de hauteur (reset des règles précédentes) */
+  .gal-item:nth-child(n) {
+    grid-column: span 1 !important;
+    height: 140px !important;
+  }
+  /* Sauf la 6ème qui prend toute la largeur */
+  .gal-item:nth-child(6) { grid-column: span 2 !important; }
+
+  /* Boutons lightbox ramenés très près des bords */
+  .lb-prev { left: 4px; }
+  /* Idem */
+  .lb-next { right: 4px; }
+  /* Image lightbox prend presque toute la largeur de l'écran */
+  .lb-inner img { max-width: 96vw; max-height: 70vh; }
+
+  /* La carte et la liste passent en colonne unique */
+  .map-layout { grid-template-columns: 1fr; gap: 14px; }
+  /* Carte encore moins haute sur mobile */
+  #map { height: 260px; }
+  /* Liste des lieux limitée à 200px avec scroll */
+  .map-list { max-height: 200px; }
+
+  /* Météo et formulaire empilés sur mobile */
+  .mc-layout { grid-template-columns: 1fr; gap: 20px; }
+  /* Température légèrement réduite */
+  .meteo-temp { font-size: 54px; }
+  /* Les 4 cases météo restent en 2 colonnes */
+  .meteo-grid { grid-template-columns: 1fr 1fr; }
+  /* Formulaire moins espacé */
+  .contact-form { padding: 20px 14px; }
+  /* Prénom et nom en colonne unique */
+  .form-row { grid-template-columns: 1fr; }
+
+  /* Image de la modale réduite */
+  .modal-img { height: 180px; }
+  /* Corps de la modale moins espacé */
+  .modal-body { padding: 16px 14px 20px; }
+  /* Titre de la modale réduit */
+  .modal-body h2 { font-size: 20px; }
+  /* Détails en colonne unique */
+  .modal-details { grid-template-columns: 1fr; padding: 12px; }
+
+  /* La sidebar reste visible sur mobile */
+ .sidebar { display: flex; }
+
+  /* Footer moins espacé */
+  footer { padding: 30px 14px 20px; }
+  /* Moins d'espace entre les liens du footer */
+  .foot-links { gap: 10px; }
+}
+</style>
+
+<!-- ═══════════════════════════════════════════
+     FIN DU CSS 
+═══════════════════════════════════════════ -->
+
+</head>
+
+<!-- ═══════════════════════════════════════════
+     DÉBUT DU HTML
+═══════════════════════════════════════════ -->
+
+<body>
+  <!-- body : corps de la page, tout ce que l'utilisateur voit -->
+
+<!-- ══ TOP BAR ══ -->
+<!-- Barre d'information en haut de la page -->
+<div class="top-bar">Chefchaouen — La Perle Bleue · Région Tanger-Tétouan-Al Hoceima</div>
+
+
+<!-- ══ NAVBAR ══ -->
+<!-- Barre de navigation principale qui reste visible en haut de la page -->
+<nav>
+  <!-- Lien logo qui ramène au début de la page (href="#") -->
+  <a class="nav-logo" href="#">
+    <!-- SVG : dessin vectoriel du logo étoile marocaine -->
+    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <!-- polygon : étoile à 5 branches style marocain, contour bleu sans remplissage -->
+      <polygon points="30,4 36,22 56,22 40,33 46,52 30,40 14,52 20,33 4,22 24,22" fill="none" stroke="#1B3A6B" stroke-width="2.2"/>
+      <!-- Petit cercle doré semi-transparent au centre de l'étoile -->
+      <circle cx="30" cy="30" r="5" fill="#C9A96E" opacity=".6"/>
+    </svg>
+    <!-- Conteneur du texte à côté du SVG -->
+    <div class="logo-text">
+      <div class="city">CHEFCHAOUEN</div>
+      <!-- Nom de la ville en grand -->
+      <div class="sub">La Perle Bleue</div>
+      <!-- Slogan en petit dessous -->
+    </div>
+  </a>
+
+  <!-- Liste non ordonnée des liens de navigation -->
+  <ul class="nav-links">
+    <li><a href="#hero" class="active">Accueil</a></li>
+    <!-- Lien vers la section hero, avec classe active car c'est la page d'accueil -->
+    <li><a href="#activites">Activités</a></li>
+    <!-- Lien ancre vers la section activités (le # renvoie à l'id de la section) -->
+    <li><a href="#galerie">Galerie</a></li>
+    <!-- Lien vers la galerie photos -->
+    <li><a href="#restaurants">Restaurants & Hôtels</a></li>
+    <!-- Lien vers la section restaurants et hébergement -->
+    <li><a href="#carte">Carte</a></li>
+    <!-- Lien vers la carte interactive -->
+    <li><a href="#contact">Météo & Contact</a></li>
+    <!-- Lien vers la section météo et formulaire de contact -->
+    <li><a href="../index/dashboard.html">Portail touristique</a></li>
+    <!-- Lien vers le tableau de bord du projet -->
+  </ul>
+  <!-- Bouton burger visible sur mobile, appelle la fonction toggleMenu() au clic -->
+  <button class="hamburger" id="menuBtn" onclick="toggleMenu()">
+    <span></span>
+    <!-- Premier trait horizontal du burger -->
+    <span></span>
+    <!-- Deuxième trait horizontal du burger -->
+    <span></span>
+    <!-- Troisième trait horizontal du burger -->
+  </button>
+</nav>
+
+<!-- ══ SECTION 1 – HERO ══ -->
+<!-- Section principale plein écran avec image de fond et titre -->
+<section id="hero">
+  <!-- Section avec l'id "hero" pour les liens ancres et le scroll spy -->
+  <div class="hero-img"></div>
+  <!-- Div qui affiche l'image de fond en CSS (background-image) -->
+  <div class="hero-overlay"></div>
+  <!-- Div transparent qui assombrit l'image pour améliorer la lisibilité du texte -->
+  <div class="hero-pattern"></div>
+  <!-- Div avec le motif étoile en répétition très transparent -->
+
+  <!-- SVG en forme de vague à la transition entre le hero et la section suivante -->
+  <svg class="hero-wave" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <!-- Première vague : chemin SVG formant une courbe irrégulière, couleur sombre -->
+    <path d="M0,120 L0,70 L180,20 L360,80 L540,30 L720,85 L900,18 L1080,72 L1260,28 L1440,60 L1440,120Z" fill="rgba(13,31,60,0.55)"/>
+    <!-- Deuxième vague par-dessus la première, plus opaque -->
+    <path d="M0,120 L0,95 L240,65 L480,100 L720,55 L960,90 L1200,50 L1440,78 L1440,120Z" fill="rgba(13,31,60,0.7)"/>
+  </svg>
+
+  <!-- Conteneur du contenu texte centré par-dessus l'image -->
+  <div class="hero-content">
+    
+    <!-- h1 : titre principal de la page (un seul h1 par page) -->
+    <!-- "CHEF" normal, "CHAOUEN" en italique doré grâce à la balise em -->
+    <h1 class="hero-title">CHEF<em>CHAOUEN</em></h1>
+    <!-- Sous-titre poétique de la ville -->
+    <p class="hero-sub">La Perle Bleue — Joyau du Rif</p>
+    <!-- Conteneur des deux boutons d'action -->
+    <div class="hero-btns">
+      <!-- Bouton principal : au clic, défilement fluide vers la section activités -->
+      <!-- onclick : JS inline qui fait défiler vers la section activités -->
+      <button class="btn-primary" onclick="document.getElementById('activites').scrollIntoView({behavior:'smooth'})">Découvrir</button>
+      <!-- Bouton secondaire : au clic, défilement fluide vers la galerie -->
+      <button class="btn-outline" onclick="document.getElementById('galerie').scrollIntoView({behavior:'smooth'})">Voir la galerie</button>
+    </div>
+  </div>
+
+  <!-- Indicateur visuel qui invite l'utilisateur à défiler vers le bas -->
+  <div class="scroll-hint">
+    <span style="font-size:10px;letter-spacing:2px;">DÉFILER</span>
+    <!-- Texte "DÉFILER" en petit -->
+    <!-- Flèche vers le bas en SVG -->
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 5v14M5 12l7 7 7-7"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══ SECTION 2 – ACTIVITÉS ══ -->
+<!-- Section avec les cartes des activités touristiques filtrables -->
+<section id="activites">
+  <!-- Section activités avec son id pour les ancres -->
+  <div class="sec-head">
+    <!-- En-tête centré avec eyebrow, titre, séparateur et description -->
+    <div class="eyebrow">À découvrir</div>
+    <!-- Petit texte au-dessus du titre principal -->
+    <h2>Activités <em>touristiques</em></h2>
+    <!-- Titre avec "touristiques" en italique -->
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <!-- Séparateur décoratif : deux traits dorés avec un losange au milieu -->
+    <p>De la médina bleue aux cascades d'Akchour, Chefchaouen regorge d'expériences inoubliables.</p>
+    <!-- Paragraphe de description de la section -->
+  </div>
+
+  <!-- Barre avec les boutons de filtrage des activités -->
+  <div class="filter-bar">
+    <!-- active : classe CSS qui met le bouton en surbrillance -->
+    <!-- onclick : appelle la fonction JS filterAct avec la catégorie et le bouton -->
+    <button class="filter-btn active" onclick="filterAct('all',this)">Tout</button>
+    <!-- Bouton actif par défaut : affiche toutes les activités -->
+    <button class="filter-btn" onclick="filterAct('culture',this)">Culture</button>
+    <!-- Filtre pour n'afficher que les activités culturelles -->
+    <button class="filter-btn" onclick="filterAct('nature',this)">Nature</button>
+    <!-- Filtre nature -->
+    <button class="filter-btn" onclick="filterAct('sport',this)">Sport</button>
+    <!-- Filtre sport -->
+    <button class="filter-btn" onclick="filterAct('bien-etre',this)">Bien-être</button>
+    <!-- Filtre bien-être -->
+  </div>
+
+  <!-- Grille des cartes d'activités, id="actGrid" pour le ciblage JS -->
+  <div class="cards-grid" id="actGrid">
+
+    <!-- Card 1 : Médina Bleue – Culture -->
+    <!-- data-cat : attribut lu par JS pour filtrer les cards -->
+    <!-- onclick : ouvre la modale de détail en passant la clé 'medina' -->
+    <div class="act-card" data-cat="culture" onclick="openModal('medina')">
+      <div class="card-img-wrap">
+        <!-- Conteneur de l'image avec hauteur fixe pour le zoom -->
+        <!-- img : image de la card avec fallback si absente (onerror) -->
+        <img src="images/medina.jpg" alt="La Médina Bleue"
+             onerror="this.style.background='linear-gradient(135deg,#1B3A6B,#2563EB)';this.style.height='210px'">
+        <!-- card-badge : étiquette colorée de catégorie -->
+        <span class="card-badge badge-culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <h3>La Médina Bleue</h3>
+        <p>Perdez-vous dans les ruelles bleues et blanches de la vieille médina, classée patrimoine architectural du Maroc.</p>
+        <!-- card-meta : informations pratiques (durée, tarif, distance) -->
+        <div class="card-meta"><span> 2–3h</span><span> Entrée libre</span></div>
+        <!-- Bouton d'action (le clic est géré par le onclick de la carte parente) -->
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card 2 : Cascades d'Akchour – Nature -->
+    <div class="act-card" data-cat="nature" onclick="openModal('akchour')">
+      <div class="card-img-wrap">
+        <img src="images/akchour.jpg" alt="Cascades d'Akchour"
+             onerror="this.style.background='linear-gradient(135deg,#1a5c3a,#2d5016)';this.style.height='210px'">
+        <span class="card-badge badge-nature">Nature</span>
+      </div>
+      <div class="card-body">
+        <h3>Cascades d'Akchour</h3>
+        <p>Randonnée jusqu'aux majestueuses cascades d'Akchour, joyau naturel dans la forêt de cèdres du Parc National de Talassemtane.</p>
+        <div class="card-meta"><span> Journée</span><span> 30 km</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card 3 : Kasbah – Culture -->
+    <div class="act-card" data-cat="culture" onclick="openModal('kasbah')">
+      <div class="card-img-wrap">
+        <img src="images/place.jpg" alt="La Kasbah"
+             onerror="this.style.background='linear-gradient(135deg,#1a3a5c,#C9A96E)';this.style.height='210px'">
+        <span class="card-badge badge-culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <h3>La Kasbah & Place Outa El Hammam</h3>
+        <p>Forteresse fondée en 1471, entourée de jardins andalous et d'un musée ethnographique. La Place Outa El Hammam voisine est le cœur animé de la ville.</p>
+        <div class="card-meta"><span> 1–2h</span><span> 20 MAD</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card 4 : Randonnée Rif – Sport -->
+    <div class="act-card" data-cat="sport" onclick="openModal('rif')">
+      <div class="card-img-wrap">
+        <img src="images/rif.jpg" alt="Randonnée dans le Rif"
+             onerror="this.style.background='linear-gradient(135deg,#1a5c3a,#0d1f3c)';this.style.height='210px'">
+        <span class="card-badge badge-sport">Sport</span>
+      </div>
+      <div class="card-body">
+        <h3>Randonnée dans le Rif</h3>
+        <p>Explorez les sentiers montagneux du massif du Rif avec des guides locaux. Panoramas exceptionnels sur la ville et la vallée.</p>
+        <div class="card-meta"><span> Demi-journée</span><span> Montagne</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card 5 : Artisanat – Culture -->
+    <div class="act-card" data-cat="culture" onclick="openModal('souk')">
+      <div class="card-img-wrap">
+        <img src="images/souk.jpg" alt="Artisanat & Souks"
+             onerror="this.style.background='linear-gradient(135deg,#8b4513,#C9A96E)';this.style.height='210px'">
+        <span class="card-badge badge-culture">Culture</span>
+      </div>
+      <div class="card-body">
+        <h3>Artisanat & Souks</h3>
+        <p>Laines teintes à l'indigo, poteries bleues, babouches brodées et épices parfumées — les souks de Chefchaouen sont un enchantement.</p>
+        <div class="card-meta"><span> 2h</span><span> Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card 6 : Hammam – Bien-être -->
+    <div class="act-card" data-cat="bien-etre" onclick="openModal('hammam')">
+      <div class="card-img-wrap">
+        <img src="images/hammam.jpg" alt="Hammam Traditionnel"
+             onerror="this.style.background='linear-gradient(135deg,#5c1a5c,#1B3A6B)';this.style.height='210px'">
+        <span class="card-badge badge-bienetre">Bien-être</span>
+      </div>
+      <div class="card-body">
+        <h3>Hammam Traditionnel</h3>
+        <p>Vivez l'expérience du hammam marocain authentique. Relaxation totale dans un cadre traditionnel avec huile d'argan et savon beldi.</p>
+        <div class="card-meta"><span> 1h30–2h</span><span> 30–80 MAD</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+  </div><!-- fin de la grille actGrid -->
+</section>
+<!-- Fin de la section activités -->
+
+<!-- ══ SECTION 3 – GALERIE ══ -->
+<!-- Section photos avec grille masonry-like et lightbox -->
+<section id="galerie">
+  <div class="sec-head">
+    <div class="eyebrow">En images</div>
+    <!-- Label au-dessus du titre -->
+    <h2><em>Galerie</em> photos</h2>
+    <!-- "Galerie" en italique -->
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <!-- Séparateur décoratif -->
+    <p>Cliquez sur une photo pour l'agrandir.</p>
+    <!-- Instruction pour l'utilisateur -->
+  </div>
+
+  <!-- Grille CSS avec disposition asymétrique des photos -->
+  <div class="gallery-grid">
+    <!-- data-index correspond à l'index dans le tableau lbSrcs du JS -->
+    <!-- onclick : ouvre la lightbox à l'index donné -->
+    <div class="gal-item" onclick="openLb(0)">
+      <!-- Clic sur la photo : ouvre la lightbox à l'index 0 -->
+      <img src="images/g1.jpg" alt="Ruelles bleues de la Médina"
+           onerror="this.style.background='linear-gradient(135deg,#1B3A6B,#2563EB)'">
+      <!-- Image avec fallback dégradé bleu si absent -->
+      <!-- Overlay bleu avec icône "agrandir" en SVG, visible au survol -->
+      <div class="gal-overlay">
+        <svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      </div>
+    </div>
+    <div class="gal-item" onclick="openLb(1)">
+      <!-- Photo 2 : La Kasbah et ses jardins -->
+      <img src="images/g2.jpg" alt="La Kasbah et ses jardins"
+           onerror="this.style.background='linear-gradient(135deg,#0d1f3c,#1B3A6B)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(2)">
+      <!-- Photo 3 : Cascades d'Akchour -->
+      <img src="images/g3.jpg" alt="Cascades d'Akchour"
+           onerror="this.style.background='linear-gradient(135deg,#1a5c3a,#1B3A6B)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(3)">
+      <!-- Photo 4 : Vue panoramique sur Chefchaouen -->
+      <img src="images/g4.jpg" alt="Vue panoramique sur Chefchaouen"
+           onerror="this.style.background='linear-gradient(135deg,#2563EB,#C9A96E)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(4)">
+      <!-- Photo 5 : Artisanat local et souks -->
+      <img src="images/g5.jpg" alt="Artisanat local et souks"
+           onerror="this.style.background='linear-gradient(135deg,#8b4513,#C9A96E)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(5)">
+      <!-- Photo 6 : Place Outa El Hammam (span 3 = pleine largeur) -->
+      <img src="images/g6.jpg" alt="Place Outa El Hammam"
+           onerror="this.style.background='linear-gradient(135deg,#5c1a5c,#1B3A6B)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+    <div class="gal-item" onclick="openLb(6)">
+      <!-- Photo 7 : Portes et fenêtres bleues -->
+      <img src="images/g7.jpg" alt="Portes et fenêtres bleues"
+           onerror="this.style.background='linear-gradient(135deg,#1B3A6B,#C9A96E)'">
+      <div class="gal-overlay"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+    </div>
+  </div>
+</section>
+<!-- Fin de la section galerie -->
+
+<!-- LIGHTBOX -->
+<!-- Visionneuse plein écran pour les photos de la galerie -->
+<!-- display:none par défaut, JS ajoute la classe 'open' au clic -->
+<div class="lightbox" id="lightbox">
+  <!-- Div cachée par défaut, devient visible quand on clique sur une photo -->
+  <div class="lb-inner">
+    <!-- Conteneur interne qui limite la taille de l'image -->
+    <!-- Bouton fermer en haut à droite -->
+    <button class="lb-close" onclick="closeLb()">✕</button>
+    <!-- Bouton flèche gauche : navigue vers la photo précédente (index -1) -->
+    <button class="lb-nav lb-prev" onclick="navLb(-1)">‹</button>
+    <!-- lbImg : image chargée dynamiquement par JS selon la photo cliquée -->
+    <img id="lbImg" src="" alt="">
+    <!-- Bouton flèche droite : navigue vers la photo suivante (index +1) -->
+    <button class="lb-nav lb-next" onclick="navLb(1)">›</button>
+    <!-- lbCap : légende de la photo affichée sous l'image, texte injecté par JS -->
+    <div class="lb-caption" id="lbCap"></div>
+  </div>
+</div>
+
+<!-- ══ SECTION 4 – RESTAURANTS & HÉBERGEMENT ══ -->
+<!-- Section avec les cartes restaurants, riads et hôtels -->
+<section id="restaurants">
+  <div class="sec-head">
+    <div class="eyebrow">Où manger & dormir</div>
+    <h2>Restaurants & <em>Hébergement</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <!-- Style inline pour adapter la couleur au fond bleu de cette section -->
+    <p style="color:rgba(255,255,255,.65)">Les meilleures adresses de la Perle Bleue.</p>
+  </div>
+
+  <!-- Barre de filtres restaurants/hôtels/riads -->
+  <div class="rh-filter-bar">
+    <!-- Affiche tout par défaut -->
+    <button class="rh-filter-btn active" onclick="filterRH('all',this)">Tout</button>
+    <!-- Filtre uniquement les restaurants (data-rh="restaurant") -->
+    <button class="rh-filter-btn" onclick="filterRH('restaurant',this)">Restaurants</button>
+    <!-- Filtre les hôtels -->
+    <button class="rh-filter-btn" onclick="filterRH('hotel',this)">Hôtels</button>
+    <!-- Filtre les riads -->
+    <button class="rh-filter-btn" onclick="filterRH('riad',this)">Riads</button>
+  </div>
+
+  <!-- Grille des cartes restaurants et hébergements, id pour le ciblage JS -->
+  <div class="rh-grid" id="rhGrid">
+
+    <!-- Card Restaurant 1 : Bab Ssour -->
+    <!-- data-rh : attribut lu par JS pour filtrer -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('babssour')">
+      <div class="rh-card-img">
+        <img src="images/rest1.jpg" alt="Restaurant Bab Ssour"
+             onerror="this.style.background='linear-gradient(135deg,#1B3A6B,#C9A96E)'">
+        <!-- rh-badge : badge de type (restaurant, hôtel, riad) -->
+        <span class="rh-badge badge-resto">Restaurant</span>
+        <!-- stars : étoiles de notation en haut à droite de l'image -->
+        <span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <!-- cat : catégorie du lieu en doré -->
+        <div class="cat"> Cuisine Marocaine</div>
+        <h3>Restaurant Bab Ssour</h3>
+        <p>Cuisine marocaine authentique avec vue imprenable sur la médina. Tajines et couscous maison dans un cadre chaleureux face aux remparts.</p>
+        <!-- rh-meta : infos pratiques prix et localisation -->
+        <div class="rh-meta"><span> 40 - 100 MAD</span><span> N°5 Rue El Kharrazin, Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card Restaurant 2 : Café Clock -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('cafeclock')">
+      <div class="rh-card-img">
+        <img src="images/rest2.jpg" alt="Café Clock"
+             onerror="this.style.background='linear-gradient(135deg,#0d1f3c,#2563EB)'">
+        <span class="rh-badge badge-resto">Restaurant</span>
+        <span class="stars">★★★★★</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Café & Fusion</div>
+        <h3>Café Clock Chaouen</h3>
+        <p>Fusion maroco-moderne avec terrasse panoramique. Petit-déjeuner au coucher du soleil inoubliable. Cours de cuisine et animations culturelles.</p>
+        <div class="rh-meta"><span> 150 – 250 MAD</span><span> 3 Derb Tijani, Hay Souk</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card Restaurant 3 : La Lampe Magique -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('lampemagique')">
+      <div class="rh-card-img">
+        <img src="images/rest3.jpg" alt="La Lampe Magique"
+             onerror="this.style.background='linear-gradient(135deg,#2d5016,#1B3A6B)'">
+        <span class="rh-badge badge-resto">Restaurant</span>
+        <span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Cuisine Berbère</div>
+        <h3>La Lampe Magique</h3>
+        <p>Restaurant en terrasse avec cuisine berbère traditionnelle. Spécialités de la région du Rif, harira maison et msemen frais.</p>
+        <div class="rh-meta"><span> 50 – 120 MAD</span><span> 17 Rue Targui, Place Outa El Hammam</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card Restaurant 4 : Tissemlal -->
+    <div class="rh-card" data-rh="restaurant" onclick="openModal('tissemlal')">
+      <div class="rh-card-img">
+        <img src="images/rest4.png" alt="Restaurant Tissemlal"
+             onerror="this.style.background='linear-gradient(135deg,#8b4513,#C9A96E)'">
+        <span class="rh-badge badge-resto">Restaurant</span>
+        <span class="stars">★★★★★</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Gastronomique</div>
+        <h3>Restaurant Tissemlal</h3>
+        <p>Adresse gastronomique incontournable sur la place Outa El Hammam. Vue panoramique sur la Kasbah, tajines d'agneau raffinés et pastilla au pigeon.</p>
+        <div class="rh-meta"><span> 80 – 150 MAD</span><span> 22 Rue Targui, Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card Riad 1 : Riad Cherifa -->
+    <div class="rh-card" data-rh="riad" onclick="openModal('riadcherifa')">
+      <div class="rh-card-img">
+        <img src="images/riad1.jpg" alt="Riad Cherifa"
+             onerror="this.style.background='linear-gradient(135deg,#1B3A6B,#2563EB)'">
+        <!-- Badge doré pour les riads -->
+        <span class="rh-badge badge-riad">Riad</span>
+        <span class="stars">★★★★★</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Riad Boutique</div>
+        <h3>Riad Cherifa</h3>
+        <p>Magnifique riad traditionnel au cœur de la médina bleue. Patio fleuri, terrasse panoramique et décoration authentique avec zelliges et boiseries sculptées.</p>
+        <div class="rh-meta"><span> 1100 - 1500 MAD/nuit</span><span> N°6 Derb Ahmed Laaroussi, Bab Souk</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card Riad 2 : Dar Meziana -->
+    <div class="rh-card" data-rh="riad" onclick="openModal('darmeziana')">
+      <div class="rh-card-img">
+        <img src="images/riad2.jpg" alt="Dar Meziana"
+             onerror="this.style.background='linear-gradient(135deg,#0d1f3c,#C9A96E)'">
+        <span class="rh-badge badge-riad">Riad</span>
+        <span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Dar Traditionnel</div>
+        <h3>Dar Meziana</h3>
+        <p>Dar traditionnel rénové avec goût, mêlant architecture andalouse et touches contemporaines. Terrasse avec vue sur les montagnes du Rif. Petit-déjeuner inclus.</p>
+        <div class="rh-meta"><span> 620 – 730 MAD/nuit</span><span> Derb Zaghdoud N°7, Bab Souk</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card Hôtel 1 : Parador -->
+    <div class="rh-card" data-rh="hotel" onclick="openModal('parador')">
+      <div class="rh-card-img">
+        <img src="images/hotel1.jpg" alt="Hôtel Parador"
+             onerror="this.style.background='linear-gradient(135deg,#1a3a5c,#2563EB)'">
+        <!-- Badge bleu marine pour les hôtels -->
+        <span class="rh-badge badge-hotel">Hôtel</span>
+        <span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Hôtel 4 étoiles</div>
+        <h3>Hôtel Parador</h3>
+        <p>Hôtel historique surplombant la ville entière, ancienne résidence coloniale reconvertie en établissement de charme. Piscine extérieure avec vue imprenable sur la médina et le Rif.</p>
+        <div class="rh-meta"><span> 600 – 870 MAD/nuit</span><span> Place El Makhzen BP3, Médina</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+    <!-- Card Hôtel 2 : Hôtel Chaouen -->
+    <div class="rh-card" data-rh="hotel" onclick="openModal('hotelchaouen')">
+      <div class="rh-card-img">
+        <img src="images/hotel2.jpg" alt="Hôtel Chaouen"
+             onerror="this.style.background='linear-gradient(135deg,#1B3A6B,#5c1a5c)'">
+        <span class="rh-badge badge-hotel">Hôtel</span>
+        <span class="stars">★★★★☆</span>
+      </div>
+      <div class="rh-body">
+        <div class="cat"> Hôtel Panoramique</div>
+        <h3>Hôtel Chaouen</h3>
+        <p>Établissement bien situé avec terrasse panoramique sur les toits bleus de la ville et les montagnes du Rif. Personnel accueillant, cuisine locale généreuse.</p>
+        <div class="rh-meta"><span> 330 – 760 MAD/nuit</span><span> Av. Melilia, Dhar Ben Ayad</span></div>
+        <button class="btn-sm">Savoir plus →</button>
+      </div>
+    </div>
+
+  </div><!-- fin de la grille rhGrid -->
+</section>
+<!-- Fin de la section restaurants et hébergement -->
+
+<!-- ══ SECTION 5 – CARTE ══ -->
+<!-- Section avec la carte Leaflet interactive -->
+<section id="carte">
+  <div class="sec-head">
+    <div class="eyebrow">Se repérer</div>
+    <h2>Carte <em>interactive</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+    <!-- Instructions pour l'utilisateur -->
+    <p>Cliquez sur un lieu pour voir les infos. Cliquez dans la liste pour centrer la carte.</p>
+  </div>
+  <!-- Mise en page deux colonnes : carte + liste des lieux -->
+  <div class="map-layout">
+    <!-- Div vide où Leaflet va injecter la carte. L'id "map" est requis par le JS Leaflet -->
+    <div id="map"></div>
+    <!-- Div vide où le JS va injecter dynamiquement les éléments de la liste des lieux -->
+    <div class="map-list" id="mapList"></div>
+  </div>
+</section>
+<!-- Fin section carte -->
+
+<!-- ══ SECTION 6 – MÉTÉO & CONTACT ══ -->
+<!-- Section avec les infos météo et le formulaire de contact -->
+<section id="contact">
+  <div class="sec-head">
+    <div class="eyebrow">Infos pratiques</div>
+    <h2>Météo & <em>Contact</em></h2>
+    <div class="divider"><span></span><i>✦</i><span></span></div>
+  </div>
+  <!-- Grille deux colonnes : météo à gauche, formulaire à droite -->
+  <div class="mc-layout">
+
+    <!-- Carte météo avec fond dégradé bleu. L'id permet au JS de la cibler si besoin -->
+    <div class="meteo-box" id="meteoBox">
+      <!-- Nom de la ville avec emoji épingle -->
+      <div class="meteo-city"> Chefchaouen, Maroc</div>
+      <!-- Température, valeur "--" par défaut avant chargement JS -->
+      <div class="meteo-temp" id="mTemp">--°</div>
+      <!-- Description météo, "Chargement…" par défaut -->
+      <div class="meteo-desc" id="mDesc">Chargement…</div>
+      <!-- Grille 2x2 des 4 informations météo secondaires -->
+      <div class="meteo-grid">
+        <div class="meteo-item">
+          <div class="label">Ressenti</div>
+          <!-- mFeel : température ressentie, valeur injectée par JS -->
+          <div class="val" id="mFeel">--</div>
+        </div>
+        <div class="meteo-item">
+          <div class="label">Humidité</div>
+          <!-- mHum : % humidité relative, valeur injectée par JS -->
+          <div class="val" id="mHum">--</div>
+        </div>
+        <div class="meteo-item">
+          <div class="label">Vent</div>
+          <!-- mWind : vitesse du vent en km/h, valeur injectée par JS -->
+          <div class="val" id="mWind">--</div>
+        </div>
+        <div class="meteo-item">
+          <div class="label">Couverture</div>
+          <!-- mCloud : couverture nuageuse en %, valeur injectée par JS -->
+          <div class="val" id="mCloud">--</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulaire de contact -->
+    <div class="contact-form">
+      <!-- Titre du formulaire -->
+      <h3>Nous contacter</h3>
+      <!-- Sous-titre incitatif -->
+      <p class="sub">Une question sur Chefchaouen ? Écrivez-nous !</p>
+      <!-- Ligne avec deux champs côte à côte -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Prénom</label>
+          <!-- id : utilisé par JS pour récupérer et valider la valeur. placeholder comme indication -->
+          <input type="text" id="fPrenom" placeholder="Votre prénom">
+        </div>
+        <div class="form-group">
+          <label>Nom</label>
+          <input type="text" id="fNom" placeholder="Votre nom">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <!-- type="email" : clavier email sur mobile + validation native du navigateur -->
+        <input type="email" id="fEmail" placeholder="email@exemple.com">
+      </div>
+      <div class="form-group">
+        <label>Sujet</label>
+        <!-- select : liste déroulante pour choisir le sujet du message -->
+        <select id="fSujet">
+          <!-- Option par défaut non sélectionnable -->
+          <option value="">Choisir un sujet…</option>
+          <option>Activités touristiques</option>
+          <option>Restaurants & Hébergement</option>
+          <option>Infos pratiques</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <!-- textarea : zone de texte multi-lignes pour le message -->
+        <textarea id="fMsg" placeholder="Votre message…"></textarea>
+      </div>
+      <!-- Bouton d'envoi pleine largeur, appelle sendForm() au clic -->
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="sendForm()">Envoyer le message</button>
+      <!-- Message de confirmation caché par défaut (display:none), affiché après envoi réussi -->
+      <div class="form-success" id="formOk"> Message envoyé ! Merci, nous vous répondrons rapidement.</div>
+    </div>
+
+  </div><!-- fin de la grille mc-layout -->
+</section>
+<!-- Fin de la section météo et contact -->
+
+<!-- ══ FOOTER ══ -->
+<!-- Pied de page avec logo, sous-titre et liens rapides -->
+<footer>
+  <!-- Nom de la ville en grand dans le footer -->
+  <div class="foot-logo">CHEFCHAOUEN</div>
+  <!-- Sous-titre du footer -->
+  <div class="foot-sub">La Perle Bleue · Joyau du Rif Marocain</div>
+  <!-- Liens de navigation répétés dans le footer pour faciliter la navigation -->
+  <div class="foot-links">
+    <a href="#hero">Accueil</a>
+    <a href="#activites">Activités</a>
+    <a href="#galerie">Galerie</a>
+    <a href="#restaurants">Restaurants</a>
+    <a href="#carte">Carte</a>
+    <a href="#contact">Contact</a>
+    <a href="../index/dashboard.html">Explorer le portail</a> 
+  </div>
+</footer>
+<!-- Fin du footer -->
+
+<!-- ══ SIDEBAR ══ -->
+<!-- Boutons flottants collés au bord droit de la page -->
+<div class="sidebar">
+  <!-- Bouton retour en haut : scrollTo avec behavior smooth pour l'animation -->
+  <button class="s-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Haut">↑</button>
+  <!-- Bouton raccourci vers la section carte -->
+  <button class="s-btn" onclick="document.getElementById('carte').scrollIntoView({behavior:'smooth'})" title="Carte">🗺</button>
+  <!-- Bouton raccourci vers le formulaire de contact -->
+  <button class="s-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" title="Contact">✉</button>
+</div>
+
+<!-- ══ MODAL ══ -->
+<!-- Fenêtre popup de détail pour les activités et restaurants -->
+<!-- onclick sur l'overlay : ferme la modale si clic à l'extérieur (sur l'overlay lui-même) -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <!-- Le conteneur blanc de la modale -->
+  <div class="modal">
+    <!-- Bouton fermer en haut à droite -->
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <!-- Image en tête de modale, src rempli dynamiquement par JS selon la carte cliquée -->
+    <img id="mImg" class="modal-img" src="" alt="">
+    <!-- Corps de la modale avec les informations détaillées -->
+    <div class="modal-body">
+      <!-- Catégorie (ex: Culture · Chefchaouen), texte injecté par JS -->
+      <div id="mCat" class="m-cat"></div>
+      <!-- Titre de l'élément, injecté par JS -->
+      <h2 id="mTitle"></h2>
+      <!-- Description longue, injectée par JS -->
+      <p id="mDesc2" class="m-desc"></p>
+      <!-- Grille des détails pratiques (horaires, prix, etc.), générée dynamiquement par JS -->
+      <div class="modal-details" id="mDets"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Leaflet.js : bibliothèque cartographique chargée avant notre JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- ═══════════════════════════════════════════
+     FIN DU HTML — DÉBUT DU JAVASCRIPT
+═══════════════════════════════════════════ -->
+<script>
+/* ══ MODAL DATA ══ */
+/* Objet JavaScript contenant toutes les données pour les modales.
+   Clé = identifiant unique.
+   Valeur = objet avec : img, cat, title, desc, dets (tableau de détails).
+   Chaque clé correspond à un attribut onclick des cartes HTML */
+const modalData = {
+  medina:{
+  img:'images/medina.jpg',
+  cat:' Culture · Médina de Chefchaouen',
+  title:'La Médina Bleue',
+  desc:'Située au cœur de Chefchaouen, la médina est un véritable musée à ciel ouvert. Ses ruelles pavées, peintes dans différentes nuances de bleu et de blanc, offrent un décor unique au monde. Classée patrimoine architectural national, elle fut fondée en 1471 par Moulay Ali Ben Moussa Ben Rached. La tradition bleue fut renforcée dans les années 1930 par des réfugiés juifs andalous, pour qui le bleu symbolisait le divin et éloignait les moustiques.',
+  /* Les \' sont des apostrophes échappées dans la chaîne JS */
+  dets:[
+    ['Accès','Entrée libre, toute la journée'],
+    ['Meilleur moment','Matin tôt (7h–9h) ou coucher du soleil'],
+    ['À faire','Se perdre dans les ruelles bleues'],
+    ['Patrimoine','Architecture hispano-mauresque, fondée en 1471'],
+    ['Situation','Centre historique · Altitude 600 m'],
+    ['Conseil','Respecter les habitants ']
+  ]
+  /* Tableau de tableaux [label, valeur] pour les détails pratiques */
+},
+  akchour:{
+  img:'images/akchour.jpg',
+  cat:' Nature · Parc National Talassemtane',
+  title:'Cascades d\'Akchour',
+  desc:'Situées à environ 28 kilomètres de Chefchaouen, au cœur du Parc National de Talassemtane (classé réserve de biosphère par l\'UNESCO), les cascades d\'Akchour comptent parmi les plus beaux sites naturels du nord du Maroc. Le sentier de randonnée traverse des gorges impressionnantes et des forêts de pins et de cèdres, menant à plusieurs bassins aux eaux turquoise d\'une grande limpidité. Il existe deux cascades : la petite (45 min de marche) et la grande cascade de 100 mètres, accessible en 3h.',
+ dets:[
+  ['Distance','30 km de Chefchaouen'],
+  ['Durée','Pont de Dieu : 2-3h · Grande cascade : 5-6h'],
+  ['Difficulté','Facile à modérée'],
+  ['Transport','Grand taxi · 25 MAD/personne'],
+  ['Équipement','Chaussures de marche, eau, chapeau'],
+  ['Conseil','Partir avant 9h · Éviter juillet-août']
+]
+},
+ kasbah:{
+  img:'images/place.jpg',
+  cat:' Culture · Médina',
+  title:'La Kasbah & Place Outa El Hammam',
+  desc:'Construite au XVe siècle (vers 1471) par Moulay Ali Ben Moussa Ben Rached El Alami, la Kasbah de Chefchaouen est une forteresse historique entourée de magnifiques jardins andalous avec fontaines et orangers. Elle abrite aujourd\'hui un musée ethnographique retraçant l\'histoire et les traditions berbères de la région du Rif. À quelques pas, la Place Outa El Hammam — dont le nom signifie "terrain du bain public" — constitue le cœur animé de la ville, entourée de cafés traditionnels, de restaurants et de la Grande Mosquée à minaret octogonal unique au Maroc.',
+  dets:[
+    ['Entrée Kasbah','20 MAD (musée ethnographique inclus)'],
+    ['Horaires','9h–13h · 15h–18h30 (fermé mardi)'],
+    ['Place','Ouverte 24h/24, animée dès 18h'],
+    ['Style','Architecture hispano-mauresque du XVe siècle'],
+    ['Jardins','Roses, orangers et fontaines andalouses'],
+    ['Conseil','Visiter la Kasbah le matin, la place le soir']
+  ]
+},
+  rif:{
+  img:'images/rif.jpg',
+  cat:' Sport · Montagne du Rif',
+  title:'Randonnée dans le Rif',
+  desc:'Les montagnes du Rif qui encadrent Chefchaouen offrent des possibilités de randonnée exceptionnelles pour tous les niveaux. Le sentier du Jebel El Kelaa mène jusqu\'à 1 616 mètres d\'altitude avec une vue panoramique à 360° sur la ville bleue, la Méditerranée et les monts du Rif. Le Parc National de Talassemtane, qui couvre 58 950 hectares, abrite une faune et une flore remarquables dont le sapin du Maroc (Abies marocana), espèce endémique unique au monde. Des guides locaux certifiés proposent des circuits d\'une demi-journée à plusieurs jours avec bivouac en montagne.',
+  dets:[
+    ['Niveau','Facile à difficile (selon le sentier)'],
+    ['Durée','3h (Jebel El Kelaa) à plusieurs jours'],
+    ['Point culminant','Jebel El Kelaa · 1 616 m d\'altitude'],
+    ['Guide local','Fortement recommandé · 150–250 MAD/jour'],
+    ['Meilleur moment','Avril–Juin et Septembre–Octobre'],
+    ['Équipement','Chaussures de randonnée, eau 2L min, protection solaire, veste']
+  ]
+},
+  souk:{
+  img:'images/souk.jpg',
+  cat:'🛍 Culture · Médina',
+  title:'Artisanat & Souks de Chefchaouen',
+  desc:'Les souks de Chefchaouen sont réputés pour leur artisanat unique et authentique. La laine de montagne tissée à la main, les djellabas et burnous en laine vierge du Rif, les poteries et céramiques bleues caractéristiques, les paniers en osier tressé et les épices du marché emplissent les ruelles d\'un spectacle de couleurs et de senteurs envoûtantes. Le chanvre local est également transformé en cordes, sacs et sandales artisanales. Le Souk El Had, grand marché du dimanche installé hors les murs, réunit les artisans et agriculteurs des villages environnants pour une véritable explosion de produits locaux et régionaux.',
+  dets:[
+    ['Produits phares','Laine, poteries bleues, épices, cuir, chanvre'],
+    ['Marché hebdomadaire','Souk El Had — tous les dimanches matin'],
+    ['Prix','Négociation de mise · Sourire apprécié !'],
+    ['Horaires','9h–19h (tlj) · Souk El Had : 7h–14h'],
+    ['Situation','Médina, rue principale et Place Outa'],
+    ['Conseil','Comparer plusieurs échoppes avant d\'acheter · Ne pas montrer trop d\'intérêt']
+  ]
+},
+  hammam:{
+  img:'images/hammam.jpg',
+  cat:'♨ Bien-être · Médina',
+  title:'Hammam Traditionnel de Chefchaouen',
+  desc:'Le hammam est un rituel de purification et de convivialité ancré dans la vie quotidienne des habitants de Chefchaouen. Dans les hammams traditionnels de la médina, vous vivrez une expérience authentique : vapeur chaude, gommage au kessa, savon beldi à base d\'huile d\'olive, puis massage à l\'huile d\'argan du Maroc. Un moment de bien-être total, accessible à tous, partagé entre locaux et voyageurs dans une atmosphère chaleureuse et intemporelle.',
+  dets:[
+    ['Prix moyen','60 – 120 MAD (gommage inclus)'],
+    ['Durée','1h30 – 2h'],
+    ['Horaires','Femmes : 9h–16h · Hommes : 16h–22h'],
+    ['Produits','Savon beldi, Huile d\'argan, Kessa'],
+    ['À apporter','Maillot de bain, serviette, tongs'],
+    ['Conseil','Éviter vendredi midi · Moment calme en semaine']
+  ]
+},
+  babssour:{
+    img:'images/rest1.jpg',cat:' Restaurant ',
+    title:'Restaurant Bab Ssour',
+    desc:'Situé au cœur de la médina de Chefchaouen, Restaurant Bab Ssour est une adresse réputée pour sa cuisine marocaine traditionnelle et son ambiance chaleureuse. Le restaurant propose des spécialités locales comme les tajines, le couscous, la bissara et plusieurs plats végétariens préparés avec des ingrédients frais. Son décor authentique, inspiré de l\'architecture andalouse et rifaine, offre une expérience typique de la ville bleue. La terrasse constitue également un endroit agréable pour profiter d\'un repas dans une atmosphère conviviale',
+    dets:[['Prix moyen','40 - 100 MAD / personne'],['Horaires', '9h – 22h30'],['Spécialité','Tagine, Couscous, Bissara, Harira, Pastilla, yaourt maison'],['Cadre','terrasse avec vue dans la médina'],['Réservation','Non obligatoire'],['Adresse','N°5 Rue El Kharrazin, Médina, Chefchaouen'],['Note',' 4.3 / 5']]
+  },
+  cafeclock:{
+    img:'images/rest2.jpg',cat:' Café Culturel · Médina',
+    title:'Café Clock Chaouen',
+    desc:'Institution de la scène culturelle de Chefchaouen, Café Clock est un café cross-culturel niché dans le quartier Houta de la médina historique, à quelques minutes de la place Outa El Hammam. Il propose une cuisine marocaine revisitée — tagines, camel burger, brunch — dans une ambiance conviviale et bohème, avec murs bleus, carreaux traditionnels et mobilier vintage. Cours de cuisine marocaine, ateliers de calligraphie arabe, leçons d\'oud , soirées de musique live et projections cinéma — un lieu de rencontre entre artistes locaux et voyageurs du monde entier ',
+    dets:[['Prix moyen','150 – 250 MAD / personne '],['Horaires','9h – 22h30 (tlj)'],['Spécialité','Fusion maroco-moderne, Brunch'],['Activités','Cours cuisine, concerts gnawa'],['Terrasse','Vue panoramique sur la médina'],['Adresse','3 Derb Tijani, Hay Souk, Chefchaouen'],['Note',' 4.5 / 5']]
+  },
+  lampemagique:{
+    img:'images/rest3.jpg',cat:' Cuisine Berbère · Place Outa',
+    title:'La Lampe Magique',
+    desc:'Au cœur de la Place Outa El Hammam, La Lampe Magique est une adresse incontournable pour découvrir la cuisine berbère du Rif. Harira fumante, msemen au miel, tagine de chèvre de montagne aux herbes sauvages et thé à la menthe fraîche — tout est préparé avec des produits locaux et des recettes transmises de génération en génération.',
+    dets:[['Prix moyen','50 – 120 MAD / personne'],['Horaires','10h – 23h30 (tlj)'],['Spécialité','Tagine, Couscous, Pastilla, Brick, Salade marocaine'],['Cadre','Terrasse en face de la Kasbah'],['Ambiance','Familiale, authentique'],['Adresse','17 Rue Targui, Place Outa El Hammam, Chefchaouen'],['Note',' 3,7 / 5']]
+  },
+  tissemlal:{
+    img:'images/rest4.png',cat:' Restaurant marocain · Place Outa',
+    title:'Restaurant Tissemlal',
+    desc:'Tissemlal (qui signifie "perle" en berbère) est le restaurant de l\'hôtel Casa Hassan, une référence de la médina de Chefchaouen. Installé sur deux niveaux dans un riad authentique avec patio, coussins et tapis berbères, il propose une cuisine marocaine traditionnelle et généreuse — tagines, couscous, harira, pastilla, brochettes — préparée avec des produits frais du marché et de la ferme bio de l\'hôtel. La salle dispose d\'une belle cheminée très appréciée en hiver.',
+    dets:[['Prix moyen','80 – 150  MAD / personne'],['Horaires','7h – minuit (tlj)'],['Réservation','Recommandée le soir'],['Spécialité','Pastilla au poulet, Tagines, Couscous, Harira, Brochettes'],['Vue','Terrasse avec vue sur la médina'],['Adresse','22 Rue Targui, Médina, Chefchaouen'],['Note',' 4.1 / 5']]
+  },
+  riadcherifa:{
+    img:'images/riad1.jpg',cat:' Riad · Médina de Chefchaouen',
+    title:'Riad Cherifa',
+    desc:'Ouvert en 2016, le Riad Cherifa est un riad 4 étoiles situé au cœur de la médina bleue, à moins de 200 m de la place Outa El Hammam. Son architecture traditionnelle mêle zelliges, boiseries de cèdre et textiles artisanaux. L\'établissement dispose d\'une piscine, d\'un hammam & spa, d\'une terrasse panoramique et d\'un patio fleuri. Petit-déjeuner continental inclus. Il propose 8 chambres et 4 suites toutes décorées individuellement avec une grande attention aux détails.',
+    dets:[['Catégorie','Riad 4 étoiles'],['Prix','1 100 - 1 500 MAD / nuit'],['Chambres','8 chambres + 4 suites (12 unités au total)'],['Terrasse','Vue panoramique sur la médina'],['Petit-déjeuner','Inclus (fait maison)'],['Équipements' , 'Piscine, hammam & spa, Wi-Fi, climatisation'],['Adresse','N°6 Derb Ahmed Laaroussi, Bab Souk, Chefchaouen'],['Réception ' , '7h30 – 23h'],['Note',' 4.8 / 5']]
+  },
+  darmeziana:{
+    img:'images/riad2.jpg',cat:' Dar Traditionnel · Médina',
+    title:'Dar Meziana',
+    desc:'Dar Meziana ("la belle maison" en arabe) est un dar traditionnel rénové avec goût, mêlant architecture andalouse authentique et touches contemporaines. Situé dans une ruelle calme de la médina près de Bab Souk, il offre une vue panoramique sur les montagnes du Rif depuis sa terrasse. Chaque chambre est unique et décorée de matériaux locaux — bois de cèdre, tadelakt, carreaux de faïence peints à la main. L\'établissement dispose également d\'un restaurant servant des spécialités locales le soir.',
+    dets:[['Catégorie','Riad / Dar 4 étoiles'],['Prix','620 – 730 MAD / nuit'],['Chambres','7 chambres décorées à la main'],['Terrasse','Vue panoramique sur le Rif et la médina'],['Petit-déjeuner','Inclus (traditionnel marocain, servi sur la terrasse)'],['Services','Wi-Fi gratuit, climatisation, restaurant, réception 24h/24'],['Adresse','Derb Zaghdoud N°7, Bab Souk, Chefchaouen'],['Note',' 4 / 5']]
+  },
+  parador:{
+    img:'images/hotel1.jpg',cat:' Hôtel 4 étoiles · Kasbah',
+    title:'Hôtel Parador',
+    desc:'L\'Hôtel Parador est l\'un des établissements les plus emblématiques de Chefchaouen, situé à deux pas de la Kasbah et de la Place Outa El Hammam. Il propose 49 chambres standard et 6 suites (junior et supérieures), toutes climatisées, avec vue sur les montagnes du Rif et la médina. Sa piscine extérieure avec terrasse panoramique, son restaurant et son parking privé gratuit en font l\'une des adresses les mieux équipées de la ville. Hôtel de standing, aux chambres simples mais confortables, idéal pour sa situation exceptionnelle.',
+    dets:[['Catégorie','Hôtel 4 étoiles'],['Prix','600 – 870 MAD / nuit'],['Chambres','49 standard + 3 junior suites + 3 suites supérieures '],['Piscine','Extérieure avec vue panoramique'],['Restaurant','Cuisine marocaine & internationale'],['Jardins','Terrasses fleuries en cascade'],['Extras',' Parking privé gratuit, bar, salle de conférence, Wi-Fi'],['Adresse','Place El Makhzen BP3, Médina, Chefchaouen'],['Note',' 3.2 / 5']]
+  },
+  hotelchaouen:{
+    img:'images/hotel2.jpg',cat:' Hôtel · Centre-ville',
+    title:'Hôtel Chaouen',
+    desc:'L\'Hôtel Chaouen est un hôtel 3 étoiles situé sur l\'Avenue Melilla, à environ 2,7 km de la Kasbah et de la Place Outa El Hammam — donc en dehors de la médina, et non à "2 minutes à pied" comme indiqué. Il dispose d\'une terrasse avec vue panoramique sur les toits bleus et les montagnes du Rif, d\'un restaurant, d\'un salon et d\'un parking gratuit. Bon rapport qualité-prix, personnel chaleureux, mais avis mitigés sur la qualité des chambres.',
+    dets:[['Catégorie','Hôtel 3 étoiles'],['Prix','330 – 760 MAD / nuit'],['Chambres',' 24 chambres climatisées avec TV satellite'],['Terrasse','Panorama sur la médina et le Rif'],['Situation','2,7 km de la Place Outa (voiture/taxi)'],['Restaurant','Cuisine marocaine maison'],['Extras',' Parking gratuit, petit-déjeuner inclus (à la commande), Wi-Fi, réception 24h/24'],['Adresse','Av. Melilia, Dhar Ben Ayad, Chefchaouen'],['Note',' 3.5 / 5']]
+  }
+};
+/* Fin de l'objet modalData qui contient toutes les données des popups */
+
+/* ══ MODAL ══ */
+/* Fonction qui ouvre la modale en injectant les données correspondant à la clé donnée */
+function openModal(key){
+  const d = modalData[key];
+  if(!d) return;
+  /* On récupère les données par clé. Si la clé n'existe pas, on sort de la fonction */
+  document.getElementById('mImg').src = d.img;
+  /* On change le src de l'image de la modale */
+  document.getElementById('mImg').onerror = function(){
+    this.style.cssText = 'width:100%;height:220px;display:block;background:linear-gradient(135deg,#1B3A6B,#2563EB)';
+  };
+  /* Si l'image ne charge pas, on affiche un dégradé bleu à la place */
+  document.getElementById('mCat').textContent = d.cat;
+  /* On remplit la catégorie */
+  document.getElementById('mTitle').textContent = d.title;
+  /* On remplit le titre */
+  document.getElementById('mDesc2').textContent = d.desc;
+  /* On remplit la description longue */
+  document.getElementById('mDets').innerHTML = d.dets.map(([l,v]) =>
+    `<div class="modal-detail"><div class="d-label">${l}</div><div class="d-val">${v}</div></div>`
+  ).join('');
+  /* On génère dynamiquement le HTML des détails en parcourant le tableau dets avec map().
+     Chaque [label, valeur] devient une div modal-detail avec d-label et d-val */
+  document.getElementById('modalOverlay').classList.add('open');
+  /* On ajoute la classe 'open' à l'overlay pour l'afficher (display:flex) */
+  document.body.style.overflow = 'hidden';
+  /* On empêche le défilement du fond pendant que la modale est ouverte */
+}
+
+function closeModal(){
+  /* Fonction de fermeture de la modale */
+  document.getElementById('modalOverlay').classList.remove('open');
+  /* On retire la classe 'open' pour cacher la modale */
+  document.body.style.overflow = '';
+  /* On rétablit le défilement normal */
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ closeModal(); closeLb(); }
+});
+/* Ferme la modale ET la lightbox quand l'utilisateur appuie sur la touche Échap */
+
+/* ══ FILTERS – ACTIVITÉS ══ */
+/* Fonctions de filtrage des cartes par catégorie */
+function filterAct(cat, btn){
+  /* Filtre les cartes d'activités. cat = catégorie choisie, btn = bouton cliqué */
+  document.querySelectorAll('#actGrid .act-card').forEach(c => {
+    /* On parcourt toutes les cartes de la grille d'activités */
+    c.classList.toggle('hidden', cat !== 'all' && c.dataset.cat !== cat);
+    /* On cache la carte si : on n'est PAS sur "tout" ET la catégorie ne correspond pas */
+  });
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  /* On retire la classe active de tous les boutons de filtre */
+  btn.classList.add('active');
+  /* On ajoute la classe active uniquement au bouton cliqué */
+}
+
+/* ══ FILTERS – RESTAURANTS & HÉBERGEMENT ══ */
+/* Même logique pour filtrer les cartes restaurants/hôtels */
+function filterRH(cat, btn){
+  document.querySelectorAll('#rhGrid .rh-card').forEach(c => {
+    c.classList.toggle('hidden', cat !== 'all' && c.dataset.rh !== cat);
+    /* On utilise data-rh au lieu de data-cat pour ces cartes */
+  });
+  document.querySelectorAll('.rh-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ══ LIGHTBOX ══ */
+/* Données et fonctions de la visionneuse de photos */
+const lbSrcs = [
+  /* Tableau des sources d'images et légendes pour la lightbox */
+  {src:'images/g1.jpg', cap:'Chefchaouen — Les ruelles bleues de la Médina'},
+  {src:'images/g2.jpg', cap:'La Kasbah et ses jardins andalous'},
+  {src:'images/g3.jpg', cap:'Cascades d\'Akchour — Joyau naturel du Rif'},
+  {src:'images/g4.jpg', cap:'Vue panoramique sur Chefchaouen et le Rif'},
+  {src:'images/g5.jpg', cap:'Artisanat local — Laines et poteries bleues'},
+  {src:'images/g6.jpg', cap:'Place Outa El Hammam au coucher du soleil'},
+  {src:'images/g7.jpg', cap:'Portes et fenêtres bleues — Détails de la médina'},
+];
+let lbIdx = 0;
+/* Variable pour suivre l'index de la photo actuellement affichée dans la lightbox */
+
+function openLb(i){
+  /* Ouvre la lightbox à l'index i */
+  lbIdx = i;
+  /* On mémorise l'index courant pour la navigation */
+  document.getElementById('lbImg').src = lbSrcs[i].src;
+  /* On change l'image affichée */
+  document.getElementById('lbCap').textContent = lbSrcs[i].cap;
+  /* On change la légende */
+  document.getElementById('lightbox').classList.add('open');
+  /* On affiche la lightbox */
+  document.body.style.overflow = 'hidden';
+  /* On bloque le défilement du fond */
+}
+
+function closeLb(){
+  /* Ferme la lightbox */
+  document.getElementById('lightbox').classList.remove('open');
+  /* On cache la lightbox */
+  document.body.style.overflow = '';
+  /* On rétablit le défilement */
+}
+
+function navLb(dir){
+  /* Navigation dans la lightbox : dir = +1 (suivant) ou -1 (précédent) */
+  lbIdx = (lbIdx + dir + lbSrcs.length) % lbSrcs.length;
+  /* Calcul cyclique : quand on dépasse la dernière photo, on revient à la première.
+     + lbSrcs.length évite les nombres négatifs avec le modulo % */
+  openLb(lbIdx);
+  /* On réouvre la lightbox avec le nouvel index */
+}
+
+document.getElementById('lightbox').addEventListener('click', function(e){
+  if(e.target === this) closeLb();
+});
+/* Ferme la lightbox si on clique directement sur le fond noir (pas sur l'image) */
+
+/* ══ LEAFLET MAP ══ */
+/* Données et initialisation de la carte interactive */
+const places = [
+  /* Tableau des lieux à afficher sur la carte avec leurs coordonnées GPS */
+  {name:'Place Outa El Hammam', lat:35.1688, lng:-5.2687, type:'culture', col:'#1B3A6B', desc:'Cœur historique de la ville'},
+  /* Chaque lieu a : nom, latitude, longitude, type, couleur du marqueur, description */
+  {name:'La Kasbah',            lat:35.1671, lng:-5.2701, type:'culture', col:'#1a3a5c', desc:'Forteresse du XVe siècle'},
+  {name:'Mosquée Al-Andalus',   lat:35.1700, lng:-5.2660, type:'culture', col:'#1B3A6B', desc:'Architecture hispano-mauresque'},
+  {name:'Ras El Ma',            lat:35.1650, lng:-5.2720, type:'nature',  col:'#1a5c3a', desc:'Source et lavoir traditionnel'},
+  {name:'Souk Artisanal',       lat:35.1590, lng:-5.2700, type:'culture', col:'#8b4513', desc:'Artisanat local — laines, poteries'},
+  {name:'Hôtel Parador',        lat:35.1710, lng:-5.2695, type:'hotel',   col:'#1a3a5c', desc:'Hôtel emblématique avec vue panoramique'},
+  {name:'Riad Cherifa',         lat:35.1682, lng:-5.2678, type:'hotel',   col:'#2d5016', desc:'Riad boutique au cœur de la médina'},
+];
+
+window.addEventListener('load', () => {
+  /* On attend que la page soit complètement chargée avant d'initialiser la carte */
+  const leafletMap = L.map('map').setView([35.168, -5.269], 15);
+  /* On crée la carte Leaflet dans la div#map, centrée sur Chefchaouen (lat:35.168, lng:-5.269), zoom 15 */
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+    /* Tuiles OpenStreetMap, mention de la source obligatoire */
+  }).addTo(leafletMap);
+  /* On charge les tuiles de la carte (les images de fond du plan) */
+
+  const listEl = document.getElementById('mapList');
+  /* On récupère le conteneur de la liste des lieux */
+  const typeCol = {culture:'#1B3A6B', nature:'#1a5c3a', hotel:'#1a3a5c'};
+  /* Couleurs des points dans la liste selon le type de lieu */
+
+  places.forEach((p, i) => {
+    /* On parcourt chaque lieu du tableau places avec son index i */
+    const icon = L.divIcon({
+      /* On crée une icône personnalisée (div HTML) pour chaque marqueur */
+      className: '',
+      /* Pas de classe CSS par défaut pour éviter le style Leaflet par défaut */
+      html: `<div style="background:${p.col};width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;">${i+1}</div>`,
+      /* Cercle coloré avec le numéro du lieu dedans */
+      iconSize: [28,28], iconAnchor: [14,14]
+      /* Taille 28x28, ancré en son centre pour pointer au bon endroit sur la carte */
+    });
+    const m = L.marker([p.lat, p.lng], {icon}).addTo(leafletMap);
+    /* On crée un marqueur aux coordonnées GPS du lieu et on l'ajoute à la carte */
+    m.bindPopup(`<strong>${p.name}</strong><br><small>${p.desc}</small>`);
+    /* On lie une popup au marqueur : nom en gras et description en petit */
+
+    const item = document.createElement('div');
+    /* On crée un élément div pour la liste des lieux */
+    item.className = 'map-item';
+    /* On lui donne la classe CSS appropriée */
+    item.innerHTML = `<h4><span class="type-dot" style="background:${typeCol[p.type]||p.col}"></span>${i+1}. ${p.name}</h4><p>${p.desc}</p>`;
+    /* On remplit le HTML de l'élément : point coloré + numéro + nom + description */
+    item.onclick = () => {
+      /* Quand on clique sur un élément de la liste... */
+      leafletMap.setView([p.lat, p.lng], 17);
+      /* La carte se centre sur ce lieu avec un zoom plus élevé (17) */
+      m.openPopup();
+      /* La popup du marqueur s'ouvre automatiquement */
+      document.querySelectorAll('.map-item').forEach(x => x.classList.remove('active-place'));
+      /* On retire la classe active de tous les éléments de la liste */
+      item.classList.add('active-place');
+      /* On ajoute la classe active à l'élément cliqué */
+    };
+    listEl.appendChild(item);
+    /* On ajoute l'élément créé à la liste dans le DOM */
+  });
+});
+
+/* ══ MÉTÉO ══ */
+/* Fonction qui charge les données météo dans l'interface */
+function loadMeteo(){
+  /* Cette fonction injecte des valeurs météo statiques (simulées) dans les éléments HTML */
+  document.getElementById('mTemp').textContent  = '18°C';
+  /* Température actuelle */
+  document.getElementById('mDesc').textContent  = 'Partiellement nuageux ';
+  /* Description de la météo */
+  document.getElementById('mFeel').textContent  = '16°C';
+  /* Température ressentie */
+  document.getElementById('mHum').textContent   = '62%';
+  /* Taux d'humidité */
+  document.getElementById('mWind').textContent  = '12 km/h';
+  /* Vitesse du vent */
+  document.getElementById('mCloud').textContent = '40%';
+  /* Couverture nuageuse */
+}
+loadMeteo();
+/* On appelle immédiatement la fonction au chargement de la page */
+
+/* ══ FORMULAIRE DE CONTACT ══ */
+/* Fonction de validation et envoi du formulaire de contact */
+function sendForm(){
+  const p = document.getElementById('fPrenom').value.trim();
+  /* On récupère la valeur du champ prénom et on supprime les espaces inutiles */
+  const e = document.getElementById('fEmail').value.trim();
+  /* On récupère l'email saisi */
+  const m = document.getElementById('fMsg').value.trim();
+  /* On récupère le message saisi */
+  if(!p || !e || !m){
+    alert('Veuillez remplir les champs obligatoires (Prénom, Email, Message).');
+    return;
+  }
+  /* Si un des champs obligatoires est vide, on affiche une alerte et on arrête la fonction */
+  if(!/\S+@\S+\.\S+/.test(e)){
+    alert('Adresse email invalide.');
+    return;
+  }
+  /* Expression régulière basique pour vérifier le format de l'email
+     (quelque chose @ quelque chose . quelque chose) */
+  document.getElementById('formOk').style.display = 'block';
+  /* On affiche le message de succès vert en changeant son display */
+  ['fPrenom','fNom','fEmail','fMsg'].forEach(id => document.getElementById(id).value = '');
+  /* On vide tous les champs texte du formulaire en les parcourant avec forEach */
+  document.getElementById('fSujet').selectedIndex = 0;
+  /* On remet le select "Sujet" sur l'option par défaut (index 0) */
+}
+
+/* ══ ACTIVE NAV LINK AU SCROLL ══ */
+/* Met automatiquement le lien de navigation en actif selon la section visible */
+const sections = ['hero','activites','galerie','restaurants','carte','contact'];
+/* Tableau des ids des sections dans l'ordre d'apparition dans la page */
+window.addEventListener('scroll', () => {
+  /* À chaque événement de défilement... */
+  const y = window.scrollY + 100;
+  /* Position de défilement actuelle + 100px de décalage pour anticiper la section */
+  sections.forEach(id => {
+    /* On vérifie chaque section */
+    const el   = document.getElementById(id);
+    if(!el) return;
+    /* Si la section n'existe pas, on passe à la suivante */
+    const link = document.querySelector(`nav a[href="#${id}"]`);
+    if(!link) return;
+    /* Si le lien correspondant n'existe pas dans la nav, on passe */
+    if(el.offsetTop <= y && el.offsetTop + el.offsetHeight > y){
+      /* Si le scroll est dans la zone de cette section (entre le début et la fin) */
+      document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+      /* On retire 'active' de tous les liens */
+      link.classList.add('active');
+      /* On ajoute 'active' uniquement au lien de la section visible */
+    }
+  });
+}, {passive: true});
+/* passive:true améliore les performances : on dit au navigateur qu'on ne bloquera pas le scroll */
+
+/* ══ MENU HAMBURGER ══ */
+/* Gestion de l'ouverture/fermeture du menu mobile */
+function toggleMenu(){
+  /* Bascule l'état ouvert/fermé du menu de navigation */
+  const nav = document.querySelector('.nav-links');
+  nav.classList.toggle('open');
+  /* toggle ajoute la classe si elle n'est pas là, la retire si elle y est */
+}
+
+/* Ferme le menu quand on clique sur un lien */
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', () => {
+    /* Quand on clique sur un lien du menu mobile... */
+    document.querySelector('.nav-links').classList.remove('open');
+    /*  ferme le menu (important sur mobile pour qu'il disparaisse après la navigation) */
+  });
+});
+
+/* Ferme le menu quand on clique ailleurs */
+document.addEventListener('click', function(e){
+  /* Écoute tous les clics sur la page entière */
+  const nav = document.querySelector('.nav-links');
+  const btn = document.getElementById('menuBtn');
+  if(!nav.contains(e.target) && !btn.contains(e.target)){
+    /* Si le clic n'est pas dans le menu NI sur le bouton hamburger... */
+    nav.classList.remove('open');
+    /*  ferme le menu (clic en dehors = fermeture) */
+  }
+});
+</script>
+
+<!-- ═══════════════════════════════════════════
+     FIN DU JAVASCRIPT 
+═══════════════════════════════════════════ -->
+
+</body>
+<!-- Fin du corps de la page -->
+</html>
+<!-- Fin du document HTML -->
