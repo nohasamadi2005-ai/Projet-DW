@@ -860,7 +860,7 @@ footer{
     <!-- Lien vers la carte interactive -->
     <li><a href="#contact">Météo & Contact</a></li>
     <!-- Lien vers la section météo et formulaire de contact -->
-    <li><a href="../index/dashboard.html">Dashboard</a></li>
+    <li><a href="../index/dashboard.html">Portail touristique</a></li>
     <!-- Lien vers le tableau de bord du projet -->
   </ul>
   <!-- Bouton burger visible sur mobile, appelle la fonction toggleMenu() au clic -->
@@ -895,8 +895,7 @@ footer{
 
   <!-- Conteneur du contenu texte centré par-dessus l'image -->
   <div class="hero-content">
-    <!-- Petit badge avec les labels de Chefchaouen -->
-    <div class="hero-tag">Maroc · Rif · Altitude 600 m</div>
+    
     <!-- h1 : titre principal de la page (un seul h1 par page) -->
     <!-- "CHEF" normal, "CHAOUEN" en italique doré grâce à la balise em -->
     <h1 class="hero-title">CHEF<em>CHAOUEN</em></h1>
@@ -1427,7 +1426,7 @@ footer{
       <!-- Bouton d'envoi pleine largeur, appelle sendForm() au clic -->
       <button class="btn-primary" style="width:100%;justify-content:center" onclick="sendForm()">Envoyer le message</button>
       <!-- Message de confirmation caché par défaut (display:none), affiché après envoi réussi -->
-      <div class="form-success" id="formOk">✅ Message envoyé ! Merci, nous vous répondrons rapidement.</div>
+      <div class="form-success" id="formOk"> Message envoyé ! Merci, nous vous répondrons rapidement.</div>
     </div>
 
   </div><!-- fin de la grille mc-layout -->
@@ -1449,7 +1448,7 @@ footer{
     <a href="#restaurants">Restaurants</a>
     <a href="#carte">Carte</a>
     <a href="#contact">Contact</a>
-    <a href="../index/dashboard.html"> Retour au Dashboard</a> 
+    <a href="../index/dashboard.html">Explorer le portail</a> 
   </div>
 </footer>
 <!-- Fin du footer -->
@@ -1504,7 +1503,7 @@ footer{
 const modalData = {
   medina:{
   img:'images/medina.jpg',
-  cat:'🏛 Culture · Médina de Chefchaouen',
+  cat:' Culture · Médina de Chefchaouen',
   title:'La Médina Bleue',
   desc:'Située au cœur de Chefchaouen, la médina est un véritable musée à ciel ouvert. Ses ruelles pavées, peintes dans différentes nuances de bleu et de blanc, offrent un décor unique au monde. Classée patrimoine architectural national, elle fut fondée en 1471 par Moulay Ali Ben Moussa Ben Rached. La tradition bleue fut renforcée dans les années 1930 par des réfugiés juifs andalous, pour qui le bleu symbolisait le divin et éloignait les moustiques.',
   /* Les \' sont des apostrophes échappées dans la chaîne JS */
@@ -1520,7 +1519,7 @@ const modalData = {
 },
   akchour:{
   img:'images/akchour.jpg',
-  cat:'🌿 Nature · Parc National Talassemtane',
+  cat:' Nature · Parc National Talassemtane',
   title:'Cascades d\'Akchour',
   desc:'Situées à environ 28 kilomètres de Chefchaouen, au cœur du Parc National de Talassemtane (classé réserve de biosphère par l\'UNESCO), les cascades d\'Akchour comptent parmi les plus beaux sites naturels du nord du Maroc. Le sentier de randonnée traverse des gorges impressionnantes et des forêts de pins et de cèdres, menant à plusieurs bassins aux eaux turquoise d\'une grande limpidité. Il existe deux cascades : la petite (45 min de marche) et la grande cascade de 100 mètres, accessible en 3h.',
  dets:[
@@ -1534,7 +1533,7 @@ const modalData = {
 },
  kasbah:{
   img:'images/place.jpg',
-  cat:'🏰 Culture · Médina',
+  cat:' Culture · Médina',
   title:'La Kasbah & Place Outa El Hammam',
   desc:'Construite au XVe siècle (vers 1471) par Moulay Ali Ben Moussa Ben Rached El Alami, la Kasbah de Chefchaouen est une forteresse historique entourée de magnifiques jardins andalous avec fontaines et orangers. Elle abrite aujourd\'hui un musée ethnographique retraçant l\'histoire et les traditions berbères de la région du Rif. À quelques pas, la Place Outa El Hammam — dont le nom signifie "terrain du bain public" — constitue le cœur animé de la ville, entourée de cafés traditionnels, de restaurants et de la Grande Mosquée à minaret octogonal unique au Maroc.',
   dets:[
@@ -1548,7 +1547,7 @@ const modalData = {
 },
   rif:{
   img:'images/rif.jpg',
-  cat:'🏔 Sport · Montagne du Rif',
+  cat:' Sport · Montagne du Rif',
   title:'Randonnée dans le Rif',
   desc:'Les montagnes du Rif qui encadrent Chefchaouen offrent des possibilités de randonnée exceptionnelles pour tous les niveaux. Le sentier du Jebel El Kelaa mène jusqu\'à 1 616 mètres d\'altitude avec une vue panoramique à 360° sur la ville bleue, la Méditerranée et les monts du Rif. Le Parc National de Talassemtane, qui couvre 58 950 hectares, abrite une faune et une flore remarquables dont le sapin du Maroc (Abies marocana), espèce endémique unique au monde. Des guides locaux certifiés proposent des circuits d\'une demi-journée à plusieurs jours avec bivouac en montagne.',
   dets:[
@@ -1589,49 +1588,49 @@ const modalData = {
   ]
 },
   babssour:{
-    img:'images/rest1.jpg',cat:'🍽 Restaurant ',
+    img:'images/rest1.jpg',cat:' Restaurant ',
     title:'Restaurant Bab Ssour',
     desc:'Situé au cœur de la médina de Chefchaouen, Restaurant Bab Ssour est une adresse réputée pour sa cuisine marocaine traditionnelle et son ambiance chaleureuse. Le restaurant propose des spécialités locales comme les tajines, le couscous, la bissara et plusieurs plats végétariens préparés avec des ingrédients frais. Son décor authentique, inspiré de l\'architecture andalouse et rifaine, offre une expérience typique de la ville bleue. La terrasse constitue également un endroit agréable pour profiter d\'un repas dans une atmosphère conviviale',
     dets:[['Prix moyen','40 - 100 MAD / personne'],['Horaires', '9h – 22h30'],['Spécialité','Tagine, Couscous, Bissara, Harira, Pastilla, yaourt maison'],['Cadre','terrasse avec vue dans la médina'],['Réservation','Non obligatoire'],['Téléphone ' , '+212 660 261 128'],['Adresse','N°5 Rue El Kharrazin, Médina, Chefchaouen'],['Note',' 4.3 / 5']]
   },
   cafeclock:{
-    img:'images/rest2.jpg',cat:'☕ Café Culturel · Médina',
+    img:'images/rest2.jpg',cat:' Café Culturel · Médina',
     title:'Café Clock Chaouen',
     desc:'Institution de la scène culturelle de Chefchaouen, Café Clock est un café cross-culturel niché dans le quartier Houta de la médina historique, à quelques minutes de la place Outa El Hammam. Il propose une cuisine marocaine revisitée — tagines, camel burger, brunch — dans une ambiance conviviale et bohème, avec murs bleus, carreaux traditionnels et mobilier vintage. Cours de cuisine marocaine, ateliers de calligraphie arabe, leçons d\'oud , soirées de musique live et projections cinéma — un lieu de rencontre entre artistes locaux et voyageurs du monde entier ',
     dets:[['Prix moyen','150 – 250 MAD / personne '],['Horaires','9h – 22h30 (tlj)'],['Spécialité','Fusion maroco-moderne, Brunch'],['Activités','Cours cuisine, concerts gnawa'],['Terrasse','Vue panoramique sur la médina'],['Téléphone ' , '+212 5399-88788'],['Adresse','3 Derb Tijani, Hay Souk, Chefchaouen'],['Note',' 4.5 / 5']]
   },
   lampemagique:{
-    img:'images/rest3.jpg',cat:'🍲 Cuisine Berbère · Place Outa',
+    img:'images/rest3.jpg',cat:' Cuisine Berbère · Place Outa',
     title:'La Lampe Magique',
     desc:'Au cœur de la Place Outa El Hammam, La Lampe Magique est une adresse incontournable pour découvrir la cuisine berbère du Rif. Harira fumante, msemen au miel, tagine de chèvre de montagne aux herbes sauvages et thé à la menthe fraîche — tout est préparé avec des produits locaux et des recettes transmises de génération en génération.',
     dets:[['Prix moyen','50 – 120 MAD / personne'],['Horaires','10h – 23h30 (tlj)'],['Spécialité','Tagine, Couscous, Pastilla, Brick, Salade marocaine'],['Cadre','Terrasse en face de la Kasbah'],['Ambiance','Familiale, authentique'],['Téléphone ' , '+212 665 406 464'],['Adresse','17 Rue Targui, Place Outa El Hammam, Chefchaouen'],['Note',' 3,7 / 5']]
   },
   tissemlal:{
-    img:'images/rest4.png',cat:'🍽 Restaurant marocain · Place Outa',
+    img:'images/rest4.png',cat:' Restaurant marocain · Place Outa',
     title:'Restaurant Tissemlal',
     desc:'Tissemlal (qui signifie "perle" en berbère) est le restaurant de l\'hôtel Casa Hassan, une référence de la médina de Chefchaouen. Installé sur deux niveaux dans un riad authentique avec patio, coussins et tapis berbères, il propose une cuisine marocaine traditionnelle et généreuse — tagines, couscous, harira, pastilla, brochettes — préparée avec des produits frais du marché et de la ferme bio de l\'hôtel. La salle dispose d\'une belle cheminée très appréciée en hiver.',
     dets:[['Prix moyen','80 – 150  MAD / personne'],['Horaires','7h – minuit (tlj)'],['Réservation','Recommandée le soir'],['Spécialité','Pastilla au poulet, Tagines, Couscous, Harira, Brochettes'],['Vue','Terrasse avec vue sur la médina'],['Téléphone ' , '+212 648 523 679'],['Adresse','22 Rue Targui, Médina, Chefchaouen'],['Note',' 4.1 / 5']]
   },
   riadcherifa:{
-    img:'images/riad1.jpg',cat:'🏡 Riad · Médina de Chefchaouen',
+    img:'images/riad1.jpg',cat:' Riad · Médina de Chefchaouen',
     title:'Riad Cherifa',
     desc:'Ouvert en 2016, le Riad Cherifa est un riad 4 étoiles situé au cœur de la médina bleue, à moins de 200 m de la place Outa El Hammam. Son architecture traditionnelle mêle zelliges, boiseries de cèdre et textiles artisanaux. L\'établissement dispose d\'une piscine, d\'un hammam & spa, d\'une terrasse panoramique et d\'un patio fleuri. Petit-déjeuner continental inclus. Il propose 8 chambres et 4 suites toutes décorées individuellement avec une grande attention aux détails.',
     dets:[['Catégorie','Riad 4 étoiles'],['Prix','1 100 - 1 500 MAD / nuit'],['Chambres','8 chambres + 4 suites (12 unités au total)'],['Terrasse','Vue panoramique sur la médina'],['Petit-déjeuner','Inclus (fait maison)'],['Équipements' , 'Piscine, hammam & spa, Wi-Fi, climatisation'],['Adresse','N°6 Derb Ahmed Laaroussi, Bab Souk, Chefchaouen'],['Téléphone ' , '+212 539 986 370'],['Réception ' , '7h30 – 23h'],['Note',' 4.8 / 5']]
   },
   darmeziana:{
-    img:'images/riad2.jpg',cat:'🏡 Dar Traditionnel · Médina',
+    img:'images/riad2.jpg',cat:' Dar Traditionnel · Médina',
     title:'Dar Meziana',
     desc:'Dar Meziana ("la belle maison" en arabe) est un dar traditionnel rénové avec goût, mêlant architecture andalouse authentique et touches contemporaines. Situé dans une ruelle calme de la médina près de Bab Souk, il offre une vue panoramique sur les montagnes du Rif depuis sa terrasse. Chaque chambre est unique et décorée de matériaux locaux — bois de cèdre, tadelakt, carreaux de faïence peints à la main. L\'établissement dispose également d\'un restaurant servant des spécialités locales le soir.',
     dets:[['Catégorie','Riad / Dar 4 étoiles'],['Prix','620 – 730 MAD / nuit'],['Chambres','7 chambres décorées à la main'],['Terrasse','Vue panoramique sur le Rif et la médina'],['Petit-déjeuner','Inclus (traditionnel marocain, servi sur la terrasse)'],['Services','Wi-Fi gratuit, climatisation, restaurant, réception 24h/24'],['Adresse','Derb Zaghdoud N°7, Bab Souk, Chefchaouen'],['Téléphone ' , '+212 539 987 806'],['Note',' 4 / 5']]
   },
   parador:{
-    img:'images/hotel1.jpg',cat:'🏨 Hôtel 4 étoiles · Kasbah',
+    img:'images/hotel1.jpg',cat:' Hôtel 4 étoiles · Kasbah',
     title:'Hôtel Parador',
     desc:'L\'Hôtel Parador est l\'un des établissements les plus emblématiques de Chefchaouen, situé à deux pas de la Kasbah et de la Place Outa El Hammam. Il propose 49 chambres standard et 6 suites (junior et supérieures), toutes climatisées, avec vue sur les montagnes du Rif et la médina. Sa piscine extérieure avec terrasse panoramique, son restaurant et son parking privé gratuit en font l\'une des adresses les mieux équipées de la ville. Hôtel de standing, aux chambres simples mais confortables, idéal pour sa situation exceptionnelle.',
     dets:[['Catégorie','Hôtel 4 étoiles'],['Prix','600 – 870 MAD / nuit'],['Chambres','49 standard + 3 junior suites + 3 suites supérieures '],['Piscine','Extérieure avec vue panoramique'],['Restaurant','Cuisine marocaine & internationale'],['Jardins','Terrasses fleuries en cascade'],['Extras',' Parking privé gratuit, bar, salle de conférence, Wi-Fi'],['Adresse','Place El Makhzen BP3, Médina, Chefchaouen'],['Téléphone ' , '+212 539 986 324'],['Note',' 3.2 / 5']]
   },
   hotelchaouen:{
-    img:'images/hotel2.jpg',cat:'🏨 Hôtel · Centre-ville',
+    img:'images/hotel2.jpg',cat:' Hôtel · Centre-ville',
     title:'Hôtel Chaouen',
     desc:'L\'Hôtel Chaouen est un hôtel 3 étoiles situé sur l\'Avenue Melilla, à environ 2,7 km de la Kasbah et de la Place Outa El Hammam — donc en dehors de la médina, et non à "2 minutes à pied" comme indiqué. Il dispose d\'une terrasse avec vue panoramique sur les toits bleus et les montagnes du Rif, d\'un restaurant, d\'un salon et d\'un parking gratuit. Bon rapport qualité-prix, personnel chaleureux, mais avis mitigés sur la qualité des chambres.',
     dets:[['Catégorie','Hôtel 3 étoiles'],['Prix','330 – 760 MAD / nuit'],['Chambres',' 24 chambres climatisées avec TV satellite'],['Terrasse','Panorama sur la médina et le Rif'],['Situation','2,7 km de la Place Outa (voiture/taxi)'],['Restaurant','Cuisine marocaine maison'],['Extras',' Parking gratuit, petit-déjeuner inclus (à la commande), Wi-Fi, réception 24h/24'],['Adresse','Av. Melilia, Dhar Ben Ayad, Chefchaouen'],['Téléphone ' , '+212 539 882 488'],['Note',' 3.5 / 5']]
